@@ -448,13 +448,6 @@ body::before{
         <label>Assign to:</label>
         <!-- Assign-to buttons injected dynamically -->
       </div>
-      <!-- Reminder row: optional date/time to email the assignee a reminder -->
-      <div class="add-options" style="margin-top:10px">
-        <label>Reminder:</label>
-        <input class="add-input" type="datetime-local" id="add-reminder" style="max-width:230px"/>
-        <button class="p-btn" type="button" id="clear-reminder" title="Clear reminder">Clear</button>
-      </div>
-      <div style="font-size:.72rem;color:var(--muted);margin-top:4px">Emails the assignee at this time (needs someone assigned).</div>
       <div class="add-err" id="add-err"></div>
     </div>
 
@@ -493,17 +486,15 @@ body::before{
       </div>
     </div>
 
-    <!-- Filter bar — toggle chips. Within a category selections are OR;
-         across categories (status / priority / person) they combine with AND.
-         "All" clears every active filter. -->
+    <!-- Filter bar -->
     <div class="filter-bar">
-      <button class="filter-btn active" data-f="all" data-cat="all">All</button>
-      <button class="filter-btn" data-f="open"   data-cat="status">Open</button>
-      <button class="filter-btn" data-f="done"   data-cat="status">Done</button>
-      <button class="filter-btn" data-f="high"   data-cat="priority">🔴 High</button>
-      <button class="filter-btn" data-f="medium" data-cat="priority">🟡 Med</button>
-      <button class="filter-btn" data-f="low"    data-cat="priority">🟢 Low</button>
-      <!-- Member (assigned-to) filter buttons injected dynamically -->
+      <button class="filter-btn active" data-f="all">All</button>
+      <button class="filter-btn" data-f="open">Open</button>
+      <button class="filter-btn" data-f="done">Done</button>
+      <button class="filter-btn" data-f="high">🔴 High</button>
+      <button class="filter-btn" data-f="medium">🟡 Med</button>
+      <button class="filter-btn" data-f="low">🟢 Low</button>
+      <!-- Member filter buttons injected dynamically -->
     </div>
 
     <!-- Task list -->
@@ -525,20 +516,12 @@ body::before{
 // TODO: Sign up at https://www.emailjs.com (free tier supports 200 emails/mo)
 // 1. Create a new Email Service (Gmail, Outlook, etc.) and copy the Service ID
 // 2. Create an Email Template — template variables available:
-//      {{to_name}}       — who the task is assigned to (recipient)
-//      {{assigned_by}}   — who created/assigned the task
-//      {{task_title}}    — the task text
+//      {{task_title}}   — the task text
+//      {{task_desc}}    — description (may be empty)
+//      {{assigned_by}}  — who created/assigned the task
+//      {{assigned_to}}  — who the task is assigned to
 //      {{task_priority}} — high / medium / low
-//      {{task_desc}}     — description (may be empty)
-//      {{is_reminder}}   — "true" for reminder emails, "false" for new-assignment
-//      {{app_url}}       — link to the app
-//    Suggested template body:
-//      Hello {{to_name}}, You have been assigned a new task by {{assigned_by}}.
-//      Task: {{task_title}}  Priority: {{task_priority}}  Description: {{task_desc}}
-//      Please log in to the family tasks app at {{app_url}} to view and complete it.
 // 3. Copy the Template ID and your account's Public Key
-//    NOTE: server-side reminder emails (cron) use the same template via the
-//    EmailJS REST API and require the Private Key set in the worker's wrangler.toml.
 // ════════════════════════════════════════════════════════════════════════════
 const EMAILJS_CFG = {
   SERVICE_ID:  'service_h96tng5s',
@@ -558,9 +541,7 @@ const CFG = {
 
 // ── State ──────────────────────────────────────────────────────────────────
 let tasks = [];
-// Active filters grouped by category. Within a category = OR, across = AND.
-// person values are lowercased member names (matched against assignedTo).
-let activeFilters = { status: new Set(), priority: new Set(), person: new Set() };
+let filter = 'all';
 let currentUser = '';
 let selectedPriority = 'medium';
 let selectedAssignedTo = '';   // NEW: who the task is assigned to
@@ -686,48 +667,22 @@ function buildMemberUI(members) {
     assignWrap.appendChild(b);
   });
 
-  // Member (assigned-to) filter buttons
+  // Member filter buttons
   const filterBar = document.querySelector('.filter-bar');
   filterBar.querySelectorAll('[data-member-filter]').forEach(b => b.remove());
   members.forEach(m => {
     const b = document.createElement('button');
     b.className = 'filter-btn';
-    b.dataset.f = m.toLowerCase();   // matched against assignedTo (lowercased)
-    b.dataset.cat = 'person';
+    b.dataset.f = 'by-' + m.toLowerCase();
     b.dataset.memberFilter = '1';
     b.textContent = '👤 ' + m;
-    b.addEventListener('click', () => toggleFilter(b));
+    b.addEventListener('click', () => {
+      filter = b.dataset.f;
+      filterBar.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      renderTasks();
+    });
     filterBar.appendChild(b);
-  });
-}
-
-// ── Toggle-chip filter logic ───────────────────────────────────────────────
-function toggleFilter(btn) {
-  const cat = btn.dataset.cat;
-  const val = btn.dataset.f;
-  if (cat === 'all') {
-    // Clear every category.
-    activeFilters.status.clear();
-    activeFilters.priority.clear();
-    activeFilters.person.clear();
-  } else {
-    const set = activeFilters[cat];
-    if (set.has(val)) set.delete(val); else set.add(val);
-  }
-  syncFilterButtons();
-  renderTasks();
-}
-
-// Reflect activeFilters state onto the buttons' .active class.
-function syncFilterButtons() {
-  const anyActive = activeFilters.status.size || activeFilters.priority.size || activeFilters.person.size;
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    const cat = b.dataset.cat;
-    if (cat === 'all') {
-      b.classList.toggle('active', !anyActive);
-    } else {
-      b.classList.toggle('active', activeFilters[cat] && activeFilters[cat].has(b.dataset.f));
-    }
   });
 }
 
@@ -753,9 +708,14 @@ document.querySelectorAll('#priority-btns .p-btn').forEach(b => {
   });
 });
 
-// ── Filter (static chips: All / status / priority) ──────────────────────────
+// ── Filter ─────────────────────────────────────────────────────────────────
 document.querySelectorAll('.filter-btn').forEach(b => {
-  b.addEventListener('click', () => toggleFilter(b));
+  b.addEventListener('click', () => {
+    filter = b.dataset.f;
+    document.querySelectorAll('.filter-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    renderTasks();
+  });
 });
 
 // ── API helpers ────────────────────────────────────────────────────────────
@@ -808,15 +768,6 @@ async function sendTaskEmail(task) {
   }
 
   const templateParams = {
-    // Detailed template variables — match the EmailJS template body.
-    to_name:       task.assignedTo,
-    assigned_by:   task.addedBy || 'Someone',
-    task_title:    task.text,
-    task_priority: task.priority || 'medium',
-    task_desc:     task.description || '',
-    is_reminder:   'false',
-    app_url:       'https://twcministries.net',
-    // Legacy / delivery fields kept for backwards compatibility.
     name:  task.assignedTo,
     title: task.text,
     email: toEmail,
@@ -844,25 +795,11 @@ document.getElementById('add-text').addEventListener('keydown', e => {
 });
 addBtn.addEventListener('click', addTask);
 
-// Reminder field helpers
-document.getElementById('clear-reminder').addEventListener('click', () => {
-  document.getElementById('add-reminder').value = '';
-});
-
 async function addTask() {
   const text = document.getElementById('add-text').value.trim();
   const desc = document.getElementById('add-desc').value.trim();
-  const reminderRaw = document.getElementById('add-reminder').value;
   const errEl = document.getElementById('add-err');
   if (!text) { errEl.textContent = 'Please enter a task.'; return; }
-  // Convert the datetime-local value (local time) to an ISO timestamp.
-  let reminderAt = null;
-  if (reminderRaw) {
-    const d = new Date(reminderRaw);
-    if (isNaN(d.getTime())) { errEl.textContent = 'Invalid reminder date/time.'; return; }
-    if (!selectedAssignedTo) { errEl.textContent = 'Pick someone to assign before setting a reminder.'; return; }
-    reminderAt = d.toISOString();
-  }
   errEl.textContent = '';
   addBtn.disabled = true;
   addBtn.innerHTML = '<span class="spinner"></span>';
@@ -873,16 +810,14 @@ async function addTask() {
         text,
         priority:    selectedPriority,
         addedBy:     currentUser,
-        assignedTo:  selectedAssignedTo || null,
-        description: desc || null,
-        reminderAt:  reminderAt,                    // ISO time for reminder email, or null
+        assignedTo:  selectedAssignedTo || null,   // NEW field
+        description: desc || null,                 // NEW field
       }),
     });
     tasks.push(res.task);
     tasks.sort((a, b) => a.order - b.order);
     document.getElementById('add-text').value = '';
     document.getElementById('add-desc').value = '';
-    document.getElementById('add-reminder').value = '';
     renderTasks();
     updateStats();
     showToast('Task added!', 'ok');
@@ -1119,29 +1054,18 @@ async function reorderTasks(srcId, targetId) {
 
 // ── Render ─────────────────────────────────────────────────────────────────
 function getFiltered() {
-  const f = activeFilters;
   return tasks.filter(t => {
-    // Status (OR within category)
-    if (f.status.size) {
-      const matchOpen = f.status.has('open') && !t.completed;
-      const matchDone = f.status.has('done') &&  t.completed;
-      if (!matchOpen && !matchDone) return false;
+    if (filter === 'open')   return !t.completed;
+    if (filter === 'done')   return t.completed;
+    if (filter === 'high')       return t.priority === 'high'   && !t.completed;
+    if (filter === 'medium')     return t.priority === 'medium' && !t.completed;
+    if (filter === 'low')        return t.priority === 'low'    && !t.completed;
+    if (filter.startsWith('by-')) {
+      const name = filter.slice(3);
+      return (t.addedBy || '').toLowerCase() === name;
     }
-    // Priority (OR within category)
-    if (f.priority.size && !f.priority.has(t.priority)) return false;
-    // Person — now matches who the task is assigned TO (OR within category)
-    if (f.person.size && !f.person.has((t.assignedTo || '').toLowerCase())) return false;
     return true;
   });
-}
-
-// Human-readable summary of the active filters for the list title.
-function filterSummary() {
-  const parts = [];
-  if (activeFilters.status.size)   parts.push([...activeFilters.status].join('/'));
-  if (activeFilters.priority.size) parts.push([...activeFilters.priority].join('/'));
-  if (activeFilters.person.size)   parts.push('to ' + [...activeFilters.person].join('/'));
-  return parts.join(' · ');
 }
 
 function renderTasks() {
@@ -1149,9 +1073,8 @@ function renderTasks() {
   const visible = getFiltered();
 
   // Update list title
-  const summary = filterSummary();
   document.getElementById('list-title').textContent =
-    `${visible.length} task${visible.length !== 1 ? 's' : ''}${summary ? ` (${summary})` : ''}`;
+    `${visible.length} task${visible.length !== 1 ? 's' : ''} ${filter !== 'all' ? `(${filter})` : ''}`;
 
   if (!visible.length) {
     list.innerHTML = `<div class="empty-state"><div class="empty-icon">✓</div><div class="empty-text">${tasks.length ? 'No tasks match this filter.' : 'No tasks yet — add one above!'}</div></div>`;
@@ -1176,16 +1099,6 @@ function renderTasks() {
     const descHtml = task.description
       ? `<div class="task-desc">${escHtml(task.description)}</div>`
       : '';
-    let reminderHtml = '';
-    if (task.reminderAt) {
-      const rd = new Date(task.reminderAt);
-      if (!isNaN(rd.getTime())) {
-        const rstr = rd.toLocaleDateString('en-US', { month:'short', day:'numeric' })
-                   + ' ' + rd.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true });
-        const sent = task.reminderSent ? ' ✓ sent' : '';
-        reminderHtml = `<span class="task-assigned" title="Reminder email">⏰ ${rstr}${sent}</span>`;
-      }
-    }
 
     el.innerHTML = `
       <div class="drag-handle" title="Drag to reorder">
@@ -1203,7 +1116,6 @@ function renderTasks() {
         <div class="task-meta">
           <span class="task-by">Added by ${escHtml(task.addedBy || '?')} · ${addedDate}</span>
           ${assignedHtml}
-          ${reminderHtml}
         </div>
       </div>
       <div class="task-actions">

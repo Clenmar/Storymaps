@@ -188,6 +188,9 @@
 
         #qrcode canvas {
             display: block !important;
+            /* Scale the 2× canvas down to 300 px for a sharp retina display */
+            width: 300px !important;
+            height: 300px !important;
         }
 
         #qrcode img {
@@ -399,17 +402,34 @@
         function overlayLogo(canvas) {
             if (!logoImage) return;
             const ctx = canvas.getContext('2d');
-            const size = canvas.width;
-            const logoSize = size * 0.25;
+            const size = canvas.width;          // actual pixel size (600)
+            const logoSize = size * 0.25;       // 150 px on a 600 px canvas
             const x = (size - logoSize) / 2;
             const y = (size - logoSize) / 2;
-            const pad = 6;
+            const pad = 10;
 
-            // White background square behind logo
+            // Use high-quality smoothing so the logo is crisp
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            // Rounded white background behind logo
+            const r = 10;
+            const bx = x - pad, by = y - pad, bw = logoSize + pad * 2, bh = logoSize + pad * 2;
             ctx.fillStyle = 'white';
-            ctx.fillRect(x - pad, y - pad, logoSize + pad * 2, logoSize + pad * 2);
+            ctx.beginPath();
+            ctx.moveTo(bx + r, by);
+            ctx.lineTo(bx + bw - r, by);
+            ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + r);
+            ctx.lineTo(bx + bw, by + bh - r);
+            ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - r, by + bh);
+            ctx.lineTo(bx + r, by + bh);
+            ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
+            ctx.lineTo(bx, by + r);
+            ctx.quadraticCurveTo(bx, by, bx + r, by);
+            ctx.closePath();
+            ctx.fill();
 
-            // Draw logo centred
+            // Draw logo centred at full 2× resolution
             ctx.drawImage(logoImage, x, y, logoSize, logoSize);
         }
 
@@ -441,10 +461,11 @@
             qrcodeDiv.innerHTML = '';
 
             try {
+                // Generate at 2× (600 px) — CSS scales it to 300 px for a sharp display
                 new QRCode(qrcodeDiv, {
                     text: url,
-                    width: 300,
-                    height: 300,
+                    width: 600,
+                    height: 600,
                     colorDark: '#000000',
                     colorLight: '#ffffff',
                     correctLevel: QRCode.CorrectLevel.H
