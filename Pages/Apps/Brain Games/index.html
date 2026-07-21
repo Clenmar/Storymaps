@@ -1680,6 +1680,213 @@
     play();
   }
 
+  // ── extra items to enrich the existing banks ───────────────────────────
+  [].push.apply(BANK_BREVITY, [
+    { text: "He nodded his head in agreement.", drop: "head" },
+    { text: "She shrugged her shoulders slightly.", drop: "shoulders" },
+    { text: "They exited out of the building.", drop: "out" },
+    { text: "Combine the two ingredients together.", drop: "together" },
+    { text: "The reason is because he was late.", drop: "because" },
+    { text: "We had a mutual agreement between us.", drop: "mutual" },
+    { text: "Kindly ask him to please respond.", drop: "Kindly" }
+  ]);
+  [].push.apply(BANK_TYPO, [
+    { text: "He beleived every single word.", drop: "beleived" },
+    { text: "We should of left much earlier.", drop: "of" },
+    { text: "The cat layed on the warm mat.", drop: "layed" },
+    { text: "She has less coins than before.", drop: "less" },
+    { text: "Me and him walked to school.", drop: "Me" },
+    { text: "The books is on the table.", drop: "is" }
+  ]);
+  [].push.apply(BANK_PUNCT, [
+    { prompt: 'She packed a bag <span class="slot">&#9634;</span> she was ready to travel.', options: [",", ";", ":", "—"], answer: 1 },
+    { prompt: 'Remember one thing <span class="slot">&#9634;</span> stay humble.', options: [",", ";", ":", "—"], answer: 2 },
+    { prompt: 'The road was long <span class="slot">&#9634;</span> yet they pressed on.', options: [",", ";", ":", "—"], answer: 0 },
+    { prompt: 'He had three hobbies <span class="slot">&#9634;</span> reading, running, and cooking.', options: [",", ";", ":", "—"], answer: 2 }
+  ]);
+  [].push.apply(BANK_EXPRESS, [
+    { prompt: 'The night was very <b>dark</b>.', options: ["pitch-black", "dim", "shady", "grey"], answer: 0 },
+    { prompt: 'He was very <b>angry</b> at the news.', options: ["furious", "upset", "cross", "annoyed"], answer: 0 },
+    { prompt: 'The climb was very <b>hard</b>.', options: ["gruelling", "tricky", "tough", "tiring"], answer: 0 },
+    { prompt: 'The baby was very <b>small</b>.', options: ["tiny", "little", "short", "slim"], answer: 0 }
+  ]);
+  [].push.apply(BANK_INVERT, [
+    { chunks: ["Before the sun had risen,", "the fishermen", "set out to sea."] },
+    { chunks: ["Because the road was blocked,", "the driver", "took another route."] },
+    { chunks: ["Whenever the choir sang,", "the whole church", "fell silent."] }
+  ]);
+  [].push.apply(BANK_COMPREHEND, [
+    { prompt: '<div class="passage">Kofi watered the plants before school and again after dinner. Within weeks the garden was blooming.</div><div class="qq">How often did Kofi water the plants?</div>', options: ["Twice a day", "Once a week", "Every hour", "Never"], answer: 0 },
+    { prompt: '<div class="passage">The bakery sells out of bread by 10 am most days. Ama arrived at 11 and found only pastries left.</div><div class="qq">What was left when Ama arrived?</div>', options: ["Pastries", "Bread", "Nothing", "Cakes"], answer: 0 }
+  ]);
+  [].push.apply(BANK_SCAN, [
+    { prompt: '<div class="passage">The parcel weighs 4 kg and ships from Depot 9.</div><div class="qq">How much does it weigh?</div>', options: ["4 kg", "9 kg", "14 kg", "40 kg"], answer: 0 },
+    { prompt: '<div class="passage">Choir rehearsal is on Thursday at 6:30 pm in Hall C.</div><div class="qq">What time is rehearsal?</div>', options: ["6:30 pm", "6:13 pm", "7:30 pm", "3:60 pm"], answer: 0 }
+  ]);
+  [].push.apply(BANK_THEME, [
+    { prompt: '<div class="passage">He returned the extra change, admitted his error to the boss, and refused to lie even when it cost him.</div><div class="qq">The theme is…</div>', options: ["Honesty", "Money", "Jobs", "Mistakes"], answer: 0 },
+    { prompt: '<div class="passage">Night after night she stayed by the sick child\'s bed, never once complaining.</div><div class="qq">What is the main idea?</div>', options: ["Devotion", "Sickness", "Sleep", "Night time"], answer: 0 }
+  ]);
+  [].push.apply(BANK_SPEEDREAD, [
+    { text: "The busy baker sold fresh bread to every customer.", q: "What did the baker sell?", options: ["Bread", "Cakes", "Fruit", "Milk"], answer: 0 },
+    { text: "A silver plane flew high above the snowy mountains.", q: "What flew above the mountains?", options: ["A plane", "A bird", "A kite", "A balloon"], answer: 0 }
+  ]);
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  BIBLE KNOWLEDGE — banks tagged by difficulty (0 easy · 1 medium · 2 hard)
+  // ════════════════════════════════════════════════════════════════════════
+  var BANK_BIBLE_TRIVIA = [
+    { diff: 0, q: "Who built the ark?", options: ["Noah", "Moses", "Abraham", "David"], answer: 0 },
+    { diff: 0, q: "Who was swallowed by a great fish?", options: ["Jonah", "Elijah", "Peter", "Paul"], answer: 0 },
+    { diff: 0, q: "How many disciples did Jesus choose?", options: ["Twelve", "Seven", "Ten", "Three"], answer: 0 },
+    { diff: 0, q: "In which town was Jesus born?", options: ["Bethlehem", "Nazareth", "Jerusalem", "Jericho"], answer: 0 },
+    { diff: 0, q: "Who led Israel out of Egypt?", options: ["Moses", "Joshua", "Aaron", "Samuel"], answer: 0 },
+    { diff: 0, q: "What is the first book of the Bible?", options: ["Genesis", "Exodus", "Matthew", "Psalms"], answer: 0 },
+    { diff: 0, q: "Who was thrown into the lions' den?", options: ["Daniel", "Joseph", "Jonah", "Job"], answer: 0 },
+    { diff: 0, q: "Who betrayed Jesus with a kiss?", options: ["Judas", "Peter", "Thomas", "John"], answer: 0 },
+    { diff: 1, q: "Who interpreted Pharaoh's dreams?", options: ["Joseph", "Daniel", "Moses", "Jacob"], answer: 0 },
+    { diff: 1, q: "On which mountain did Moses receive the commandments?", options: ["Sinai", "Zion", "Carmel", "Olives"], answer: 0 },
+    { diff: 1, q: "What was Jesus' first recorded miracle?", options: ["Turning water into wine", "Healing a leper", "Walking on water", "Feeding the 5000"], answer: 0 },
+    { diff: 1, q: "Who denied Jesus three times?", options: ["Peter", "Judas", "James", "Thomas"], answer: 0 },
+    { diff: 1, q: "Who was the first king of Israel?", options: ["Saul", "David", "Solomon", "Samuel"], answer: 0 },
+    { diff: 1, q: "Who baptised Jesus?", options: ["John the Baptist", "Peter", "Andrew", "Elijah"], answer: 0 },
+    { diff: 1, q: "How many days did Jesus fast in the wilderness?", options: ["Forty", "Seven", "Three", "Twelve"], answer: 0 },
+    { diff: 1, q: "Who was the mother of Isaac?", options: ["Sarah", "Rebekah", "Rachel", "Leah"], answer: 0 },
+    { diff: 2, q: "Who was the oldest man recorded in the Bible?", options: ["Methuselah", "Noah", "Adam", "Enoch"], answer: 0 },
+    { diff: 2, q: "Which prophet was taken to heaven in a whirlwind?", options: ["Elijah", "Elisha", "Enoch", "Isaiah"], answer: 0 },
+    { diff: 2, q: "Who succeeded Moses as leader of Israel?", options: ["Joshua", "Caleb", "Aaron", "Gideon"], answer: 0 },
+    { diff: 2, q: "Which tax collector climbed a sycamore tree to see Jesus?", options: ["Zacchaeus", "Matthew", "Nicodemus", "Bartimaeus"], answer: 0 },
+    { diff: 2, q: "In which city were believers first called Christians?", options: ["Antioch", "Jerusalem", "Rome", "Ephesus"], answer: 0 },
+    { diff: 2, q: "Who was Timothy's grandmother?", options: ["Lois", "Eunice", "Priscilla", "Dorcas"], answer: 0 },
+    { diff: 2, q: "Which judge defeated the Midianites with 300 men?", options: ["Gideon", "Samson", "Deborah", "Ehud"], answer: 0 },
+    { diff: 2, q: "How many books are in the Protestant Bible?", options: ["66", "72", "40", "39"], answer: 0 }
+  ];
+
+  var BANK_BIBLE_VERSE = [
+    { diff: 0, prompt: '&ldquo;For God so loved the <span class="slot">____</span> that he gave his only Son.&rdquo;', options: ["world", "people", "earth", "nations"], answer: 0 },
+    { diff: 0, prompt: '&ldquo;The Lord is my <span class="slot">____</span>; I shall not want.&rdquo;', options: ["shepherd", "strength", "refuge", "light"], answer: 0 },
+    { diff: 0, prompt: '&ldquo;I can do all things through <span class="slot">____</span> who strengthens me.&rdquo;', options: ["Christ", "God", "faith", "grace"], answer: 0 },
+    { diff: 0, prompt: '&ldquo;In the <span class="slot">____</span> God created the heavens and the earth.&rdquo;', options: ["beginning", "garden", "light", "Spirit"], answer: 0 },
+    { diff: 0, prompt: '&ldquo;Love is patient, love is <span class="slot">____</span>.&rdquo;', options: ["kind", "gentle", "pure", "humble"], answer: 0 },
+    { diff: 0, prompt: '&ldquo;Be still, and know that I am <span class="slot">____</span>.&rdquo;', options: ["God", "holy", "near", "love"], answer: 0 },
+    { diff: 1, prompt: '&ldquo;Trust in the Lord with all your <span class="slot">____</span>.&rdquo;', options: ["heart", "soul", "strength", "might"], answer: 0 },
+    { diff: 1, prompt: '&ldquo;Your word is a lamp to my feet and a <span class="slot">____</span> to my path.&rdquo;', options: ["light", "guide", "torch", "map"], answer: 0 },
+    { diff: 1, prompt: '&ldquo;The fear of the Lord is the beginning of <span class="slot">____</span>.&rdquo;', options: ["wisdom", "knowledge", "life", "faith"], answer: 0 },
+    { diff: 1, prompt: '&ldquo;Weeping may endure for a night, but <span class="slot">____</span> comes in the morning.&rdquo;', options: ["joy", "hope", "peace", "light"], answer: 0 },
+    { diff: 1, prompt: '&ldquo;All things work together for <span class="slot">____</span> to those who love God.&rdquo;', options: ["good", "glory", "grace", "peace"], answer: 0 },
+    { diff: 1, prompt: '&ldquo;Rejoice in the Lord <span class="slot">____</span>; again I will say, rejoice.&rdquo;', options: ["always", "daily", "greatly", "ever"], answer: 0 },
+    { diff: 2, prompt: '&ldquo;They that wait upon the Lord shall renew their <span class="slot">____</span>.&rdquo;', options: ["strength", "spirit", "hope", "faith"], answer: 0 },
+    { diff: 2, prompt: '&ldquo;For all have sinned and fall short of the <span class="slot">____</span> of God.&rdquo;', options: ["glory", "grace", "law", "kingdom"], answer: 0 },
+    { diff: 2, prompt: '&ldquo;The just shall live by his <span class="slot">____</span>.&rdquo;', options: ["faith", "works", "word", "law"], answer: 0 },
+    { diff: 2, prompt: '&ldquo;A soft answer turns away <span class="slot">____</span>.&rdquo;', options: ["wrath", "anger", "evil", "strife"], answer: 0 },
+    { diff: 2, prompt: '&ldquo;He must increase, but I must <span class="slot">____</span>.&rdquo;', options: ["decrease", "follow", "remain", "depart"], answer: 0 },
+    { diff: 2, prompt: '&ldquo;Iron sharpens iron, so one person sharpens <span class="slot">____</span>.&rdquo;', options: ["another", "a friend", "the mind", "a blade"], answer: 0 }
+  ];
+
+  var BIBLE_BOOKS = [
+    "Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth",
+    "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah",
+    "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah",
+    "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah",
+    "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi",
+    "Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians",
+    "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians",
+    "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter",
+    "1 John", "2 John", "3 John", "Jude", "Revelation"
+  ];
+
+  var rand = function () { return Math.random() - 0.5; };
+
+  // ── Bible MCQ engine (difficulty-scored)   bibletrivia · bibleverse ────
+  function runBibleMCQ(id, seconds, bank, instr) {
+    var st = stageReset();
+    var S = SESSION, lvl = bibleDiff, mult = DIFFS[lvl].mult;
+    var prompt = el("div", "prompt", instr + " · " + DIFFS[lvl].name); st.appendChild(prompt);
+    var qbox = el("div", "qtext"); st.appendChild(qbox);
+    var opts = el("div", "mopts"); st.appendChild(opts);
+    setStats([["Points", 0, "sc"], ["Time", String(seconds), "tm"], ["Best", getBest(id), "bt"]]);
+
+    var pool = bank.filter(function (x) { return x.diff === lvl; });
+    if (pool.length < 4) pool = bank.slice();
+    var order = pool.slice().sort(rand), qi = 0, score = 0, ended = false;
+    var timer = makeTimer(st, seconds, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      if (qi >= order.length) { order.sort(rand); qi = 0; }
+      var item = order[qi++];
+      qbox.innerHTML = item.prompt || esc(item.q);
+      var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(rand);
+      opts.innerHTML = "";
+      shuffled.forEach(function (x) {
+        var b = el("button", "mopt", esc(x.o));
+        b.addEventListener("click", function () {
+          if (ended) return;
+          if (x.ok) {
+            score += mult; stat("sc", score); tone(700, 90); b.classList.add("right");
+            Array.prototype.forEach.call(opts.children, function (c) { c.disabled = true; });
+            setTimeout(function () { if (!ended && S === SESSION) newQ(); }, 320);
+          } else { b.classList.add("wrong"); buzz(); timer.penalise(2000); }
+        });
+        opts.appendChild(b);
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#10013;" }); }, 250);
+    }
+    newQ();
+  }
+
+  // ── Books in Order (difficulty = run length)   biblebooks ──────────────
+  function runBibleBooks() {
+    var st = stageReset();
+    var S = SESSION, lvl = bibleDiff, mult = DIFFS[lvl].mult, runLen = [3, 4, 5][lvl];
+    var prompt = el("div", "prompt", "Tap the books in Bible order (earliest first) · " + DIFFS[lvl].name); st.appendChild(prompt);
+    var build = el("div", "buildline"); st.appendChild(build);
+    var pool = el("div", "chunks"); st.appendChild(pool);
+    setStats([["Points", 0, "sc"], ["Time", "75", "tm"], ["Best", getBest("biblebooks"), "bt"]]);
+
+    var score = 0, ended = false, nextIdx = 0, seq = [];
+    var timer = makeTimer(st, 75, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newItem() {
+      var start = rnd(BIBLE_BOOKS.length - runLen + 1);
+      seq = BIBLE_BOOKS.slice(start, start + runLen);
+      nextIdx = 0;
+      build.innerHTML = '<span style="color:var(--muted);font-weight:600">Earliest first…</span>';
+      var idxs = seq.map(function (_, i) { return i; });
+      var shuffled = idxs.slice();
+      do { shuffled.sort(rand); } while (shuffled.join() === idxs.join());
+      pool.innerHTML = "";
+      shuffled.forEach(function (oi) {
+        var b = el("button", "chunk", esc(seq[oi]));
+        b.addEventListener("click", function () {
+          if (ended || b.classList.contains("used")) return;
+          if (oi === nextIdx) {
+            b.classList.add("used"); tone(560, 70);
+            if (nextIdx === 0) build.innerHTML = "";
+            build.appendChild(document.createTextNode((nextIdx ? "  ·  " : "") + seq[oi]));
+            nextIdx++;
+            if (nextIdx === seq.length) {
+              score += mult; stat("sc", score); goodChime();
+              setTimeout(function () { if (!ended && S === SESSION) newItem(); }, 550);
+            }
+          } else { b.classList.add("bad"); buzz(); timer.penalise(1500); setTimeout(function () { b.classList.remove("bad"); }, 320); }
+        });
+        pool.appendChild(b);
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#128218;" }); }, 250);
+    }
+    newItem();
+  }
+
   var GAME_RUNNERS = {
     matrix: runMatrix, simon: runSimon, cards: runCards, span: runSpan,
     arith: runArith, equate: runEquate, stroop: runStroop, schulte: runSchulte,
@@ -1692,7 +1899,10 @@
     comprehend: function () { runMCQ("comprehend", 70, BANK_COMPREHEND); },
     scan: function () { runMCQ("scan", 60, BANK_SCAN); },
     theme: function () { runMCQ("theme", 70, BANK_THEME); },
-    speedread: runSpeedread
+    speedread: runSpeedread,
+    bibletrivia: function () { runBibleMCQ("bibletrivia", 60, BANK_BIBLE_TRIVIA, "Answer"); },
+    bibleverse: function () { runBibleMCQ("bibleverse", 60, BANK_BIBLE_VERSE, "Fill the blank"); },
+    biblebooks: runBibleBooks
   };
 
   // ── leaderboard ─────────────────────────────────────────────────────────
