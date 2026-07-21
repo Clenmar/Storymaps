@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#5b21b6">
+<title>Brain Games — TWC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1:#f4f0ff; --bg2:#eafaff;
+    --ink:#221a3a; --muted:#6a6484;
+    --card:#ffffff; --rule:#e7e1f7;
+    --violet:#7c3aed; --violet-d:#5b21b6;
+    --pink:#ec4899; --cyan:#06b6d4; --amber:#f59e0b;
+    --green:#10b981; --red:#ef4444; --blue:#3b82f6;
+    --shadow:0 14px 40px rgba(90,40,160,.18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Baloo 2", ui-rounded, "Segoe UI", system-ui, sans-serif;
+    background: linear-gradient(150deg, var(--bg1), var(--bg2));
+    color: var(--ink); min-height: 100%; overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(124,58,237,.14), transparent 40%),
+      radial-gradient(circle at 88% 12%, rgba(236,72,153,.13), transparent 38%),
+      radial-gradient(circle at 78% 88%, rgba(6,182,212,.13), transparent 42%);
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 20px 16px 60px; }
+  button { font-family: inherit; cursor: pointer; border: none; }
+
+  /* ── top bar ─────────────────────────────────────────────────────── */
+  .top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+  .brand { display: flex; align-items: center; gap: 11px; }
+  .brand .logo {
+    width: 46px; height: 46px; border-radius: 14px; flex: 0 0 auto;
+    background: linear-gradient(135deg, var(--violet), var(--pink)); position: relative;
+    box-shadow: var(--shadow); display: flex; align-items: center; justify-content: center;
+  }
+  .brand .logo svg { width: 27px; height: 27px; }
+  .brand h1 { font-size: 21px; font-weight: 800; letter-spacing: -.3px; line-height: 1; }
+  .brand p { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .whoami { display: flex; align-items: center; gap: 8px; }
+  .pill {
+    font-size: 12.5px; font-weight: 700; color: var(--violet-d);
+    background: #fff; border: 1.5px solid var(--rule); border-radius: 999px; padding: 7px 13px;
+    box-shadow: 0 3px 10px rgba(90,40,160,.08); display: inline-flex; align-items: center; gap: 6px;
+  }
+  .pill.act { cursor: pointer; }
+  .pill.act:hover { border-color: var(--violet); }
+  .pill .av { width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 800; }
+
+  /* ── home: game grid ─────────────────────────────────────────────── */
+  .lead { text-align: center; margin: 4px 0 22px; }
+  .lead h2 { font-size: clamp(26px, 6vw, 40px); font-weight: 800; letter-spacing: -.5px; line-height: 1.05; }
+  .lead h2 .g { background: linear-gradient(90deg, var(--violet), var(--pink), var(--cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+  .lead p { color: var(--muted); font-weight: 600; margin-top: 7px; font-size: 14.5px; }
+
+  .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; }
+  .gcard {
+    position: relative; border-radius: 22px; padding: 20px 18px 18px; color: #fff; overflow: hidden;
+    box-shadow: var(--shadow); cursor: pointer; border: none; text-align: left;
+    transition: transform .16s ease, box-shadow .16s ease; min-height: 168px;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .gcard:hover { transform: translateY(-5px) scale(1.012); box-shadow: 0 22px 52px rgba(90,40,160,.28); }
+  .gcard:active { transform: translateY(-1px) scale(.997); }
+  .gcard .ico { width: 52px; height: 52px; border-radius: 15px; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; }
+  .gcard .ico svg { width: 30px; height: 30px; }
+  .gcard h3 { font-size: 20px; font-weight: 800; margin-top: 14px; letter-spacing: -.2px; }
+  .gcard p { font-size: 12.8px; font-weight: 600; opacity: .92; margin-top: 3px; line-height: 1.4; }
+  .gcard .best { margin-top: 12px; font-size: 12px; font-weight: 700; background: rgba(0,0,0,.16); align-self: flex-start; padding: 4px 11px; border-radius: 999px; }
+  .gcard .blob { position: absolute; border-radius: 50%; filter: blur(6px); opacity: .5; }
+  .g-matrix { background: linear-gradient(140deg, #7c3aed, #a855f7); }
+  .g-simon  { background: linear-gradient(140deg, #ec4899, #f97316); }
+  .g-cards  { background: linear-gradient(140deg, #06b6d4, #3b82f6); }
+  .g-span   { background: linear-gradient(140deg, #10b981, #22c55e); }
+
+  .homebtns { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
+  .btn {
+    font-size: 14px; font-weight: 800; border-radius: 999px; padding: 11px 20px;
+    background: #fff; color: var(--violet-d); border: 1.5px solid var(--rule); box-shadow: 0 4px 14px rgba(90,40,160,.09);
+    transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(90,40,160,.16); }
+  .btn.primary { background: linear-gradient(135deg, var(--violet), var(--pink)); color: #fff; border: none; }
+  .btn.ghost { background: transparent; box-shadow: none; }
+  .btn:disabled { opacity: .5; transform: none; cursor: default; }
+
+  /* ── game screen ─────────────────────────────────────────────────── */
+  .screen { display: none; }
+  .screen.on { display: block; animation: pop .25s ease; }
+  @keyframes pop { from { opacity: 0; transform: scale(.98) translateY(6px); } to { opacity: 1; transform: none; } }
+
+  .gbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+  .gbar .name { font-size: 19px; font-weight: 800; display: flex; align-items: center; gap: 9px; }
+  .gbar .name .dot { width: 14px; height: 14px; border-radius: 5px; }
+  .stats { display: flex; gap: 8px; }
+  .stat { background: #fff; border: 1.5px solid var(--rule); border-radius: 13px; padding: 6px 13px; text-align: center; min-width: 62px; box-shadow: 0 3px 10px rgba(90,40,160,.06); }
+  .stat .k { font-size: 9.5px; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: var(--muted); }
+  .stat .v { font-size: 19px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums; }
+
+  .stage {
+    background: #fff; border-radius: 22px; box-shadow: var(--shadow); border: 1.5px solid var(--rule);
+    padding: 22px; min-height: 340px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; position: relative; overflow: hidden;
+  }
+  .prompt { font-size: 17px; font-weight: 700; color: var(--muted); text-align: center; }
+  .prompt strong { color: var(--ink); }
+  .big { font-size: 20px; font-weight: 800; text-align: center; }
+
+  /* grid (matrix) */
+  .grid { display: grid; gap: 9px; touch-action: manipulation; }
+  .cell {
+    aspect-ratio: 1; border-radius: 13px; background: #eee6ff; border: none; cursor: pointer;
+    transition: transform .08s ease, background .18s ease; min-width: 44px;
+  }
+  .cell.lit { background: linear-gradient(135deg, var(--violet), var(--pink)); box-shadow: 0 6px 16px rgba(124,58,237,.45); transform: scale(1.04); }
+  .cell.good { background: linear-gradient(135deg, var(--green), #22c55e); }
+  .cell.bad { background: linear-gradient(135deg, var(--red), #f97316); animation: shake .3s; }
+  .cell:disabled { cursor: default; }
+  @keyframes shake { 0%,100%{transform:none} 25%{transform:translateX(-5px)} 75%{transform:translateX(5px)} }
+
+  /* simon */
+  .simon { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: min(300px, 78vw); }
+  .pad { aspect-ratio: 1; border-radius: 18px; cursor: pointer; opacity: .62; transition: opacity .12s ease, transform .1s ease; border: none; }
+  .pad.flash { opacity: 1; transform: scale(1.03); box-shadow: 0 0 30px currentColor; }
+  .pad.p0 { background: #22c55e; color: #22c55e; }
+  .pad.p1 { background: #ef4444; color: #ef4444; }
+  .pad.p2 { background: #3b82f6; color: #3b82f6; }
+  .pad.p3 { background: #f59e0b; color: #f59e0b; }
+
+  /* cards */
+  .deck { display: grid; gap: 9px; width: 100%; max-width: 380px; }
+  .tile { aspect-ratio: 3/4; perspective: 600px; cursor: pointer; }
+  .tile .inner { position: relative; width: 100%; height: 100%; transition: transform .35s; transform-style: preserve-3d; }
+  .tile.up .inner, .tile.done .inner { transform: rotateY(180deg); }
+  .tile .face { position: absolute; inset: 0; border-radius: 12px; display: flex; align-items: center; justify-content: center; backface-visibility: hidden; font-size: 26px; }
+  .tile .back { background: linear-gradient(135deg, var(--cyan), var(--blue)); box-shadow: 0 5px 14px rgba(6,120,200,.3); }
+  .tile .back::after { content: "?"; color: rgba(255,255,255,.85); font-weight: 800; font-size: 22px; }
+  .tile .front { background: #f2edff; transform: rotateY(180deg); }
+  .tile.done .front { background: #d9f9e9; }
+
+  /* span */
+  .numflash { font-size: clamp(44px, 12vw, 84px); font-weight: 800; letter-spacing: 6px; font-variant-numeric: tabular-nums; }
+  .spaninput {
+    font-family: inherit; font-size: 30px; font-weight: 800; letter-spacing: 8px; text-align: center;
+    width: min(320px, 82vw); padding: 12px; border-radius: 14px; border: 2px solid var(--rule); background: #faf7ff; color: var(--ink);
+  }
+  .spaninput:focus { outline: none; border-color: var(--violet); }
+  .keys { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; width: min(300px, 82vw); }
+  .key { font-size: 24px; font-weight: 800; padding: 15px 0; border-radius: 14px; background: #f2edff; color: var(--violet-d); box-shadow: 0 3px 8px rgba(90,40,160,.08); }
+  .key:active { transform: scale(.95); background: #e3d9ff; }
+  .key.wide { grid-column: span 1; font-size: 18px; }
+
+  .overlay {
+    position: absolute; inset: 0; background: rgba(255,255,255,.92); backdrop-filter: blur(3px);
+    display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; z-index: 5;
+  }
+  .overlay.on { display: flex; animation: pop .25s ease; }
+  .overlay .em { font-size: 52px; }
+  .overlay h3 { font-size: 26px; font-weight: 800; }
+  .overlay .sc { font-size: 15px; color: var(--muted); font-weight: 700; }
+  .overlay .sc b { color: var(--violet-d); font-size: 20px; }
+  .overlay .row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+
+  /* ── leaderboard ─────────────────────────────────────────────────── */
+  .board-tabs { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
+  .tab { font-size: 13px; font-weight: 700; border-radius: 999px; padding: 8px 15px; background: #fff; color: var(--muted); border: 1.5px solid var(--rule); }
+  .tab.on { background: var(--violet-d); color: #fff; border-color: var(--violet-d); }
+  .lb { background: #fff; border-radius: 20px; border: 1.5px solid var(--rule); box-shadow: var(--shadow); overflow: hidden; }
+  .lb .rowh { display: grid; grid-template-columns: 42px 1fr auto; padding: 12px 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); border-bottom: 1px solid var(--rule); }
+  .lrow { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--rule); }
+  .lrow:last-child { border-bottom: none; }
+  .lrow .rk { font-weight: 800; font-size: 15px; color: var(--muted); }
+  .lrow.me { background: linear-gradient(90deg, rgba(124,58,237,.08), transparent); }
+  .lrow .who { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .lrow .av { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 13px; flex: 0 0 auto; }
+  .lrow .sv { font-weight: 800; font-size: 17px; font-variant-numeric: tabular-nums; }
+  .medal { font-size: 17px; }
+  .lb-empty { padding: 34px 20px; text-align: center; color: var(--muted); font-weight: 600; }
+  .totrow .sub { font-size: 11.5px; color: var(--muted); font-weight: 600; }
+
+  /* ── modal ───────────────────────────────────────────────────────── */
+  .scrim { position: fixed; inset: 0; background: rgba(40,20,70,.42); display: none; align-items: center; justify-content: center; padding: 18px; z-index: 60; }
+  .scrim.on { display: flex; }
+  .sheet { background: #fff; width: 100%; max-width: 400px; border-radius: 22px; box-shadow: 0 24px 60px rgba(40,20,70,.4); overflow: hidden; animation: pop .2s ease; max-height: 92vh; overflow-y: auto; }
+  .sheet-h { padding: 20px 22px 6px; }
+  .sheet-h h3 { font-size: 21px; font-weight: 800; }
+  .sheet-h p { font-size: 13px; color: var(--muted); font-weight: 600; margin-top: 3px; }
+  .sheet-b { padding: 14px 22px 22px; }
+  .sheet-b label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); display: block; margin-top: 12px; }
+  .sheet-b input { width: 100%; margin-top: 6px; font-family: inherit; font-size: 16px; font-weight: 600; border: 1.5px solid var(--rule); border-radius: 12px; padding: 12px 13px; background: #faf7ff; color: var(--ink); }
+  .sheet-b input:focus { outline: none; border-color: var(--violet); }
+  .sheet-b .msg { font-size: 12.5px; font-weight: 700; margin-top: 10px; min-height: 16px; }
+  .sheet-b .msg.bad { color: var(--red); }
+  .sheet-b .msg.good { color: var(--green); }
+  .sheet-b .btn { width: 100%; margin-top: 14px; justify-content: center; text-align: center; }
+  .check { display: flex; align-items: center; gap: 8px; margin-top: 14px; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .check input { width: auto; margin: 0; }
+  .rooms { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 6px; }
+  .rooms td { padding: 7px 4px; border-bottom: 1px solid var(--rule); }
+  .rooms code { background: #f2edff; padding: 1px 6px; border-radius: 5px; font-size: 12px; }
+  .rooms button { font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 8px; background: #ffe9e9; color: var(--red); }
+
+  #toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(150%); background: var(--violet-d); color: #fff; font-weight: 700; font-size: 14px; padding: 12px 18px; border-radius: 14px; box-shadow: 0 12px 30px rgba(40,20,70,.4); z-index: 80; transition: transform .28s cubic-bezier(.4,0,.2,1); max-width: calc(100% - 32px); text-align: center; }
+  #toast.on { transform: translateX(-50%) translateY(0); }
+
+  .foot { text-align: center; margin-top: 30px; font-size: 12px; color: var(--muted); font-weight: 600; }
+  .foot a { color: var(--violet-d); text-decoration: none; }
+
+  @media (max-width: 480px) {
+    .brand p { display: none; }
+    .stat { min-width: 54px; padding: 6px 9px; }
+    .stat .v { font-size: 17px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="brand">
+      <span class="logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 3.5a3 3 0 0 0-3 3 3 3 0 0 0-1.5 5.6A3 3 0 0 0 6.5 18 3 3 0 0 0 12 19.5V4a3 3 0 0 0-2.5-.5z"/>
+          <path d="M14.5 3.5a3 3 0 0 1 3 3 3 3 0 0 1 1.5 5.6A3 3 0 0 1 17.5 18 3 3 0 0 1 12 19.5"/>
+        </svg>
+      </span>
+      <div>
+        <h1>Brain Games</h1>
+        <p>Train your memory, TWC style</p>
+      </div>
+    </div>
+    <div class="whoami">
+      <button class="pill act" id="whoPill"><span class="av" id="whoAv" style="background:var(--violet)">?</span><span id="whoName">Guest</span></button>
+    </div>
+  </div>
+
+  <!-- ── HOME ──────────────────────────────────────────────────────── -->
+  <div class="screen on" id="home">
+    <div class="lead">
+      <h2>Sharpen your <span class="g">memory</span></h2>
+      <p>Four quick games. Beat your best, then climb the family leaderboard.</p>
+    </div>
+
+    <div class="games" id="gameGrid"></div>
+
+    <div class="homebtns">
+      <button class="btn primary" id="leaderBtn">&#127942; Family leaderboard</button>
+      <button class="btn" id="signBtn">Sign in to compete</button>
+    </div>
+  </div>
+
+  <!-- ── GAME ──────────────────────────────────────────────────────── -->
+  <div class="screen" id="play">
+    <div class="gbar">
+      <button class="btn ghost" id="backBtn">&#8592; Back</button>
+      <div class="name" id="playName"><span class="dot"></span><span></span></div>
+    </div>
+    <div class="stats" id="playStats"></div>
+    <div class="stage" id="stage">
+      <div class="overlay" id="overlay">
+        <div class="em" id="ovEm">&#127881;</div>
+        <h3 id="ovTitle">Nice!</h3>
+        <div class="sc" id="ovScore"></div>
+        <div class="row">
+          <button class="btn primary" id="ovAgain">Play again</button>
+          <button class="btn" id="ovMenu">Menu</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── LEADERBOARD ───────────────────────────────────────────────── -->
+  <div class="screen" id="leader">
+    <div class="gbar">
+      <button class="btn ghost" id="lbBack">&#8592; Back</button>
+      <div class="name"><span id="lbFamily">Leaderboard</span></div>
+    </div>
+    <div class="board-tabs" id="lbTabs"></div>
+    <div class="lb" id="lbBody"></div>
+  </div>
+
+  <div class="foot">Part of <a href="/Pages/Apps/">TWC Apps</a> · scores are saved on your device, and to your family board when signed in</div>
+</div>
+
+<!-- sign-in modal -->
+<div class="scrim" id="signScrim">
+  <div class="sheet">
+    <div class="sheet-h">
+      <h3>Join the leaderboard</h3>
+      <p>Sign in with your family password, then pick a name to play under.</p>
+    </div>
+    <div class="sheet-b">
+      <label for="inPass">Family password</label>
+      <input type="password" id="inPass" autocomplete="current-password" placeholder="Your family password">
+      <label for="inName">Your name</label>
+      <input type="text" id="inName" autocomplete="nickname" placeholder="e.g. Grace">
+      <div class="check"><input type="checkbox" id="inRemember" checked><label for="inRemember" style="margin:0;text-transform:none;letter-spacing:0;font-weight:600;font-size:13px;color:var(--muted)">Stay signed in on this device</label></div>
+      <div class="msg" id="inMsg"></div>
+      <button class="btn primary" id="inGo">Sign in</button>
+      <button class="btn ghost" id="inGuest" style="width:100%;margin-top:8px">Keep playing as guest</button>
+    </div>
+  </div>
+</div>
+
+<!-- account modal (when signed in) -->
+<div class="scrim" id="acctScrim">
+  <div class="sheet">
+    <div class="sheet-h"><h3 id="acctFam">Your family</h3><p id="acctWho"></p></div>
+    <div class="sheet-b">
+      <label for="acctName">Play as</label>
+      <input type="text" id="acctName" placeholder="Your name">
+      <button class="btn primary" id="acctSave">Save name</button>
+      <div id="acctAdmin" style="display:none;margin-top:18px;border-top:1px solid var(--rule);padding-top:14px">
+        <label>Families</label>
+        <div id="acctRooms"><div class="lb-empty" style="padding:12px">Loading…</div></div>
+        <label for="acctNewName" style="margin-top:12px">Add a family</label>
+        <input type="text" id="acctNewName" placeholder="Family name">
+        <input type="text" id="acctNewPass" placeholder="Password" style="margin-top:8px">
+        <div class="msg" id="acctMsg"></div>
+        <button class="btn" id="acctAdd" style="width:100%;margin-top:10px">Create family</button>
+      </div>
+      <button class="btn ghost" id="acctOut" style="width:100%;margin-top:16px;color:var(--red)">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var API = "https://twc-brain-games.kd7bgn7q2z.workers.dev";
+  var AUTH_KEY = "twcBrain_auth_v1";
+  var BEST_KEY = "twcBrain_best_v1";
+  var NAME_KEY = "twcBrain_name_v1";
+
+  var GAMES = {
+    matrix: { name: "Memory Matrix", cls: "g-matrix", colour: "#7c3aed", unit: "level",
+      desc: "Remember the lit tiles, then tap them back.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff" fill-opacity=".5"/></svg>' },
+    simon: { name: "Colour Echo", cls: "g-simon", colour: "#ec4899", unit: "streak",
+      desc: "Watch the pattern light up, then repeat it.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 8-8"/><path d="M20 12a8 8 0 0 1-8 8"/><circle cx="12" cy="4" r="1.6" fill="#fff"/><circle cx="20" cy="12" r="1.6" fill="#fff"/><circle cx="12" cy="20" r="1.6" fill="#fff"/><circle cx="4" cy="12" r="1.6" fill="#fff"/></svg>' },
+    cards: { name: "Match Pairs", cls: "g-cards", colour: "#06b6d4", unit: "points",
+      desc: "Flip cards two at a time to find the pairs.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="5" width="12" height="15" rx="2" transform="rotate(-6 9 12)"/><rect x="9" y="4" width="12" height="15" rx="2" fill="#fff" fill-opacity=".35"/></svg>' },
+    span: { name: "Number Span", cls: "g-span", colour: "#10b981", unit: "digits",
+      desc: "A number flashes up — type it back from memory.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h2v8"/><path d="M13 8h2a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h2"/></svg>' }
+  };
+  var GAME_IDS = ["matrix", "simon", "cards", "span"];
+
+  var auth = null;                 // {password, family, isAdmin}
+  var player = "";                 // name to record under
+  var current = null;              // active game id
+  var lbGame = "total";
+
+  // ── helpers ───────────────────────────────────────────────────────────
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+  function canStore() { try { localStorage.setItem("__t", "1"); localStorage.removeItem("__t"); return true; } catch (e) { return false; } }
+  var OK = canStore(), mem = {};
+  function lget(k) { try { return OK ? localStorage.getItem(k) : mem[k]; } catch (e) { return mem[k]; } }
+  function lset(k, v) { try { if (OK) localStorage.setItem(k, v); else mem[k] = v; } catch (e) { mem[k] = v; } }
+  function ldel(k) { try { if (OK) localStorage.removeItem(k); } catch (e) {} delete mem[k]; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function rnd(n) { return Math.floor(Math.random() * n); }
+  function avatarColour(name) { var h = 0; for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 360; return "hsl(" + h + ",65%,55%)"; }
+  function initials(name) { return (name || "?").trim().slice(0, 1).toUpperCase() || "?"; }
+
+  function bests() { try { return JSON.parse(lget(BEST_KEY) || "{}"); } catch (e) { return {}; } }
+  function getBest(g) { return bests()[g] || 0; }
+  function setBest(g, v) { var b = bests(); if (v > (b[g] || 0)) { b[g] = v; lset(BEST_KEY, JSON.stringify(b)); return true; } return false; }
+
+  var toastT = null;
+  function toast(msg) { $("toast").textContent = msg; $("toast").classList.add("on"); clearTimeout(toastT); toastT = setTimeout(function () { $("toast").classList.remove("on"); }, 3200); }
+
+  function show(id) { ["home", "play", "leader"].forEach(function (s) { $(s).classList.toggle("on", s === id); }); window.scrollTo(0, 0); }
+
+  // ── sound (WebAudio, no files) ─────────────────────────────────────────
+  var actx = null;
+  function tone(freq, ms, type) {
+    try {
+      if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+      var o = actx.createOscillator(), g = actx.createGain();
+      o.type = type || "sine"; o.frequency.value = freq;
+      o.connect(g); g.connect(actx.destination);
+      g.gain.setValueAtTime(0.0001, actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.22, actx.currentTime + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + ms / 1000);
+      o.start(); o.stop(actx.currentTime + ms / 1000 + 0.02);
+    } catch (e) {}
+  }
+  function goodChime() { tone(660, 90); setTimeout(function () { tone(880, 140); }, 90); }
+  function buzz() { tone(150, 220, "sawtooth"); }
+
+  // ── home grid ──────────────────────────────────────────────────────────
+  function renderHome() {
+    var grid = $("gameGrid"); grid.innerHTML = "";
+    GAME_IDS.forEach(function (id) {
+      var g = GAMES[id], b = getBest(id);
+      var card = el("button", "gcard " + g.cls);
+      card.innerHTML = '<div class="ico">' + g.icon + '</div>' +
+        '<div><h3>' + g.name + '</h3><p>' + g.desc + '</p></div>' +
+        '<div class="best">' + (b ? "Best: " + b + " " + g.unit : "Not played yet") + '</div>';
+      card.addEventListener("click", function () { startGame(id); });
+      grid.appendChild(card);
+    });
+    refreshWho();
+  }
+
+  function refreshWho() {
+    var name = player || (auth ? "" : "Guest");
+    $("whoName").textContent = auth ? (player || "Pick a name") : "Guest";
+    $("whoAv").textContent = auth ? initials(player || "?") : "?";
+    $("whoAv").style.background = auth ? avatarColour(player || "?") : "var(--violet)";
+    $("signBtn").textContent = auth ? "Signed in: " + auth.family : "Sign in to compete";
+  }
+
+  // ── game plumbing ───────────────────────────────────────────────────────
+  var stageAPI = { stage: null, over: false };
+
+  function startGame(id) {
+    current = id;
+    var g = GAMES[id];
+    $("playName").querySelector(".dot").style.background = g.colour;
+    $("playName").querySelector("span:last-child").textContent = g.name;
+    $("overlay").classList.remove("on");
+    show("play");
+    GAME_RUNNERS[id]();
+  }
+
+  function stageReset() {
+    var st = $("stage");
+    Array.prototype.slice.call(st.children).forEach(function (c) { if (c.id !== "overlay") st.removeChild(c); });
+    $("overlay").classList.remove("on");
+    return st;
+  }
+  function setStats(pairs) {
+    $("playStats").innerHTML = pairs.map(function (p) {
+      return '<div class="stat"><div class="k">' + p[0] + '</div><div class="v" id="stat-' + p[2] + '">' + p[1] + '</div></div>';
+    }).join("");
+  }
+  function stat(id, v) { var e = $("stat-" + id); if (e) e.textContent = v; }
+
+  function endGame(score, opts) {
+    opts = opts || {};
+    var g = GAMES[current];
+    var improved = setBest(current, score);
+    $("ovEm").innerHTML = opts.em || (improved ? "&#127942;" : "&#128077;");
+    $("ovTitle").textContent = opts.title || (improved ? "New best!" : "Good game!");
+    var line = "You scored <b>" + score + "</b> " + g.unit + ".";
+    if (improved) line += "<br>That's your best yet.";
+    else line += "<br>Best: " + getBest(current) + " " + g.unit + ".";
+    $("ovScore").innerHTML = line;
+    $("overlay").classList.add("on");
+    renderHome();
+    postScore(current, score, improved);
+  }
+
+  $("ovAgain").addEventListener("click", function () { startGame(current); });
+  $("ovMenu").addEventListener("click", function () { show("home"); });
+  $("backBtn").addEventListener("click", function () { show("home"); });
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 1 — Memory Matrix
+  // ════════════════════════════════════════════════════════════════════════
+  function runMatrix() {
+    var st = stageReset();
+    var level = 1, alive = true;
+    var prompt = el("div", "prompt"); st.appendChild(prompt);
+    var gridWrap = el("div"); gridWrap.style.width = "min(360px,82vw)"; st.appendChild(gridWrap);
+    setStats([["Level", 1, "lv"], ["Best", getBest("matrix"), "bt"]]);
+
+    function sizeFor(lv) { return Math.min(3 + Math.floor((lv - 1) / 2), 6); }   // 3x3 up to 6x6
+    function litFor(lv) { return Math.min(3 + lv, Math.floor(sizeFor(lv) * sizeFor(lv) * 0.5)); }
+
+    async function round() {
+      var n = sizeFor(level), total = n * n, need = litFor(level);
+      stat("lv", level);
+      prompt.innerHTML = "Watch closely…";
+      var grid = el("div", "grid");
+      grid.style.gridTemplateColumns = "repeat(" + n + ",1fr)";
+      gridWrap.innerHTML = ""; gridWrap.appendChild(grid);
+
+      var cells = [], pattern = {};
+      for (var i = 0; i < total; i++) { var c = el("button", "cell"); c.disabled = true; grid.appendChild(c); cells.push(c); }
+      var picks = []; while (picks.length < need) { var r = rnd(total); if (!pattern[r]) { pattern[r] = true; picks.push(r); } }
+
+      await sleep(500);
+      for (var j = 0; j < picks.length; j++) { cells[picks[j]].classList.add("lit"); tone(440 + j * 40, 140); await sleep(140); }
+      await sleep(650);
+      picks.forEach(function (p) { cells[p].classList.remove("lit"); });
+
+      prompt.innerHTML = "Now tap the <strong>" + need + "</strong> tiles";
+      var found = 0, done = false;
+      cells.forEach(function (c, idx) {
+        c.disabled = false;
+        c.addEventListener("click", function () {
+          if (done || c.classList.contains("good") || c.classList.contains("bad")) return;
+          if (pattern[idx]) {
+            c.classList.add("good"); tone(680, 120); found++;
+            if (found === need) { done = true; win(); }
+          } else {
+            c.classList.add("bad"); buzz(); done = true;
+            picks.forEach(function (p) { if (!cells[p].classList.contains("good")) cells[p].classList.add("lit"); });
+            setTimeout(function () { endGame(level - 1, { title: level > 1 ? "Good run!" : "Keep trying!", em: "&#129504;" }); }, 900);
+          }
+        });
+      });
+    }
+
+    function win() {
+      goodChime();
+      prompt.innerHTML = "Nice! Level " + level + " cleared &#127881;";
+      level++;
+      if (level > (getBest("matrix") || 0)) stat("bt", level - 1);
+      setTimeout(round, 750);
+    }
+    round();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 2 — Colour Echo (Simon)
+  // ════════════════════════════════════════════════════════════════════════
+  function runSimon() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Watch the pattern…"); st.appendChild(prompt);
+    var board = el("div", "simon");
+    var freqs = [330, 415, 247, 554], pads = [];
+    for (var i = 0; i < 4; i++) { var p = el("button", "pad p" + i); board.appendChild(p); pads.push(p); }
+    st.appendChild(board);
+    setStats([["Streak", 0, "sk"], ["Best", getBest("simon"), "bt"]]);
+
+    var seq = [], accepting = false, idx = 0;
+
+    async function flash(i, ms) { pads[i].classList.add("flash"); tone(freqs[i], ms); await sleep(ms); pads[i].classList.remove("flash"); await sleep(120); }
+
+    async function playback() {
+      accepting = false; prompt.innerHTML = "Watch the pattern…";
+      await sleep(500);
+      for (var k = 0; k < seq.length; k++) await flash(seq[k], Math.max(230, 460 - seq.length * 12));
+      accepting = true; idx = 0;
+      prompt.innerHTML = "Your turn — repeat it";
+    }
+
+    function next() { seq.push(rnd(4)); stat("sk", seq.length - 1); playback(); }
+
+    pads.forEach(function (p, i) {
+      p.addEventListener("click", async function () {
+        if (!accepting) return;
+        p.classList.add("flash"); tone(freqs[i], 200); setTimeout(function () { p.classList.remove("flash"); }, 200);
+        if (seq[idx] === i) {
+          idx++;
+          if (idx === seq.length) {
+            accepting = false;
+            var streak = seq.length;
+            stat("sk", streak);
+            if (streak > (getBest("simon") || 0)) stat("bt", streak);
+            goodChime(); prompt.innerHTML = "Yes! &#127881;";
+            setTimeout(next, 700);
+          }
+        } else {
+          accepting = false; buzz();
+          setTimeout(function () { endGame(seq.length - 1, { title: seq.length > 1 ? "Nice streak!" : "Keep going!", em: "&#127925;" }); }, 700);
+        }
+      });
+    });
+    setTimeout(next, 500);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 3 — Match Pairs
+  // ════════════════════════════════════════════════════════════════════════
+  function runCards() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Find every pair"); st.appendChild(prompt);
+    var deck = el("div", "deck"); st.appendChild(deck);
+    setStats([["Moves", 0, "mv"], ["Pairs", "0/8", "pr"], ["Time", "0s", "tm"]]);
+
+    var EMOJI = ["🍎", "🚀", "⭐", "🎸", "🐢", "🌻", "🎈", "🔔", "🍕", "🐝", "🍊", "🐟"];
+    var PAIRS = 8;
+    var chosen = EMOJI.slice().sort(function () { return Math.random() - 0.5; }).slice(0, PAIRS);
+    var cards = chosen.concat(chosen).sort(function () { return Math.random() - 0.5; });
+
+    var cols = 4; deck.style.gridTemplateColumns = "repeat(" + cols + ",1fr)";
+    var flipped = [], matched = 0, moves = 0, lock = false, started = 0, timer = null;
+
+    function startTimer() { started = Date.now(); timer = setInterval(function () { stat("tm", Math.floor((Date.now() - started) / 1000) + "s"); }, 250); }
+
+    cards.forEach(function (sym) {
+      var tile = el("div", "tile");
+      tile.innerHTML = '<div class="inner"><div class="face back"></div><div class="face front">' + sym + '</div></div>';
+      tile.addEventListener("click", function () {
+        if (lock || tile.classList.contains("up") || tile.classList.contains("done")) return;
+        if (!started) startTimer();
+        tile.classList.add("up"); tone(520, 80); flipped.push({ tile: tile, sym: sym });
+        if (flipped.length === 2) {
+          moves++; stat("mv", moves); lock = true;
+          if (flipped[0].sym === flipped[1].sym) {
+            setTimeout(function () {
+              flipped.forEach(function (f) { f.tile.classList.add("done"); });
+              matched++; stat("pr", matched + "/" + PAIRS); goodChime();
+              flipped = []; lock = false;
+              if (matched === PAIRS) finish();
+            }, 380);
+          } else {
+            setTimeout(function () { flipped.forEach(function (f) { f.tile.classList.remove("up"); }); flipped = []; lock = false; buzz(); }, 780);
+          }
+        }
+      });
+      deck.appendChild(tile);
+    });
+
+    function finish() {
+      clearInterval(timer);
+      var secs = Math.max(1, Math.round((Date.now() - started) / 1000));
+      // points: reward speed and few moves. Perfect = 16 moves.
+      var score = Math.max(50, Math.round(1000 - (moves - PAIRS) * 22 - secs * 6));
+      prompt.innerHTML = "All matched in " + moves + " moves, " + secs + "s";
+      setTimeout(function () { endGame(score, { title: "Cleared!", em: "&#127183;" }); }, 500);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 4 — Number Span
+  // ════════════════════════════════════════════════════════════════════════
+  function runSpan() {
+    var st = stageReset();
+    var prompt = el("div", "prompt"); st.appendChild(prompt);
+    var mid = el("div"); mid.style.minHeight = "120px"; mid.style.display = "flex"; mid.style.alignItems = "center"; mid.style.justifyContent = "center"; st.appendChild(mid);
+    var padWrap = el("div"); st.appendChild(padWrap);
+    setStats([["Length", 3, "ln"], ["Best", getBest("span"), "bt"]]);
+
+    var len = 3, num = "";
+
+    async function flashNumber() {
+      padWrap.innerHTML = "";
+      num = ""; for (var i = 0; i < len; i++) num += rnd(10);
+      stat("ln", len);
+      prompt.innerHTML = "Memorise this number";
+      mid.innerHTML = '<div class="numflash">' + num + '</div>';
+      var showMs = 900 + len * 260;
+      await sleep(showMs);
+      mid.innerHTML = '<div class="numflash" style="color:var(--rule)">' + "•".repeat(len) + '</div>';
+      askBack();
+    }
+
+    function askBack() {
+      prompt.innerHTML = "Type the number back";
+      var input = el("input", "spaninput"); input.readOnly = true; input.value = "";
+      mid.innerHTML = ""; mid.appendChild(input);
+
+      var keys = el("div", "keys");
+      ["1","2","3","4","5","6","7","8","9","del","0","ok"].forEach(function (k) {
+        var b = el("button", "key" + (k === "del" || k === "ok" ? " wide" : ""), k === "del" ? "&#9003;" : k === "ok" ? "Enter" : k);
+        b.addEventListener("click", function () {
+          if (k === "del") { input.value = input.value.slice(0, -1); tone(300, 60); }
+          else if (k === "ok") { submit(input.value); }
+          else if (input.value.length < len) { input.value += k; tone(500 + parseInt(k, 10) * 20, 60); if (input.value.length === len) setTimeout(function () { submit(input.value); }, 200); }
+        });
+        keys.appendChild(b);
+      });
+      padWrap.innerHTML = ""; padWrap.appendChild(keys);
+    }
+
+    function submit(val) {
+      if (val === num) {
+        goodChime(); prompt.innerHTML = "Correct! &#127881;";
+        if (len > (getBest("span") || 0)) stat("bt", len);
+        len++;
+        padWrap.innerHTML = "";
+        setTimeout(flashNumber, 650);
+      } else {
+        buzz();
+        mid.innerHTML = '<div class="numflash" style="color:var(--red)">' + num + '</div>';
+        prompt.innerHTML = "It was " + num;
+        padWrap.innerHTML = "";
+        setTimeout(function () { endGame(len - 1, { title: len > 3 ? "Sharp memory!" : "Keep practising!", em: "&#128290;" }); }, 1100);
+      }
+    }
+    flashNumber();
+  }
+
+  var GAME_RUNNERS = { matrix: runMatrix, simon: runSimon, cards: runCards, span: runSpan };
+
+  // ── leaderboard ─────────────────────────────────────────────────────────
+  var boardCache = null;
+  function openLeader() {
+    show("leader");
+    $("lbFamily").textContent = auth ? auth.family + " leaderboard" : "Leaderboard";
+    renderTabs();
+    if (!auth) { $("lbBody").innerHTML = '<div class="lb-empty">Sign in with your family password to see and join the leaderboard.<br><br><button class="btn primary" id="lbSign">Sign in</button></div>'; var b = $("lbSign"); if (b) b.addEventListener("click", openSign); return; }
+    $("lbBody").innerHTML = '<div class="lb-empty">Loading…</div>';
+    api("GET", "/api/board").then(function (r) { boardCache = r; renderBoard(); })
+      .catch(function (e) { $("lbBody").innerHTML = '<div class="lb-empty">' + esc(e.message) + '</div>'; });
+  }
+
+  function renderTabs() {
+    var tabs = [["total", "&#127942; Overall"]].concat(GAME_IDS.map(function (g) { return [g, GAMES[g].name]; }));
+    $("lbTabs").innerHTML = tabs.map(function (t) {
+      return '<button class="tab' + (lbGame === t[0] ? " on" : "") + '" data-g="' + t[0] + '">' + t[1] + '</button>';
+    }).join("");
+    Array.prototype.forEach.call($("lbTabs").querySelectorAll(".tab"), function (b) {
+      b.addEventListener("click", function () { lbGame = b.getAttribute("data-g"); renderTabs(); renderBoard(); });
+    });
+  }
+
+  function medal(i) { return i === 0 ? "&#129351;" : i === 1 ? "&#129352;" : i === 2 ? "&#129353;" : ""; }
+
+  function renderBoard() {
+    if (!boardCache) return;
+    var body = $("lbBody");
+    if (lbGame === "total") {
+      var rows = boardCache.players || [];
+      if (!rows.length) { body.innerHTML = '<div class="lb-empty">No scores yet — be the first! Play a game and it lands here.</div>'; return; }
+      body.innerHTML = '<div class="rowh"><div>#</div><div>Player</div><div>Total</div></div>' + rows.map(function (p, i) {
+        var mine = p.player === player;
+        var sub = GAME_IDS.filter(function (g) { return p.scores[g]; }).map(function (g) { return GAMES[g].name.split(" ")[0] + " " + p.scores[g]; }).join(" · ");
+        return '<div class="lrow totrow' + (mine ? " me" : "") + '"><div class="rk">' + (medal(i) ? '<span class="medal">' + medal(i) + '</span>' : (i + 1)) + '</div>' +
+          '<div class="who"><span class="av" style="background:' + avatarColour(p.player) + '">' + initials(p.player) + '</span><div>' + esc(p.player) + '<div class="sub">' + esc(sub) + '</div></div></div>' +
+          '<div class="sv">' + p.total + '</div></div>';
+      }).join("");
+    } else {
+      var list = (boardCache.games && boardCache.games[lbGame]) || [];
+      if (!list.length) { body.innerHTML = '<div class="lb-empty">No ' + GAMES[lbGame].name + ' scores yet.</div>'; return; }
+      body.innerHTML = '<div class="rowh"><div>#</div><div>Player</div><div>' + GAMES[lbGame].unit + '</div></div>' + list.map(function (p, i) {
+        var mine = p.player === player;
+        return '<div class="lrow' + (mine ? " me" : "") + '"><div class="rk">' + (medal(i) ? '<span class="medal">' + medal(i) + '</span>' : (i + 1)) + '</div>' +
+          '<div class="who"><span class="av" style="background:' + avatarColour(p.player) + '">' + initials(p.player) + '</span>' + esc(p.player) + '</div>' +
+          '<div class="sv">' + p.score + '</div></div>';
+      }).join("");
+    }
+  }
+
+  $("leaderBtn").addEventListener("click", openLeader);
+  $("lbBack").addEventListener("click", function () { show("home"); });
+
+  // ── posting scores ──────────────────────────────────────────────────────
+  function postScore(game, score, improved) {
+    if (!auth) { if (improved) toast("New best! Sign in to add it to the family board."); return; }
+    if (!player) { toast("Pick a name in your profile to post scores."); return; }
+    api("POST", "/api/score", { player: player, game: game, score: score }).then(function (r) {
+      boardCache = null;
+      if (r.improved && r.rank) toast(r.rank === 1 ? "&#129351; Top of the board!" : "Posted — rank #" + r.rank + " in " + GAMES[game].name);
+      else if (r.rank) toast("Saved to the family board");
+    }).catch(function () {});
+  }
+
+  // ── API ──────────────────────────────────────────────────────────────────
+  function api(method, path, body) {
+    var opts = { method: method, headers: {} };
+    if (auth) opts.headers["Authorization"] = "Bearer " + auth.password;
+    if (body !== undefined) { opts.headers["Content-Type"] = "application/json"; opts.body = JSON.stringify(body); }
+    return fetch(API + path, opts).then(function (r) {
+      return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || ("Error " + r.status)); return j; });
+    });
+  }
+
+  // ── sign in ───────────────────────────────────────────────────────────────
+  function openSign() { $("inMsg").textContent = ""; $("inName").value = player || ""; $("signScrim").classList.add("on"); setTimeout(function () { $("inPass").focus(); }, 60); }
+  function closeSign() { $("signScrim").classList.remove("on"); }
+  $("signBtn").addEventListener("click", function () { auth ? openAcct() : openSign(); });
+  $("whoPill").addEventListener("click", function () { auth ? openAcct() : openSign(); });
+  $("inGuest").addEventListener("click", closeSign);
+  $("signScrim").addEventListener("click", function (e) { if (e.target === $("signScrim")) closeSign(); });
+
+  $("inGo").addEventListener("click", function () {
+    var pass = $("inPass").value.trim(), nm = $("inName").value.trim(), msg = $("inMsg");
+    if (!pass) { msg.className = "msg bad"; msg.textContent = "Enter your family password."; return; }
+    if (!nm) { msg.className = "msg bad"; msg.textContent = "Pick a name to play under."; return; }
+    msg.className = "msg"; msg.textContent = "Checking…"; $("inGo").disabled = true;
+    fetch(API + "/api/auth", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password: pass }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { if (!r.ok) throw new Error(j.error || "Sign in failed"); return j; }); })
+      .then(function (r) {
+        auth = { password: pass, family: r.name, isAdmin: !!r.isAdmin };
+        player = nm;
+        if ($("inRemember").checked) { lset(AUTH_KEY, JSON.stringify(auth)); lset(NAME_KEY, nm); }
+        closeSign(); refreshWho(); toast("Welcome, " + nm + "!");
+      })
+      .catch(function (e) { msg.className = "msg bad"; msg.textContent = /Failed to fetch|NetworkError/.test(e.message) ? "Can't reach the leaderboard service." : e.message; })
+      .then(function () { $("inGo").disabled = false; });
+  });
+  $("inPass").addEventListener("keydown", function (e) { if (e.key === "Enter") $("inName").focus(); });
+  $("inName").addEventListener("keydown", function (e) { if (e.key === "Enter") $("inGo").click(); });
+
+  // ── account ───────────────────────────────────────────────────────────────
+  function openAcct() {
+    $("acctFam").textContent = auth.family;
+    $("acctWho").textContent = "Signed in" + (auth.isAdmin ? " · administrator" : "");
+    $("acctName").value = player;
+    $("acctAdmin").style.display = auth.isAdmin ? "" : "none";
+    if (auth.isAdmin) loadRooms();
+    $("acctScrim").classList.add("on");
+  }
+  $("acctScrim").addEventListener("click", function (e) { if (e.target === $("acctScrim")) $("acctScrim").classList.remove("on"); });
+  $("acctSave").addEventListener("click", function () {
+    var nm = $("acctName").value.trim(); if (!nm) return;
+    player = nm; lset(NAME_KEY, nm); refreshWho(); $("acctScrim").classList.remove("on"); toast("Playing as " + nm);
+  });
+  $("acctOut").addEventListener("click", function () {
+    ldel(AUTH_KEY); auth = null; $("acctScrim").classList.remove("on"); refreshWho(); toast("Signed out"); if ($("leader").classList.contains("on")) openLeader();
+  });
+
+  function loadRooms() {
+    var box = $("acctRooms"); box.innerHTML = '<div class="lb-empty" style="padding:12px">Loading…</div>';
+    api("GET", "/api/admin/rooms").then(function (r) {
+      box.innerHTML = '<table class="rooms"><tbody>' + r.rooms.map(function (rm) {
+        return '<tr><td>' + esc(rm.name) + '<br><code>' + esc(rm.password) + '</code></td><td style="text-align:right">' + rm.plays + ' plays' +
+          (rm.password === auth.password ? '' : ' <button data-del="' + esc(rm.password) + '">Remove</button>') + '</td></tr>';
+      }).join("") + '</tbody></table>';
+      Array.prototype.forEach.call(box.querySelectorAll("[data-del]"), function (b) {
+        b.addEventListener("click", function () {
+          if (!confirm("Remove this family and all their scores?")) return;
+          api("DELETE", "/api/admin/rooms", { password: b.getAttribute("data-del") }).then(loadRooms).catch(function (e) { toast(e.message); });
+        });
+      });
+    }).catch(function (e) { box.innerHTML = '<div class="lb-empty" style="padding:12px">' + esc(e.message) + '</div>'; });
+  }
+  $("acctAdd").addEventListener("click", function () {
+    var nm = $("acctNewName").value.trim(), pw = $("acctNewPass").value.trim(), m = $("acctMsg");
+    if (!nm || !pw) { m.className = "msg bad"; m.textContent = "Name and password required."; return; }
+    m.className = "msg"; m.textContent = "Creating…";
+    api("POST", "/api/admin/rooms", { name: nm, password: pw }).then(function () {
+      m.className = "msg good"; m.textContent = nm + " can now sign in."; $("acctNewName").value = ""; $("acctNewPass").value = ""; loadRooms();
+    }).catch(function (e) { m.className = "msg bad"; m.textContent = e.message; });
+  });
+
+  // ── boot ──────────────────────────────────────────────────────────────────
+  (function boot() {
+    player = lget(NAME_KEY) || "";
+    var saved = lget(AUTH_KEY);
+    if (saved) { try { auth = JSON.parse(saved); } catch (e) { ldel(AUTH_KEY); } }
+    renderHome();
+  })();
+})();
+</script>
+</body>
+</html>
