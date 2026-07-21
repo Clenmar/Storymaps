@@ -62,6 +62,44 @@
   .lead h2 .g { background: linear-gradient(90deg, var(--violet), var(--pink), var(--cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
   .lead p { color: var(--muted); font-weight: 600; margin-top: 7px; font-size: 14.5px; }
 
+  /* category tiles (home hub) */
+  .cats { display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 14px; }
+  .cattile { position: relative; border-radius: 20px; padding: 18px 16px 16px; color: #fff; cursor: pointer; border: none; text-align: left; min-height: 132px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: var(--shadow); transition: transform .16s ease, box-shadow .16s ease; overflow: hidden; }
+  .cattile:hover { transform: translateY(-5px); box-shadow: 0 22px 52px rgba(90,40,160,.26); }
+  .cattile:active { transform: translateY(-1px); }
+  .cattile .cico { width: 46px; height: 46px; border-radius: 13px; background: rgba(255,255,255,.22); display: flex; align-items: center; justify-content: center; }
+  .cattile .cico svg { width: 27px; height: 27px; }
+  .cattile h3 { font-size: 19px; font-weight: 800; margin-top: 14px; letter-spacing: -.2px; }
+  .cattile .cn { font-size: 12px; font-weight: 700; opacity: .92; margin-top: 1px; }
+  .cattile .cbadge { position: absolute; top: 14px; right: 14px; background: rgba(0,0,0,.2); border-radius: 999px; font-size: 11px; font-weight: 800; padding: 3px 10px; }
+  .cattile .clead { margin-top: 9px; font-size: 11px; font-weight: 700; background: rgba(0,0,0,.16); align-self: flex-start; padding: 3px 10px; border-radius: 999px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .crumb { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .crumb .home { font-size: 13px; font-weight: 800; color: var(--violet-d); background: #fff; border: 1.5px solid var(--rule); border-radius: 999px; padding: 8px 15px; box-shadow: 0 3px 10px rgba(90,40,160,.08); }
+  .crumb .home:hover { border-color: var(--violet); }
+  .crumb .here { display: flex; align-items: center; gap: 8px; font-size: 17px; font-weight: 800; }
+  .crumb .here .cdot { width: 12px; height: 12px; border-radius: 4px; }
+
+  .gcard .lead { margin-top: 7px; font-size: 11.5px; font-weight: 700; background: rgba(0,0,0,.16); align-self: flex-start; padding: 4px 11px; border-radius: 999px; display: inline-flex; align-items: center; gap: 5px; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .gcard .cardfoot { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .gcard .cardfoot .best { margin-top: 0; }
+
+  /* difficulty chooser */
+  .difwrap { display: flex; flex-direction: column; gap: 11px; width: min(340px, 84vw); }
+  .difbtn { padding: 15px 16px; border-radius: 16px; color: #fff; font-weight: 800; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,.14); transition: transform .1s ease; display: flex; justify-content: space-between; align-items: center; }
+  .difbtn:active { transform: scale(.97); }
+  .difbtn small { font-weight: 700; opacity: .9; font-size: 12px; }
+  .difbtn .mult { background: rgba(0,0,0,.2); border-radius: 999px; padding: 3px 10px; font-size: 12px; }
+  .dif0 { background: linear-gradient(140deg, #10b981, #22c55e); }
+  .dif1 { background: linear-gradient(140deg, #f59e0b, #f97316); }
+  .dif2 { background: linear-gradient(140deg, #ef4444, #b91c1c); }
+  .difpill { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .5px; padding: 3px 10px; border-radius: 999px; color: #fff; }
+
+  /* bible category — gold */
+  .g-bibletrivia { background: linear-gradient(140deg, #a16207, #eab308); }
+  .g-bibleverse  { background: linear-gradient(140deg, #854d0e, #d97706); }
+  .g-biblebooks  { background: linear-gradient(140deg, #7c2d12, #f59e0b); }
+
   .catsec { margin-bottom: 26px; }
   .cathead { display: flex; align-items: center; gap: 9px; margin: 0 2px 12px; }
   .cathead .cdot { width: 12px; height: 12px; border-radius: 4px; flex: 0 0 auto; }
@@ -214,6 +252,45 @@
   .aslot { width: 40px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--violet), var(--pink)); color: #fff; font-size: 24px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
   .anrow { display: flex; gap: 9px; }
 
+  /* word & reading games */
+  .qtext { font-size: clamp(19px, 4.6vw, 26px); font-weight: 700; line-height: 1.5; text-align: center; max-width: 560px; }
+  .qtext b, .passage b { color: var(--violet-d); }
+  .slot { display: inline-block; min-width: 22px; color: var(--pink); font-weight: 800; }
+  .passage { font-size: clamp(15px, 3.8vw, 18px); font-weight: 600; line-height: 1.6; color: var(--ink); background: #f7f3ff; border: 1px solid var(--rule); border-radius: 14px; padding: 14px 16px; max-width: 560px; text-align: left; }
+  .qq { margin-top: 12px; font-size: clamp(16px, 4vw, 20px); font-weight: 800; }
+  .sentence { font-size: clamp(18px, 4.4vw, 25px); font-weight: 700; line-height: 1.8; text-align: center; max-width: 560px; }
+  .wtok { display: inline-block; padding: 2px 6px; margin: 1px; border-radius: 7px; cursor: pointer; transition: background .12s ease, color .12s ease, opacity .12s ease; }
+  .wtok:hover { background: var(--rule); }
+  .wtok.gone { text-decoration: line-through; opacity: .38; color: var(--muted); background: transparent; }
+  .wtok.mark { background: linear-gradient(135deg, var(--green), #22c55e); color: #fff; }
+  .wtok.bad { background: linear-gradient(135deg, var(--red), #f97316); color: #fff; animation: shake .3s; }
+  .mopts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(520px, 90vw); }
+  .mopt { padding: 13px 12px; border-radius: 14px; font-size: 15px; font-weight: 700; background: #f2edff; color: var(--ink); box-shadow: 0 3px 9px rgba(90,40,160,.08); transition: transform .1s ease, background .12s ease; text-align: center; }
+  .mopt:hover { background: #e7ddff; }
+  .mopt:active { transform: scale(.97); }
+  .mopt.right { background: linear-gradient(135deg, var(--green), #22c55e); color: #fff; }
+  .mopt.wrong { background: linear-gradient(135deg, var(--red), #f97316); color: #fff; }
+  .mopt:disabled { cursor: default; }
+  .chunks { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 560px; }
+  .chunk { padding: 10px 13px; border-radius: 12px; font-size: 15px; font-weight: 700; background: #f2edff; color: var(--violet-d); box-shadow: 0 3px 9px rgba(90,40,160,.1); transition: transform .1s ease, opacity .12s ease; }
+  .chunk:active { transform: scale(.95); }
+  .chunk.used { opacity: .3; pointer-events: none; }
+  .chunk.bad { background: linear-gradient(135deg, var(--red), #f97316); color: #fff; animation: shake .3s; }
+  .buildline { min-height: 44px; display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; align-items: center; padding: 8px 10px; border-bottom: 3px dashed var(--rule); max-width: 560px; font-size: 16px; font-weight: 700; color: var(--ink); }
+  .rsvp { font-size: clamp(30px, 8vw, 52px); font-weight: 800; min-height: 84px; display: flex; align-items: center; justify-content: center; letter-spacing: .5px; }
+
+  /* writing category — teal/emerald */
+  .g-brevity { background: linear-gradient(140deg, #0d9488, #2dd4bf); }
+  .g-punct   { background: linear-gradient(140deg, #0e7490, #06b6d4); }
+  .g-typo    { background: linear-gradient(140deg, #047857, #34d399); }
+  .g-express { background: linear-gradient(140deg, #0f766e, #5eead4); }
+  .g-invert  { background: linear-gradient(140deg, #115e59, #2dd4bf); }
+  /* reading category — rose/orange */
+  .g-speedread  { background: linear-gradient(140deg, #e11d48, #fb7185); }
+  .g-comprehend { background: linear-gradient(140deg, #be123c, #f43f5e); }
+  .g-scan       { background: linear-gradient(140deg, #c2410c, #fb923c); }
+  .g-theme      { background: linear-gradient(140deg, #db2777, #f472b6); }
+
   .overlay {
     position: absolute; inset: 0; background: rgba(255,255,255,.92); backdrop-filter: blur(3px);
     display: none; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; z-index: 5;
@@ -229,6 +306,8 @@
   .board-tabs { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
   .tab { font-size: 13px; font-weight: 700; border-radius: 999px; padding: 8px 15px; background: #fff; color: var(--muted); border: 1.5px solid var(--rule); }
   .tab.on { background: var(--violet-d); color: #fff; border-color: var(--violet-d); }
+  .tab.small { font-size: 12px; padding: 6px 12px; }
+  #lbGameTabs { margin-top: -6px; }
   .lb { background: #fff; border-radius: 20px; border: 1.5px solid var(--rule); box-shadow: var(--shadow); overflow: hidden; }
   .lb .rowh { display: grid; grid-template-columns: 42px 1fr auto; padding: 12px 16px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); border-bottom: 1px solid var(--rule); }
   .lrow { display: grid; grid-template-columns: 42px 1fr auto; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--rule); }
@@ -307,7 +386,7 @@
 
     <div id="gameGrid"></div>
 
-    <div class="homebtns">
+    <div class="homebtns" id="homeActions">
       <button class="btn primary" id="leaderBtn">&#127942; Family leaderboard</button>
       <button class="btn" id="signBtn">Sign in to compete</button>
     </div>
@@ -340,6 +419,7 @@
       <div class="name"><span id="lbFamily">Leaderboard</span></div>
     </div>
     <div class="board-tabs" id="lbTabs"></div>
+    <div class="board-tabs" id="lbGameTabs"></div>
     <div class="lb" id="lbBody"></div>
   </div>
 
@@ -388,6 +468,17 @@
   </div>
 </div>
 
+<!-- difficulty chooser -->
+<div class="scrim" id="difScrim" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-h"><h3 id="difTitle">Choose difficulty</h3><p>Harder levels are worth more points.</p></div>
+    <div class="sheet-b">
+      <div class="difwrap" id="difWrap"></div>
+      <button class="btn ghost" id="difCancel" style="width:100%;margin-top:14px">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script>
@@ -400,13 +491,25 @@
   var NAME_KEY = "twcBrain_name_v1";
 
   var CATS = {
-    memory:   { name: "Memory",   tag: "Hold it in mind",     colour: "#7c3aed" },
-    math:     { name: "Math",     tag: "Numbers, fast",       colour: "#2563eb" },
-    focus:    { name: "Focus",    tag: "Attention & control", colour: "#f59e0b" },
-    speed:    { name: "Speed",    tag: "React in a flash",    colour: "#10b981" },
-    language: { name: "Language", tag: "Words & letters",     colour: "#ec4899" }
+    memory:   { name: "Memory",   tag: "Hold it in mind",     colour: "#7c3aed", grad: "#7c3aed,#a855f7",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5a3 3 0 0 0-3 3 3 3 0 0 0-1.5 5.6A3 3 0 0 0 6.5 18 3 3 0 0 0 12 19.5V4a3 3 0 0 0-2.5-.5z"/><path d="M14.5 3.5a3 3 0 0 1 3 3 3 3 0 0 1 1.5 5.6A3 3 0 0 1 17.5 18 3 3 0 0 1 12 19.5"/></svg>' },
+    math:     { name: "Math",     tag: "Numbers, fast",       colour: "#2563eb", grad: "#2563eb,#06b6d4",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M5 8h6M8 5v6"/><path d="M14 8.5h5M14 15.5h5"/><path d="M6 14l4 4M10 14l-4 4"/></svg>' },
+    focus:    { name: "Focus",    tag: "Attention & control", colour: "#f59e0b", grad: "#f59e0b,#f97316",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.6"/></svg>' },
+    speed:    { name: "Speed",    tag: "React in a flash",    colour: "#10b981", grad: "#10b981,#22c55e",
+      icon: '<svg viewBox="0 0 24 24" fill="#fff" stroke="none"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>' },
+    language: { name: "Language", tag: "Words & letters",     colour: "#ec4899", grad: "#ec4899,#f43f5e",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h9M8.5 5c0 5-2 9-5 11M6 9c1.5 3 4 5 6 6"/><path d="M13 20l4-9 4 9M14.2 17h5.6"/></svg>' },
+    writing:  { name: "Writing",  tag: "Sharpen your prose",  colour: "#0d9488", grad: "#0d9488,#2dd4bf",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>' },
+    reading:  { name: "Reading",  tag: "Read fast, grasp more", colour: "#e11d48", grad: "#e11d48,#fb7185",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6C10 4.5 6.5 4.5 4 5.5v13c2.5-1 6-1 8 .5 2-1.5 5.5-1.5 8-.5v-13c-2.5-1-6-1-8 .5z"/><path d="M12 6v13"/></svg>' },
+    bible:    { name: "Bible", tag: "Test your scripture", colour: "#a16207", grad: "#a16207,#eab308",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/><path d="M12 7v6M9.5 9.5h5"/></svg>' }
   };
-  var CAT_ORDER = ["memory", "math", "focus", "speed", "language"];
+  var CAT_ORDER = ["memory", "math", "focus", "speed", "language", "writing", "reading", "bible"];
+  var DIFFS = [{ name: "Easy", mult: 1, cls: "dif0" }, { name: "Medium", mult: 2, cls: "dif1" }, { name: "Hard", mult: 3, cls: "dif2" }];
 
   var GAMES = {
     matrix: { name: "Memory Matrix", cat: "memory", cls: "g-matrix", colour: "#7c3aed", unit: "level",
@@ -442,13 +545,57 @@
 
     anagram: { name: "Word Scramble", cat: "language", cls: "g-anagram", colour: "#ec4899", unit: "words",
       desc: "Unscramble the letters into a word before time runs out.",
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2"/><path d="M9 19h6"/><path d="M12 5v14"/><rect x="15" y="12" width="6" height="6" rx="1" fill="#fff" fill-opacity=".3"/></svg>' }
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2"/><path d="M9 19h6"/><path d="M12 5v14"/><rect x="15" y="12" width="6" height="6" rx="1" fill="#fff" fill-opacity=".3"/></svg>' },
+
+    brevity: { name: "Brevity", cat: "writing", cls: "g-brevity", colour: "#0d9488", unit: "correct",
+      desc: "Tap the redundant word that the sentence doesn't need.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.5"/><circle cx="6" cy="18" r="2.5"/><path d="M20 4L8.5 15.5M14.5 14.5L20 20M8.5 8.5L11.5 11.5"/></svg>' },
+    punct: { name: "Punctuation", cat: "writing", cls: "g-punct", colour: "#0e7490", unit: "correct",
+      desc: "Choose the mark that completes the sentence.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M8 8h3v5a3 3 0 0 1-3 3"/><path d="M15 8h3v5a3 3 0 0 1-3 3"/></svg>' },
+    typo: { name: "Error Spotting", cat: "writing", cls: "g-typo", colour: "#047857", unit: "correct",
+      desc: "Find the word with a typo or grammar slip.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l4-9 4 9"/><path d="M5.5 13h5"/><path d="M13.5 14.5l2 2 4-4"/></svg>' },
+    express: { name: "Expression", cat: "writing", cls: "g-express", colour: "#0f766e", unit: "correct",
+      desc: "Swap a bland word for the strongest synonym.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.4L18 9l-4.2 1.6L12 15l-1.8-4.4L6 9l4.2-1.6z"/><path d="M18.5 15l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></svg>' },
+    invert: { name: "Inversion", cat: "writing", cls: "g-invert", colour: "#115e59", unit: "sentences",
+      desc: "Reorder the scrambled clauses into a clear sentence.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 5v13M7 5l-3 3M7 5l3 3"/><path d="M17 19V6M17 19l3-3M17 19l-3-3"/></svg>' },
+
+    speedread: { name: "Speed Read", cat: "reading", cls: "g-speedread", colour: "#e11d48", unit: "rounds",
+      desc: "Read words flashed fast, then answer. Speeds up each round.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13l3.5-2.5"/><path d="M4 18a8 8 0 1 1 16 0"/></svg>' },
+    comprehend: { name: "Comprehension", cat: "reading", cls: "g-comprehend", colour: "#be123c", unit: "correct",
+      desc: "Read a short passage and answer against the clock.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6C10 4.5 6.5 4.5 4 5.5v13c2.5-1 6-1 8 .5 2-1.5 5.5-1.5 8-.5v-13c-2.5-1-6-1-8 .5z"/><path d="M12 6v13"/></svg>' },
+    scan: { name: "Agility", cat: "reading", cls: "g-scan", colour: "#c2410c", unit: "correct",
+      desc: "Scan the text and grab the key detail fast.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h9M4 10h6M4 14h4"/><circle cx="16" cy="15" r="3.5"/><path d="M21 20l-2.5-2.5"/></svg>' },
+    theme: { name: "Main Idea", cat: "reading", cls: "g-theme", colour: "#db2777", unit: "correct",
+      desc: "Read a paragraph and pick its central theme.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/></svg>' },
+
+    bibletrivia: { name: "Bible Trivia", cat: "bible", cls: "g-bibletrivia", colour: "#a16207", unit: "points", diff: true,
+      desc: "Answer scripture questions. Harder levels score more.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 8v4l2 1"/><path d="M17 3v4M15 5h4"/></svg>' },
+    bibleverse: { name: "Finish the Verse", cat: "bible", cls: "g-bibleverse", colour: "#854d0e", unit: "points", diff: true,
+      desc: "Fill in the missing word of a well-known verse.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16l-7-3-7 3z"/><path d="M9 9h6M9 12h4"/></svg>' },
+    biblebooks: { name: "Books in Order", cat: "bible", cls: "g-biblebooks", colour: "#7c2d12", unit: "points", diff: true,
+      desc: "Put the books of the Bible into their correct order.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h5v14H4zM10 5h4v14h-4z"/><path d="M15.5 6l3.5.9-3 13-3.4-.9z"/></svg>' }
   };
-  var GAME_IDS = ["matrix", "simon", "cards", "span", "arith", "equate", "stroop", "schulte", "reaction", "anagram"];
+  var GAME_IDS = ["matrix", "simon", "cards", "span", "arith", "equate", "stroop", "schulte", "reaction", "anagram",
+    "brevity", "punct", "typo", "express", "invert", "speedread", "comprehend", "scan", "theme",
+    "bibletrivia", "bibleverse", "biblebooks"];
 
   var auth = null;                 // {password, family, isAdmin}
   var player = "";                 // name to record under
   var current = null;              // active game id
+  var homeView = "cats";           // "cats" (category hub) or a category id
+  var bibleDiff = 1;               // 0 easy, 1 medium, 2 hard
+  var lbCat = "total";             // leaderboard category filter
   var lbGame = "total";
   var SESSION = 0;                 // bumps every time we leave/enter a game
   var stoppers = [];               // cleanup fns for the running game
@@ -495,30 +642,64 @@
   function buzz() { tone(150, 220, "sawtooth"); }
 
   // ── home grid ──────────────────────────────────────────────────────────
+  function idsIn(catId) { return GAME_IDS.filter(function (id) { return GAMES[id].cat === catId; }); }
+
+  function gameLeader(id) {
+    if (!boardCache || !boardCache.games || !boardCache.games[id]) return null;
+    return boardCache.games[id][0] || null;
+  }
+
+  function leadChip(id) {
+    var l = gameLeader(id);
+    if (!l) return "";
+    var mine = l.player === player;
+    return '<div class="lead">&#128081; ' + (mine ? "You lead &middot; " + l.score : esc(l.player) + " &middot; " + l.score) + '</div>';
+  }
+
   function renderHome() {
     var host = $("gameGrid"); host.innerHTML = "";
-    CAT_ORDER.forEach(function (catId) {
-      var cat = CATS[catId];
-      var ids = GAME_IDS.filter(function (id) { return GAMES[id].cat === catId; });
-      if (!ids.length) return;
 
-      var sec = el("div", "catsec");
-      sec.innerHTML = '<div class="cathead"><span class="cdot" style="background:' + cat.colour + '"></span>' +
-        '<h3>' + cat.name + '</h3><span class="ctag">' + cat.tag + '</span><span class="cline"></span></div>';
+    if (homeView === "cats") {
+      var wrap = el("div", "cats");
+      CAT_ORDER.forEach(function (catId) {
+        var cat = CATS[catId], n = idsIn(catId).length;
+        if (!n) return;
+        var tile = el("button", "cattile");
+        tile.style.background = "linear-gradient(140deg," + cat.grad + ")";
+        // best leader across this category's games (by highest score)
+        var topGame = null;
+        idsIn(catId).forEach(function (id) { var l = gameLeader(id); if (l && (!topGame || l.score > topGame.score)) topGame = { id: id, player: l.player, score: l.score }; });
+        tile.innerHTML = '<span class="cbadge">' + n + ' game' + (n > 1 ? "s" : "") + '</span>' +
+          '<div class="cico">' + cat.icon + '</div>' +
+          '<div><h3>' + cat.name + '</h3><div class="cn">' + cat.tag + '</div>' +
+          (topGame ? '<div class="clead">&#128081; ' + esc(topGame.player) + '</div>' : '') + '</div>';
+        tile.addEventListener("click", function () { homeView = catId; renderHome(); window.scrollTo(0, 0); });
+        wrap.appendChild(tile);
+      });
+      host.appendChild(wrap);
+      $("homeActions").style.display = "";
+    } else {
+      var cat2 = CATS[homeView];
+      var crumb = el("div", "crumb");
+      var back = el("button", "home", "&#8592; Categories");
+      back.addEventListener("click", function () { homeView = "cats"; renderHome(); window.scrollTo(0, 0); });
+      crumb.appendChild(back);
+      crumb.appendChild(el("div", "here", '<span class="cdot" style="background:' + cat2.colour + '"></span>' + cat2.name));
+      host.appendChild(crumb);
+
       var grid = el("div", "games");
-
-      ids.forEach(function (id) {
+      idsIn(homeView).forEach(function (id) {
         var g = GAMES[id], b = getBest(id);
         var card = el("button", "gcard " + g.cls);
         card.innerHTML = '<div class="ico">' + g.icon + '</div>' +
-          '<div><h3>' + g.name + '</h3><p>' + g.desc + '</p></div>' +
-          '<div class="best">' + (b ? "Best: " + b + " " + g.unit : "Not played yet") + '</div>';
+          '<div><h3>' + g.name + (g.diff ? ' <span class="difpill" style="background:rgba(0,0,0,.2)">levels</span>' : '') + '</h3><p>' + g.desc + '</p></div>' +
+          '<div class="cardfoot"><div class="best">' + (b ? "Best " + b + " " + g.unit : "Not played") + '</div>' + leadChip(id) + '</div>';
         card.addEventListener("click", function () { startGame(id); });
         grid.appendChild(card);
       });
-      sec.appendChild(grid);
-      host.appendChild(sec);
-    });
+      host.appendChild(grid);
+      $("homeActions").style.display = "";
+    }
     refreshWho();
   }
 
@@ -534,15 +715,34 @@
   var stageAPI = { stage: null, over: false };
 
   function startGame(id) {
+    if (GAMES[id].diff) { askDifficulty(id, function () { launch(id); }); return; }
+    launch(id);
+  }
+
+  function launch(id) {
     stopAll();
     current = id;
     var g = GAMES[id];
     $("playName").querySelector(".dot").style.background = g.colour;
-    $("playName").querySelector("span:last-child").textContent = g.name;
+    $("playName").querySelector("span:last-child").textContent = g.name + (g.diff ? " · " + DIFFS[bibleDiff].name : "");
     $("overlay").classList.remove("on");
     show("play");
     GAME_RUNNERS[id]();
   }
+
+  function askDifficulty(id, cb) {
+    $("difTitle").textContent = GAMES[id].name;
+    var wrap = $("difWrap"); wrap.innerHTML = "";
+    DIFFS.forEach(function (dif, i) {
+      var b = el("button", "difbtn " + dif.cls,
+        '<span>' + dif.name + '<br><small>' + ["Well-known questions", "A real test", "For scripture buffs"][i] + '</small></span><span class="mult">×' + dif.mult + ' pts</span>');
+      b.addEventListener("click", function () { bibleDiff = i; $("difScrim").classList.remove("on"); cb(); });
+      wrap.appendChild(b);
+    });
+    $("difScrim").classList.add("on");
+  }
+  $("difCancel").addEventListener("click", function () { $("difScrim").classList.remove("on"); });
+  $("difScrim").addEventListener("click", function (e) { if (e.target === $("difScrim")) $("difScrim").classList.remove("on"); });
 
   function stageReset() {
     var st = $("stage");
@@ -572,7 +772,7 @@
     postScore(current, score, improved);
   }
 
-  $("ovAgain").addEventListener("click", function () { startGame(current); });
+  $("ovAgain").addEventListener("click", function () { launch(current); });
   $("ovMenu").addEventListener("click", function () { stopAll(); show("home"); });
   $("backBtn").addEventListener("click", function () { stopAll(); show("home"); });
 
@@ -1137,30 +1337,410 @@
     newWord();
   }
 
+  // ════════════════════════════════════════════════════════════════════════
+  //  CONTENT BANKS — Writing & Reading
+  // ════════════════════════════════════════════════════════════════════════
+  var BANK_BREVITY = [   // tap the one redundant word
+    { text: "She returned back home before dark.", drop: "back" },
+    { text: "They cooperated together on the project.", drop: "together" },
+    { text: "Please repeat that sentence again.", drop: "again" },
+    { text: "We studied the past history of the town.", drop: "past" },
+    { text: "He added an additional chair for the guest.", drop: "additional" },
+    { text: "The end result was a great success.", drop: "end" },
+    { text: "She sat down on the wooden bench.", drop: "down" },
+    { text: "I personally think we should leave now.", drop: "personally" },
+    { text: "The final outcome pleased everyone there.", drop: "final" },
+    { text: "They gathered together for evening prayer.", drop: "together" },
+    { text: "It was a completely unique painting.", drop: "completely" },
+    { text: "We must plan ahead for tomorrow.", drop: "ahead" },
+    { text: "He told a false lie to his friend.", drop: "false" },
+    { text: "The two twins looked exactly alike.", drop: "two" },
+    { text: "She whispered quietly under her breath.", drop: "quietly" }
+  ];
+
+  var BANK_TYPO = [   // tap the word with an error
+    { text: "The childrens played in the yard.", drop: "childrens" },
+    { text: "She recieved a letter this morning.", drop: "recieved" },
+    { text: "We definately need more time.", drop: "definately" },
+    { text: "He is taller then his brother.", drop: "then" },
+    { text: "Their going to the market later.", drop: "Their" },
+    { text: "The dog wagged it's tail happily.", drop: "it's" },
+    { text: "I could of helped you yesterday.", drop: "of" },
+    { text: "The weather is beautifull today.", drop: "beautifull" },
+    { text: "We was late for the service.", drop: "was" },
+    { text: "Its a wonderful day outside.", drop: "Its" },
+    { text: "He runned all the way home.", drop: "runned" },
+    { text: "Your welcome to join us tonight.", drop: "Your" },
+    { text: "The teacher gived us homework.", drop: "gived" },
+    { text: "They finded the missing keys.", drop: "finded" },
+    { text: "She dont like waiting in line.", drop: "dont" }
+  ];
+
+  var BANK_PUNCT = [   // choose the mark for the ▢ slot; options fixed
+    { prompt: 'She had one dream <span class="slot">&#9634;</span> to serve others.', options: [",", ";", ":", "—"], answer: 2 },
+    { prompt: 'It rained all day <span class="slot">&#9634;</span> so we stayed inside.', options: [",", ";", ":", "—"], answer: 0 },
+    { prompt: 'He was late <span class="slot">&#9634;</span> therefore he missed the bus.', options: [",", ";", ":", "—"], answer: 1 },
+    { prompt: 'Bring these items <span class="slot">&#9634;</span> a pen, paper, and ink.', options: [",", ";", ":", "—"], answer: 2 },
+    { prompt: 'Although it was hard <span class="slot">&#9634;</span> she never gave up.', options: [",", ";", ":", "—"], answer: 0 },
+    { prompt: 'The team practiced daily <span class="slot">&#9634;</span> they wanted to win.', options: [",", ";", ":", "—"], answer: 1 },
+    { prompt: 'We visited three cities <span class="slot">&#9634;</span> Accra, Lagos, and Nairobi.', options: [",", ";", ":", "—"], answer: 2 },
+    { prompt: 'When the bell rang <span class="slot">&#9634;</span> the students left.', options: [",", ";", ":", "—"], answer: 0 },
+    { prompt: 'The choir sang beautifully <span class="slot">&#9634;</span> the crowd wept.', options: [",", ";", ":", "—"], answer: 1 },
+    { prompt: 'He studied hard <span class="slot">&#9634;</span> but he still felt nervous.', options: [",", ";", ":", "—"], answer: 0 },
+    { prompt: 'There was only one rule <span class="slot">&#9634;</span> be kind.', options: [",", ";", ":", "—"], answer: 2 },
+    { prompt: 'The sun set <span class="slot">&#9634;</span> and the stars appeared.', options: [",", ";", ":", "—"], answer: 0 }
+  ];
+
+  var BANK_EXPRESS = [   // pick the strongest replacement for the bold word
+    { prompt: 'The meal was very <b>good</b>.', options: ["delicious", "nice", "okay", "fine"], answer: 0 },
+    { prompt: 'She was very <b>happy</b> about the news.', options: ["overjoyed", "glad", "okay", "fine"], answer: 0 },
+    { prompt: 'The mountain was very <b>big</b>.', options: ["towering", "large", "tall", "wide"], answer: 0 },
+    { prompt: 'He walked <b>quickly</b> to the door.', options: ["rushed", "moved", "went", "strolled"], answer: 0 },
+    { prompt: 'It was a very <b>bad</b> mistake.', options: ["grievous", "poor", "small", "minor"], answer: 0 },
+    { prompt: 'The room was very <b>cold</b>.', options: ["freezing", "cool", "chilly", "breezy"], answer: 0 },
+    { prompt: 'She spoke in a <b>quiet</b> voice.', options: ["hushed", "low", "soft", "small"], answer: 0 },
+    { prompt: 'The crowd was very <b>loud</b>.', options: ["deafening", "noisy", "busy", "lively"], answer: 0 },
+    { prompt: 'He felt very <b>tired</b> after work.', options: ["exhausted", "sleepy", "bored", "weak"], answer: 0 },
+    { prompt: 'The story was very <b>interesting</b>.', options: ["captivating", "nice", "good", "fun"], answer: 0 },
+    { prompt: 'The gift made her very <b>happy</b>.', options: ["elated", "content", "calm", "pleased"], answer: 0 },
+    { prompt: 'The soup was very <b>hot</b>.', options: ["scalding", "warm", "nice", "tasty"], answer: 0 }
+  ];
+
+  var BANK_INVERT = [   // reorder the chunks into a clear sentence
+    { chunks: ["Because it was raining,", "we decided", "to stay home."] },
+    { chunks: ["After the long journey,", "the travelers", "finally rested."] },
+    { chunks: ["When the sun rose,", "the birds", "began to sing."] },
+    { chunks: ["Although she was tired,", "she continued", "to help others."] },
+    { chunks: ["Before the meeting started,", "everyone", "took their seats."] },
+    { chunks: ["If you work hard,", "you will", "see the results."] },
+    { chunks: ["As the music played,", "the children", "danced with joy."] },
+    { chunks: ["Since the store was closed,", "we went", "somewhere else."] },
+    { chunks: ["While he was reading,", "the phone", "suddenly rang."] },
+    { chunks: ["Once the game ended,", "the fans", "cheered loudly."] },
+    { chunks: ["Even though it was late,", "the workers", "kept going."] },
+    { chunks: ["After the rain stopped,", "a rainbow", "filled the sky."] }
+  ];
+
+  var BANK_COMPREHEND = [
+    { prompt: '<div class="passage">Maria planted tomatoes in the spring. By summer, the plants were full of red fruit, and she shared them with her neighbours.</div><div class="qq">What did Maria grow?</div>', options: ["Tomatoes", "Corn", "Roses", "Beans"], answer: 0 },
+    { prompt: '<div class="passage">The library closes at 8 pm on weekdays but at 5 pm on Saturdays. On Sundays it stays shut all day.</div><div class="qq">When does the library close on Saturday?</div>', options: ["5 pm", "8 pm", "It is shut", "6 pm"], answer: 0 },
+    { prompt: '<div class="passage">The team lost their first three games. After changing their strategy, they won the next five in a row.</div><div class="qq">How many games did the team win?</div>', options: ["Five", "Three", "Eight", "Two"], answer: 0 },
+    { prompt: '<div class="passage">David saved for a year to buy a bicycle. When he finally had enough money, the shop had already sold out.</div><div class="qq">Did David buy the bicycle?</div>', options: ["No", "Yes", "He bought two", "He got a refund"], answer: 0 },
+    { prompt: '<div class="passage">The recipe needs two cups of flour, one egg, and a pinch of salt. Sugar is optional.</div><div class="qq">Which ingredient is optional?</div>', options: ["Sugar", "Flour", "Egg", "Salt"], answer: 0 },
+    { prompt: '<div class="passage">Rain fell heavily all morning. By afternoon the sky cleared, and a rainbow appeared over the hills.</div><div class="qq">What appeared in the afternoon?</div>', options: ["A rainbow", "More rain", "Snow", "Fog"], answer: 0 },
+    { prompt: '<div class="passage">Peter woke up late and missed the bus. He decided to walk and arrived just as the class began.</div><div class="qq">How did Peter get to class?</div>', options: ["He walked", "By bus", "By car", "He was absent"], answer: 0 },
+    { prompt: '<div class="passage">The museum\'s new exhibit features paintings from the 1800s. Photography is not allowed inside.</div><div class="qq">What is not allowed in the exhibit?</div>', options: ["Photography", "Talking", "Eating", "Walking"], answer: 0 },
+    { prompt: '<div class="passage">Grace practised the piano every day for a month. At the recital her hard work paid off with a flawless performance.</div><div class="qq">How was Grace\'s performance?</div>', options: ["Flawless", "Poor", "Average", "Cancelled"], answer: 0 },
+    { prompt: '<div class="passage">The shop offers a discount on Mondays for students only. Teachers pay the full price.</div><div class="qq">Who gets the Monday discount?</div>', options: ["Students", "Teachers", "Everyone", "No one"], answer: 0 }
+  ];
+
+  var BANK_SCAN = [
+    { prompt: '<div class="passage">Flight 204 departs at 9:45 am from Gate 12.</div><div class="qq">Which gate?</div>', options: ["12", "24", "9", "45"], answer: 0 },
+    { prompt: '<div class="passage">The Wi-Fi password is Blue-River-77.</div><div class="qq">What is the password?</div>', options: ["Blue-River-77", "Red-River-77", "Blue-River-70", "Blue-Lake-77"], answer: 0 },
+    { prompt: '<div class="passage">Order #5821 ships on Friday to Accra.</div><div class="qq">What is the order number?</div>', options: ["5821", "5812", "8521", "5281"], answer: 0 },
+    { prompt: '<div class="passage">The meeting has moved from Room B to Room D at 3 pm.</div><div class="qq">Which room now?</div>', options: ["Room D", "Room B", "Room C", "Room A"], answer: 0 },
+    { prompt: '<div class="passage">Dr. Osei is available on Tuesday and Thursday afternoons.</div><div class="qq">Which days?</div>', options: ["Tue & Thu", "Mon & Wed", "Wed & Fri", "Tue & Fri"], answer: 0 },
+    { prompt: '<div class="passage">Tickets cost $15 for adults and $8 for children.</div><div class="qq">How much for children?</div>', options: ["$8", "$15", "$5", "$18"], answer: 0 },
+    { prompt: '<div class="passage">The cake bakes at 180°C for 25 minutes.</div><div class="qq">For how long?</div>', options: ["25 minutes", "15 minutes", "35 minutes", "20 minutes"], answer: 0 },
+    { prompt: '<div class="passage">Contact support at help@twc.org before Monday.</div><div class="qq">What is the email?</div>', options: ["help@twc.org", "info@twc.org", "help@twc.com", "helptwc.org"], answer: 0 },
+    { prompt: '<div class="passage">The event is on the 3rd floor, Suite 306.</div><div class="qq">Which suite?</div>', options: ["306", "360", "603", "036"], answer: 0 },
+    { prompt: '<div class="passage">Bus route 7 stops at Market, Church, and School.</div><div class="qq">Which route number?</div>', options: ["7", "11", "17", "70"], answer: 0 }
+  ];
+
+  var BANK_THEME = [
+    { prompt: '<div class="passage">Every morning she wakes before dawn, laces her shoes, and runs five miles. Rain or shine, she never skips a day.</div><div class="qq">What is the main idea?</div>', options: ["Discipline", "The weather", "Running shoes", "Sleeping in"], answer: 0 },
+    { prompt: '<div class="passage">The old bridge had stood for a century. Carts, cars, and countless footsteps had crossed it, yet it never failed.</div><div class="qq">Central theme?</div>', options: ["Endurance", "Traffic", "Rivers", "Building cars"], answer: 0 },
+    { prompt: '<div class="passage">He gave his lunch to a stranger, helped an elderly woman cross the road, and stayed late to tutor a classmate.</div><div class="qq">This is mostly about…</div>', options: ["Kindness", "Hunger", "School", "Traffic"], answer: 0 },
+    { prompt: '<div class="passage">Despite losing everything in the flood, the villagers rebuilt their homes, stronger than before.</div><div class="qq">The theme is…</div>', options: ["Resilience", "Floods", "Houses", "The weather"], answer: 0 },
+    { prompt: '<div class="passage">The choir practised for months, blending each voice until they finally sang as one.</div><div class="qq">Central theme?</div>', options: ["Unity", "Music theory", "Months", "Loud voices"], answer: 0 },
+    { prompt: '<div class="passage">He apologised, returned what he had taken, and worked for weeks to earn back their trust.</div><div class="qq">The theme is…</div>', options: ["Redemption", "Stealing", "Hard work", "Money"], answer: 0 },
+    { prompt: '<div class="passage">No matter how many times the toddler fell, she stood back up and tried to walk again.</div><div class="qq">What is the main idea?</div>', options: ["Perseverance", "Walking", "Falling down", "Toddlers"], answer: 0 },
+    { prompt: '<div class="passage">They shared their harvest with neighbours, gave to the poor, and kept nothing extra for themselves.</div><div class="qq">The theme is…</div>', options: ["Generosity", "Farming", "Food", "Neighbours"], answer: 0 },
+    { prompt: '<div class="passage">The scientist failed a hundred times but recorded each result and kept on experimenting.</div><div class="qq">Central idea?</div>', options: ["Persistence", "Science class", "Failure", "Taking notes"], answer: 0 },
+    { prompt: '<div class="passage">She studied every night, asked endless questions, and never accepted an easy answer.</div><div class="qq">What is the main idea?</div>', options: ["Curiosity", "Sleeping", "Night time", "Easy answers"], answer: 0 }
+  ];
+
+  var BANK_SPEEDREAD = [
+    { text: "The red fox jumped over the tall wooden fence.", q: "What jumped over the fence?", options: ["A fox", "A dog", "A cat", "A bird"], answer: 0 },
+    { text: "Sarah bought three green apples at the busy market.", q: "How many apples did Sarah buy?", options: ["Three", "Two", "Four", "Five"], answer: 0 },
+    { text: "The early train to London leaves at noon each day.", q: "Where is the train going?", options: ["London", "Paris", "Rome", "Berlin"], answer: 0 },
+    { text: "A gentle rain fell softly on the quiet village.", q: "What fell on the village?", options: ["Rain", "Snow", "Leaves", "Hail"], answer: 0 },
+    { text: "The brave firefighter carried the child to safety.", q: "Who carried the child?", options: ["A firefighter", "A doctor", "A teacher", "A police officer"], answer: 0 },
+    { text: "They planted yellow flowers along the garden path.", q: "What colour were the flowers?", options: ["Yellow", "Red", "Blue", "White"], answer: 0 },
+    { text: "The old clock in the hall struck twelve loud times.", q: "How many times did the clock strike?", options: ["Twelve", "Ten", "Six", "Nine"], answer: 0 },
+    { text: "Grandmother baked warm bread for the whole family.", q: "What did grandmother bake?", options: ["Bread", "Cake", "Cookies", "Pie"], answer: 0 },
+    { text: "The little boat sailed slowly across the calm lake.", q: "Where did the boat sail?", options: ["Across a lake", "Down a river", "Out to sea", "Along a canal"], answer: 0 },
+    { text: "A tall giraffe reached the leaves at the treetop.", q: "Which animal reached the leaves?", options: ["A giraffe", "An elephant", "A monkey", "A zebra"], answer: 0 }
+  ];
+
+  var MCQ_INSTR = {
+    punct: "Which mark completes the sentence?",
+    express: "Pick the strongest replacement",
+    comprehend: "Read, then answer",
+    scan: "Find the detail — fast",
+    theme: "What is the central idea?"
+  };
+
+  // ── clean a token for matching (keep inner apostrophes) ─────────────────
+  function cleanTok(s) { return s.replace(/^[^\w']+|[^\w']+$/g, "").toLowerCase(); }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  ENGINE A — Multiple choice (timed)   punct · express · comprehend · scan · theme
+  // ════════════════════════════════════════════════════════════════════════
+  function runMCQ(id, seconds, bank) {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", MCQ_INSTR[id] || "Choose the best answer"); st.appendChild(prompt);
+    var qbox = el("div", "qtext"); st.appendChild(qbox);
+    var opts = el("div", "mopts"); st.appendChild(opts);
+    setStats([["Score", 0, "sc"], ["Time", String(seconds), "tm"], ["Best", getBest(id), "bt"]]);
+
+    var order = bank.slice().sort(function () { return Math.random() - 0.5; }), qi = 0, score = 0, ended = false;
+    var timer = makeTimer(st, seconds, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
+      var item = order[qi++];
+      qbox.innerHTML = item.prompt;
+      var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(function () { return Math.random() - 0.5; });
+      opts.innerHTML = "";
+      shuffled.forEach(function (x) {
+        var b = el("button", "mopt", esc(x.o));
+        b.addEventListener("click", function () {
+          if (ended) return;
+          if (x.ok) {
+            score++; stat("sc", score); tone(700, 90); b.classList.add("right");
+            Array.prototype.forEach.call(opts.children, function (c) { c.disabled = true; });
+            setTimeout(function () { if (!ended && S === SESSION) newQ(); }, 300);
+          } else { b.classList.add("wrong"); buzz(); timer.penalise(2000); }
+        });
+        opts.appendChild(b);
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#9997;" }); }, 250);
+    }
+    newQ();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  ENGINE B — Tap the word (timed)   brevity (remove) · typo (mark)
+  // ════════════════════════════════════════════════════════════════════════
+  function runTapWord(id, seconds, bank, mode) {
+    var st = stageReset();
+    var S = SESSION;
+    var instr = mode === "remove" ? "Tap the word the sentence doesn't need" : "Tap the word with the mistake";
+    var prompt = el("div", "prompt", instr); st.appendChild(prompt);
+    var line = el("div", "sentence"); st.appendChild(line);
+    setStats([["Score", 0, "sc"], ["Time", String(seconds), "tm"], ["Best", getBest(id), "bt"]]);
+
+    var order = bank.slice().sort(function () { return Math.random() - 0.5; }), qi = 0, score = 0, ended = false;
+    var timer = makeTimer(st, seconds, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newItem() {
+      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
+      var item = order[qi++];
+      var words = item.text.split(" ");
+      var targetIdx = -1, want = cleanTok(item.drop);
+      words.forEach(function (wd, i) { if (targetIdx < 0 && cleanTok(wd) === want) targetIdx = i; });
+      line.innerHTML = "";
+      words.forEach(function (wd, i) {
+        var t = el("button", "wtok", esc(wd));
+        t.addEventListener("click", function () {
+          if (ended || t.classList.contains("gone") || t.classList.contains("mark")) return;
+          if (i === targetIdx) {
+            t.classList.add(mode === "remove" ? "gone" : "mark");
+            score++; stat("sc", score); goodChime();
+            setTimeout(function () { if (!ended && S === SESSION) newItem(); }, 380);
+          } else { t.classList.add("bad"); buzz(); timer.penalise(1500); setTimeout(function () { t.classList.remove("bad"); }, 320); }
+        });
+        line.appendChild(t);
+        if (i < words.length - 1) line.appendChild(document.createTextNode(" "));
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#9997;" }); }, 250);
+    }
+    newItem();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  ENGINE C — Reorder the chunks (timed)   invert
+  // ════════════════════════════════════════════════════════════════════════
+  function runInvert() {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", "Tap the parts in order to build a clear sentence"); st.appendChild(prompt);
+    var build = el("div", "buildline"); st.appendChild(build);
+    var pool = el("div", "chunks"); st.appendChild(pool);
+    setStats([["Score", 0, "sc"], ["Time", "75", "tm"], ["Best", getBest("invert"), "bt"]]);
+
+    var order = BANK_INVERT.slice().sort(function () { return Math.random() - 0.5; }), qi = 0, score = 0, ended = false, nextIdx = 0;
+    var timer = makeTimer(st, 75, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newItem() {
+      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
+      var item = order[qi++];
+      nextIdx = 0;
+      build.innerHTML = '<span style="color:var(--muted);font-weight:600">Build it here…</span>';
+      var idxs = item.chunks.map(function (c, i) { return i; });
+      var shuffled = idxs.slice();
+      do { shuffled.sort(function () { return Math.random() - 0.5; }); } while (shuffled.join() === idxs.join() && item.chunks.length > 1);
+      pool.innerHTML = "";
+      shuffled.forEach(function (origIdx) {
+        var b = el("button", "chunk", esc(item.chunks[origIdx]));
+        b.addEventListener("click", function () {
+          if (ended || b.classList.contains("used")) return;
+          if (origIdx === nextIdx) {
+            b.classList.add("used"); tone(560, 70);
+            if (nextIdx === 0) build.innerHTML = "";
+            build.appendChild(document.createTextNode((nextIdx ? " " : "") + item.chunks[origIdx]));
+            nextIdx++;
+            if (nextIdx === item.chunks.length) {
+              score++; stat("sc", score); goodChime();
+              setTimeout(function () { if (!ended && S === SESSION) newItem(); }, 500);
+            }
+          } else { b.classList.add("bad"); buzz(); timer.penalise(1500); setTimeout(function () { b.classList.remove("bad"); }, 320); }
+        });
+        pool.appendChild(b);
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#128221;" }); }, 250);
+    }
+    newItem();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  ENGINE D — Speed read (RSVP) then answer   speedread  (streak style)
+  // ════════════════════════════════════════════════════════════════════════
+  function runSpeedread() {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", "Read the words as they flash…"); st.appendChild(prompt);
+    var rsvp = el("div", "rsvp"); st.appendChild(rsvp);
+    var opts = el("div", "mopts"); opts.style.display = "none"; st.appendChild(opts);
+    setStats([["Round", 0, "rd"], ["Speed", "slow", "sp"], ["Best", getBest("speedread"), "bt"]]);
+
+    var order = BANK_SPEEDREAD.slice().sort(function () { return Math.random() - 0.5; }), qi = 0;
+    var round = 0, speed = 380, ended = false;
+    stoppers.push(function () { ended = true; });
+
+    function speedWord() { return speed > 300 ? "slow" : speed > 220 ? "brisk" : speed > 160 ? "fast" : "blazing"; }
+
+    async function play() {
+      if (ended || S !== SESSION) return;
+      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
+      var item = order[qi++];
+      opts.style.display = "none";
+      prompt.innerHTML = "Read the words as they flash…";
+      stat("sp", speedWord());
+      var words = item.text.split(" ");
+      await sleep(500);
+      for (var k = 0; k < words.length; k++) {
+        if (ended || S !== SESSION) return;
+        rsvp.textContent = words[k];
+        await sleep(speed);
+      }
+      rsvp.textContent = "";
+      if (ended || S !== SESSION) return;
+      ask(item);
+    }
+
+    function ask(item) {
+      prompt.innerHTML = esc(item.q);
+      var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(function () { return Math.random() - 0.5; });
+      opts.style.display = ""; opts.innerHTML = "";
+      shuffled.forEach(function (x) {
+        var b = el("button", "mopt", esc(x.o));
+        b.addEventListener("click", function () {
+          if (ended) return;
+          Array.prototype.forEach.call(opts.children, function (c) { c.disabled = true; });
+          if (x.ok) {
+            b.classList.add("right"); round++; stat("rd", round);
+            speed = Math.max(130, speed - 26); goodChime();
+            setTimeout(play, 550);
+          } else {
+            b.classList.add("wrong"); buzz();
+            setTimeout(function () { if (S === SESSION) endGame(round, { title: round > 0 ? "Sharp reading!" : "Keep at it!", em: "&#128218;" }); }, 700);
+          }
+        });
+        opts.appendChild(b);
+      });
+    }
+    play();
+  }
+
   var GAME_RUNNERS = {
     matrix: runMatrix, simon: runSimon, cards: runCards, span: runSpan,
     arith: runArith, equate: runEquate, stroop: runStroop, schulte: runSchulte,
-    reaction: runReaction, anagram: runAnagram
+    reaction: runReaction, anagram: runAnagram,
+    brevity: function () { runTapWord("brevity", 60, BANK_BREVITY, "remove"); },
+    typo: function () { runTapWord("typo", 60, BANK_TYPO, "mark"); },
+    punct: function () { runMCQ("punct", 60, BANK_PUNCT); },
+    express: function () { runMCQ("express", 60, BANK_EXPRESS); },
+    invert: runInvert,
+    comprehend: function () { runMCQ("comprehend", 70, BANK_COMPREHEND); },
+    scan: function () { runMCQ("scan", 60, BANK_SCAN); },
+    theme: function () { runMCQ("theme", 70, BANK_THEME); },
+    speedread: runSpeedread
   };
 
   // ── leaderboard ─────────────────────────────────────────────────────────
   var boardCache = null;
+  function loadBoardQuiet() {
+    if (!auth) return;
+    api("GET", "/api/board").then(function (r) {
+      boardCache = r;
+      if ($("home").classList.contains("on")) renderHome();
+    }).catch(function () {});
+  }
+
   function openLeader() {
     show("leader");
     $("lbFamily").textContent = auth ? auth.family + " leaderboard" : "Leaderboard";
+    if (!auth) {
+      $("lbTabs").innerHTML = ""; $("lbGameTabs").innerHTML = ""; $("lbGameTabs").style.display = "none";
+      $("lbBody").innerHTML = '<div class="lb-empty">Sign in with your family password to see and join the leaderboard.<br><br><button class="btn primary" id="lbSign">Sign in</button></div>';
+      var b = $("lbSign"); if (b) b.addEventListener("click", openSign); return;
+    }
     renderTabs();
-    if (!auth) { $("lbBody").innerHTML = '<div class="lb-empty">Sign in with your family password to see and join the leaderboard.<br><br><button class="btn primary" id="lbSign">Sign in</button></div>'; var b = $("lbSign"); if (b) b.addEventListener("click", openSign); return; }
     $("lbBody").innerHTML = '<div class="lb-empty">Loading…</div>';
     api("GET", "/api/board").then(function (r) { boardCache = r; renderBoard(); })
       .catch(function (e) { $("lbBody").innerHTML = '<div class="lb-empty">' + esc(e.message) + '</div>'; });
   }
 
   function renderTabs() {
-    var tabs = [["total", "&#127942; Overall"]].concat(GAME_IDS.map(function (g) { return [g, GAMES[g].name]; }));
-    $("lbTabs").innerHTML = tabs.map(function (t) {
-      return '<button class="tab' + (lbGame === t[0] ? " on" : "") + '" data-g="' + t[0] + '">' + t[1] + '</button>';
+    var cats = [["total", "&#127942; Overall"]].concat(CAT_ORDER.map(function (c) { return [c, CATS[c].name]; }));
+    $("lbTabs").innerHTML = cats.map(function (t) {
+      return '<button class="tab' + (lbCat === t[0] ? " on" : "") + '" data-c="' + t[0] + '">' + t[1] + '</button>';
     }).join("");
     Array.prototype.forEach.call($("lbTabs").querySelectorAll(".tab"), function (b) {
+      b.addEventListener("click", function () {
+        lbCat = b.getAttribute("data-c");
+        if (lbCat !== "total") lbGame = idsIn(lbCat)[0];
+        renderTabs(); renderBoard();
+      });
+    });
+
+    var gt = $("lbGameTabs");
+    if (lbCat === "total") { gt.style.display = "none"; gt.innerHTML = ""; return; }
+    gt.style.display = "";
+    var ids = idsIn(lbCat);
+    if (ids.indexOf(lbGame) < 0) lbGame = ids[0];
+    gt.innerHTML = ids.map(function (id) {
+      return '<button class="tab small' + (lbGame === id ? " on" : "") + '" data-g="' + id + '">' + GAMES[id].name + '</button>';
+    }).join("");
+    Array.prototype.forEach.call(gt.querySelectorAll(".tab"), function (b) {
       b.addEventListener("click", function () { lbGame = b.getAttribute("data-g"); renderTabs(); renderBoard(); });
     });
   }
@@ -1170,7 +1750,7 @@
   function renderBoard() {
     if (!boardCache) return;
     var body = $("lbBody");
-    if (lbGame === "total") {
+    if (lbCat === "total") {
       var rows = boardCache.players || [];
       if (!rows.length) { body.innerHTML = '<div class="lb-empty">No scores yet — be the first! Play a game and it lands here.</div>'; return; }
       body.innerHTML = '<div class="rowh"><div>#</div><div>Player</div><div>Total</div></div>' + rows.map(function (p, i) {
@@ -1200,9 +1780,9 @@
     if (!auth) { if (improved) toast("New best! Sign in to add it to the family board."); return; }
     if (!player) { toast("Pick a name in your profile to post scores."); return; }
     api("POST", "/api/score", { player: player, game: game, score: score }).then(function (r) {
-      boardCache = null;
       if (r.improved && r.rank) toast(r.rank === 1 ? "&#129351; Top of the board!" : "Posted — rank #" + r.rank + " in " + GAMES[game].name);
       else if (r.rank) toast("Saved to the family board");
+      loadBoardQuiet();
     }).catch(function () {});
   }
 
@@ -1235,7 +1815,7 @@
         auth = { password: pass, family: r.name, isAdmin: !!r.isAdmin };
         player = nm;
         if ($("inRemember").checked) { lset(AUTH_KEY, JSON.stringify(auth)); lset(NAME_KEY, nm); }
-        closeSign(); refreshWho(); toast("Welcome, " + nm + "!");
+        closeSign(); refreshWho(); loadBoardQuiet(); toast("Welcome, " + nm + "!");
       })
       .catch(function (e) { msg.className = "msg bad"; msg.textContent = /Failed to fetch|NetworkError/.test(e.message) ? "Can't reach the leaderboard service." : e.message; })
       .then(function () { $("inGo").disabled = false; });
@@ -1291,6 +1871,7 @@
     var saved = lget(AUTH_KEY);
     if (saved) { try { auth = JSON.parse(saved); } catch (e) { ldel(AUTH_KEY); } }
     renderHome();
+    loadBoardQuiet();
   })();
 })();
 </script>
