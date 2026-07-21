@@ -62,6 +62,12 @@
   .lead h2 .g { background: linear-gradient(90deg, var(--violet), var(--pink), var(--cyan)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
   .lead p { color: var(--muted); font-weight: 600; margin-top: 7px; font-size: 14.5px; }
 
+  .catsec { margin-bottom: 26px; }
+  .cathead { display: flex; align-items: center; gap: 9px; margin: 0 2px 12px; }
+  .cathead .cdot { width: 12px; height: 12px; border-radius: 4px; flex: 0 0 auto; }
+  .cathead h3 { font-size: 16px; font-weight: 800; letter-spacing: -.2px; }
+  .cathead .ctag { font-size: 11.5px; font-weight: 700; color: var(--muted); }
+  .cathead .cline { flex: 1; height: 1px; background: var(--rule); }
   .games { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 15px; }
   .gcard {
     position: relative; border-radius: 22px; padding: 20px 18px 18px; color: #fff; overflow: hidden;
@@ -78,9 +84,15 @@
   .gcard .best { margin-top: 12px; font-size: 12px; font-weight: 700; background: rgba(0,0,0,.16); align-self: flex-start; padding: 4px 11px; border-radius: 999px; }
   .gcard .blob { position: absolute; border-radius: 50%; filter: blur(6px); opacity: .5; }
   .g-matrix { background: linear-gradient(140deg, #7c3aed, #a855f7); }
-  .g-simon  { background: linear-gradient(140deg, #ec4899, #f97316); }
+  .g-simon  { background: linear-gradient(140deg, #d946ef, #f97316); }
   .g-cards  { background: linear-gradient(140deg, #06b6d4, #3b82f6); }
-  .g-span   { background: linear-gradient(140deg, #10b981, #22c55e); }
+  .g-span   { background: linear-gradient(140deg, #8b5cf6, #6366f1); }
+  .g-arith  { background: linear-gradient(140deg, #2563eb, #06b6d4); }
+  .g-equate { background: linear-gradient(140deg, #0891b2, #38bdf8); }
+  .g-stroop { background: linear-gradient(140deg, #f59e0b, #ef4444); }
+  .g-schulte{ background: linear-gradient(140deg, #f97316, #eab308); }
+  .g-reaction{ background: linear-gradient(140deg, #10b981, #84cc16); }
+  .g-anagram{ background: linear-gradient(140deg, #ec4899, #f43f5e); }
 
   .homebtns { display: flex; gap: 10px; justify-content: center; margin-top: 22px; flex-wrap: wrap; }
   .btn {
@@ -157,6 +169,50 @@
   .key { font-size: 24px; font-weight: 800; padding: 15px 0; border-radius: 14px; background: #f2edff; color: var(--violet-d); box-shadow: 0 3px 8px rgba(90,40,160,.08); }
   .key:active { transform: scale(.95); background: #e3d9ff; }
   .key.wide { grid-column: span 1; font-size: 18px; }
+
+  /* timer bar (timed games) */
+  .timer { position: absolute; top: 0; left: 0; right: 0; height: 6px; background: #eee6ff; }
+  .timer > i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, var(--violet), var(--pink)); transition: width .25s linear; }
+  .timer.low > i { background: linear-gradient(90deg, #f59e0b, var(--red)); }
+
+  /* math */
+  .mathq { font-size: clamp(36px, 10vw, 62px); font-weight: 800; text-align: center; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+  .yn { display: flex; gap: 14px; }
+  .ynbtn { width: 118px; height: 84px; border-radius: 20px; font-size: 40px; font-weight: 800; color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,.14); transition: transform .1s ease; }
+  .ynbtn:active { transform: scale(.94); }
+  .ynbtn.yes { background: linear-gradient(140deg, #10b981, #22c55e); }
+  .ynbtn.no { background: linear-gradient(140deg, #ef4444, #f97316); }
+
+  /* stroop */
+  .stroopword { font-size: clamp(46px, 13vw, 90px); font-weight: 800; letter-spacing: 1px; }
+  .opts { display: grid; grid-template-columns: repeat(2, 1fr); gap: 11px; width: min(340px, 84vw); }
+  .opt { padding: 16px 10px; border-radius: 16px; font-size: 17px; font-weight: 800; color: #fff; box-shadow: 0 6px 16px rgba(0,0,0,.15); transition: transform .1s ease; }
+  .opt:active { transform: scale(.95); }
+
+  /* schulte / number hunt */
+  .hunt { display: grid; gap: 7px; width: min(360px, 86vw); }
+  .htile { aspect-ratio: 1; border-radius: 11px; background: #f2edff; color: var(--violet-d); font-size: clamp(15px, 4.4vw, 22px); font-weight: 800; font-variant-numeric: tabular-nums; transition: transform .08s ease, background .15s ease; min-width: 40px; }
+  .htile:active { transform: scale(.93); }
+  .htile.hit { background: linear-gradient(135deg, var(--green), #22c55e); color: #fff; }
+  .htile.miss { background: linear-gradient(135deg, var(--red), #f97316); color: #fff; animation: shake .3s; }
+  .huntnext { font-size: 15px; font-weight: 700; color: var(--muted); }
+  .huntnext b { color: var(--violet-d); font-size: 20px; }
+
+  /* reaction */
+  .rzone { position: relative; width: 100%; height: 300px; border-radius: 16px; background: #f6f2ff; overflow: hidden; touch-action: manipulation; }
+  .rdot { position: absolute; border-radius: 50%; transform: translate(-50%, -50%) scale(0); transition: transform .12s ease; box-shadow: 0 6px 16px rgba(0,0,0,.18); }
+  .rdot.in { transform: translate(-50%, -50%) scale(1); }
+  .rdot.go { background: linear-gradient(140deg, #10b981, #22c55e); }
+  .rdot.stop { background: linear-gradient(140deg, #ef4444, #f97316); }
+
+  /* anagram */
+  .scrambled { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ltile { width: 46px; height: 54px; border-radius: 12px; background: #f2edff; color: var(--violet-d); font-size: 26px; font-weight: 800; text-transform: uppercase; box-shadow: 0 4px 10px rgba(90,40,160,.1); transition: transform .1s ease, opacity .15s ease; }
+  .ltile:active { transform: scale(.92); }
+  .ltile.used { opacity: .28; pointer-events: none; }
+  .answer { min-height: 56px; display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; align-items: center; padding: 6px 10px; border-bottom: 3px dashed var(--rule); min-width: 180px; }
+  .aslot { width: 40px; height: 48px; border-radius: 10px; background: linear-gradient(135deg, var(--violet), var(--pink)); color: #fff; font-size: 24px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+  .anrow { display: flex; gap: 9px; }
 
   .overlay {
     position: absolute; inset: 0; background: rgba(255,255,255,.92); backdrop-filter: blur(3px);
@@ -249,7 +305,7 @@
       <p>Four quick games. Beat your best, then climb the family leaderboard.</p>
     </div>
 
-    <div class="games" id="gameGrid"></div>
+    <div id="gameGrid"></div>
 
     <div class="homebtns">
       <button class="btn primary" id="leaderBtn">&#127942; Family leaderboard</button>
@@ -343,26 +399,60 @@
   var BEST_KEY = "twcBrain_best_v1";
   var NAME_KEY = "twcBrain_name_v1";
 
+  var CATS = {
+    memory:   { name: "Memory",   tag: "Hold it in mind",     colour: "#7c3aed" },
+    math:     { name: "Math",     tag: "Numbers, fast",       colour: "#2563eb" },
+    focus:    { name: "Focus",    tag: "Attention & control", colour: "#f59e0b" },
+    speed:    { name: "Speed",    tag: "React in a flash",    colour: "#10b981" },
+    language: { name: "Language", tag: "Words & letters",     colour: "#ec4899" }
+  };
+  var CAT_ORDER = ["memory", "math", "focus", "speed", "language"];
+
   var GAMES = {
-    matrix: { name: "Memory Matrix", cls: "g-matrix", colour: "#7c3aed", unit: "level",
+    matrix: { name: "Memory Matrix", cat: "memory", cls: "g-matrix", colour: "#7c3aed", unit: "level",
       desc: "Remember the lit tiles, then tap them back.",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" fill="#fff" fill-opacity=".5"/></svg>' },
-    simon: { name: "Colour Echo", cls: "g-simon", colour: "#ec4899", unit: "streak",
+    simon: { name: "Colour Echo", cat: "memory", cls: "g-simon", colour: "#d946ef", unit: "streak",
       desc: "Watch the pattern light up, then repeat it.",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M4 12a8 8 0 0 1 8-8"/><path d="M20 12a8 8 0 0 1-8 8"/><circle cx="12" cy="4" r="1.6" fill="#fff"/><circle cx="20" cy="12" r="1.6" fill="#fff"/><circle cx="12" cy="20" r="1.6" fill="#fff"/><circle cx="4" cy="12" r="1.6" fill="#fff"/></svg>' },
-    cards: { name: "Match Pairs", cls: "g-cards", colour: "#06b6d4", unit: "points",
+    cards: { name: "Match Pairs", cat: "memory", cls: "g-cards", colour: "#06b6d4", unit: "points",
       desc: "Flip cards two at a time to find the pairs.",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linejoin="round"><rect x="3" y="5" width="12" height="15" rx="2" transform="rotate(-6 9 12)"/><rect x="9" y="4" width="12" height="15" rx="2" fill="#fff" fill-opacity=".35"/></svg>' },
-    span: { name: "Number Span", cls: "g-span", colour: "#10b981", unit: "digits",
+    span: { name: "Number Span", cat: "memory", cls: "g-span", colour: "#8b5cf6", unit: "digits",
       desc: "A number flashes up — type it back from memory.",
-      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h2v8"/><path d="M13 8h2a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h2"/></svg>' }
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h2v8"/><path d="M13 8h2a2 2 0 0 1 0 4h-2a2 2 0 0 0 0 4h2"/></svg>' },
+
+    arith: { name: "Quick Math", cat: "math", cls: "g-arith", colour: "#2563eb", unit: "correct",
+      desc: "Solve as many sums as you can in 60 seconds.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round"><path d="M5 8h6M8 5v6"/><path d="M14 8.5h5"/><path d="M14 15.5h5"/><path d="M6 14l4 4M10 14l-4 4"/></svg>' },
+    equate: { name: "True or False", cat: "math", cls: "g-equate", colour: "#0891b2", unit: "correct",
+      desc: "Is the equation right? Decide fast, keep the streak.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h7M4 13h7"/><path d="M20 7l-5 10"/><path d="M14.5 9.5l1.5 1.5 3-3.5"/></svg>' },
+
+    stroop: { name: "Colour Clash", cat: "focus", cls: "g-stroop", colour: "#f59e0b", unit: "correct",
+      desc: "Tap the colour of the ink, not the word it spells.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>' },
+    schulte: { name: "Number Hunt", cat: "focus", cls: "g-schulte", colour: "#f97316", unit: "found",
+      desc: "Find 1, 2, 3… in order across the grid, against the clock.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' },
+
+    reaction: { name: "Quick Tap", cat: "speed", cls: "g-reaction", colour: "#10b981", unit: "hits",
+      desc: "Tap the green dots, dodge the red. How fast are you?",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V6a2 2 0 0 1 4 0v5"/><path d="M13 11V8a2 2 0 0 1 4 0v6a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-3-4s-.8-1.3.5-2 2.5 1 2.5 1l1 1.5"/></svg>' },
+
+    anagram: { name: "Word Scramble", cat: "language", cls: "g-anagram", colour: "#ec4899", unit: "words",
+      desc: "Unscramble the letters into a word before time runs out.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2"/><path d="M9 19h6"/><path d="M12 5v14"/><rect x="15" y="12" width="6" height="6" rx="1" fill="#fff" fill-opacity=".3"/></svg>' }
   };
-  var GAME_IDS = ["matrix", "simon", "cards", "span"];
+  var GAME_IDS = ["matrix", "simon", "cards", "span", "arith", "equate", "stroop", "schulte", "reaction", "anagram"];
 
   var auth = null;                 // {password, family, isAdmin}
   var player = "";                 // name to record under
   var current = null;              // active game id
   var lbGame = "total";
+  var SESSION = 0;                 // bumps every time we leave/enter a game
+  var stoppers = [];               // cleanup fns for the running game
+  function stopAll() { SESSION++; stoppers.forEach(function (f) { try { f(); } catch (e) {} }); stoppers = []; }
 
   // ── helpers ───────────────────────────────────────────────────────────
   function $(id) { return document.getElementById(id); }
@@ -406,15 +496,28 @@
 
   // ── home grid ──────────────────────────────────────────────────────────
   function renderHome() {
-    var grid = $("gameGrid"); grid.innerHTML = "";
-    GAME_IDS.forEach(function (id) {
-      var g = GAMES[id], b = getBest(id);
-      var card = el("button", "gcard " + g.cls);
-      card.innerHTML = '<div class="ico">' + g.icon + '</div>' +
-        '<div><h3>' + g.name + '</h3><p>' + g.desc + '</p></div>' +
-        '<div class="best">' + (b ? "Best: " + b + " " + g.unit : "Not played yet") + '</div>';
-      card.addEventListener("click", function () { startGame(id); });
-      grid.appendChild(card);
+    var host = $("gameGrid"); host.innerHTML = "";
+    CAT_ORDER.forEach(function (catId) {
+      var cat = CATS[catId];
+      var ids = GAME_IDS.filter(function (id) { return GAMES[id].cat === catId; });
+      if (!ids.length) return;
+
+      var sec = el("div", "catsec");
+      sec.innerHTML = '<div class="cathead"><span class="cdot" style="background:' + cat.colour + '"></span>' +
+        '<h3>' + cat.name + '</h3><span class="ctag">' + cat.tag + '</span><span class="cline"></span></div>';
+      var grid = el("div", "games");
+
+      ids.forEach(function (id) {
+        var g = GAMES[id], b = getBest(id);
+        var card = el("button", "gcard " + g.cls);
+        card.innerHTML = '<div class="ico">' + g.icon + '</div>' +
+          '<div><h3>' + g.name + '</h3><p>' + g.desc + '</p></div>' +
+          '<div class="best">' + (b ? "Best: " + b + " " + g.unit : "Not played yet") + '</div>';
+        card.addEventListener("click", function () { startGame(id); });
+        grid.appendChild(card);
+      });
+      sec.appendChild(grid);
+      host.appendChild(sec);
     });
     refreshWho();
   }
@@ -431,6 +534,7 @@
   var stageAPI = { stage: null, over: false };
 
   function startGame(id) {
+    stopAll();
     current = id;
     var g = GAMES[id];
     $("playName").querySelector(".dot").style.background = g.colour;
@@ -469,14 +573,15 @@
   }
 
   $("ovAgain").addEventListener("click", function () { startGame(current); });
-  $("ovMenu").addEventListener("click", function () { show("home"); });
-  $("backBtn").addEventListener("click", function () { show("home"); });
+  $("ovMenu").addEventListener("click", function () { stopAll(); show("home"); });
+  $("backBtn").addEventListener("click", function () { stopAll(); show("home"); });
 
   // ════════════════════════════════════════════════════════════════════════
   //  GAME 1 — Memory Matrix
   // ════════════════════════════════════════════════════════════════════════
   function runMatrix() {
     var st = stageReset();
+    var S = SESSION;
     var level = 1, alive = true;
     var prompt = el("div", "prompt"); st.appendChild(prompt);
     var gridWrap = el("div"); gridWrap.style.width = "min(360px,82vw)"; st.appendChild(gridWrap);
@@ -514,7 +619,7 @@
           } else {
             c.classList.add("bad"); buzz(); done = true;
             picks.forEach(function (p) { if (!cells[p].classList.contains("good")) cells[p].classList.add("lit"); });
-            setTimeout(function () { endGame(level - 1, { title: level > 1 ? "Good run!" : "Keep trying!", em: "&#129504;" }); }, 900);
+            setTimeout(function () { if (S === SESSION) endGame(level - 1, { title: level > 1 ? "Good run!" : "Keep trying!", em: "&#129504;" }); }, 900);
           }
         });
       });
@@ -535,6 +640,7 @@
   // ════════════════════════════════════════════════════════════════════════
   function runSimon() {
     var st = stageReset();
+    var S = SESSION;
     var prompt = el("div", "prompt", "Watch the pattern…"); st.appendChild(prompt);
     var board = el("div", "simon");
     var freqs = [330, 415, 247, 554], pads = [];
@@ -572,7 +678,7 @@
           }
         } else {
           accepting = false; buzz();
-          setTimeout(function () { endGame(seq.length - 1, { title: seq.length > 1 ? "Nice streak!" : "Keep going!", em: "&#127925;" }); }, 700);
+          setTimeout(function () { if (S === SESSION) endGame(seq.length - 1, { title: seq.length > 1 ? "Nice streak!" : "Keep going!", em: "&#127925;" }); }, 700);
         }
       });
     });
@@ -584,6 +690,7 @@
   // ════════════════════════════════════════════════════════════════════════
   function runCards() {
     var st = stageReset();
+    var S = SESSION;
     var prompt = el("div", "prompt", "Find every pair"); st.appendChild(prompt);
     var deck = el("div", "deck"); st.appendChild(deck);
     setStats([["Moves", 0, "mv"], ["Pairs", "0/8", "pr"], ["Time", "0s", "tm"]]);
@@ -628,7 +735,7 @@
       // points: reward speed and few moves. Perfect = 16 moves.
       var score = Math.max(50, Math.round(1000 - (moves - PAIRS) * 22 - secs * 6));
       prompt.innerHTML = "All matched in " + moves + " moves, " + secs + "s";
-      setTimeout(function () { endGame(score, { title: "Cleared!", em: "&#127183;" }); }, 500);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Cleared!", em: "&#127183;" }); }, 500);
     }
   }
 
@@ -637,6 +744,7 @@
   // ════════════════════════════════════════════════════════════════════════
   function runSpan() {
     var st = stageReset();
+    var S = SESSION;
     var prompt = el("div", "prompt"); st.appendChild(prompt);
     var mid = el("div"); mid.style.minHeight = "120px"; mid.style.display = "flex"; mid.style.alignItems = "center"; mid.style.justifyContent = "center"; st.appendChild(mid);
     var padWrap = el("div"); st.appendChild(padWrap);
@@ -686,13 +794,354 @@
         mid.innerHTML = '<div class="numflash" style="color:var(--red)">' + num + '</div>';
         prompt.innerHTML = "It was " + num;
         padWrap.innerHTML = "";
-        setTimeout(function () { endGame(len - 1, { title: len > 3 ? "Sharp memory!" : "Keep practising!", em: "&#128290;" }); }, 1100);
+        setTimeout(function () { if (S === SESSION) endGame(len - 1, { title: len > 3 ? "Sharp memory!" : "Keep practising!", em: "&#128290;" }); }, 1100);
       }
     }
     flashNumber();
   }
 
-  var GAME_RUNNERS = { matrix: runMatrix, simon: runSimon, cards: runCards, span: runSpan };
+  // ── shared helpers for timed games ─────────────────────────────────────
+  function makeTimer(stage, seconds, onDone) {
+    var bar = el("div", "timer", '<i></i>'); stage.appendChild(bar);
+    var fill = bar.querySelector("i");
+    var total = seconds * 1000, started = Date.now(), penalty = 0, done = false, raf;
+    function tick() {
+      if (done) return;
+      var left = total - (Date.now() - started) - penalty;
+      var pct = Math.max(0, left / total);
+      fill.style.width = (pct * 100) + "%";
+      bar.classList.toggle("low", pct < 0.25);
+      if (left <= 0) { done = true; onDone(); return; }
+      raf = requestAnimationFrame(tick);
+    }
+    tick();
+    return {
+      secondsLeft: function () { return Math.max(0, Math.ceil((total - (Date.now() - started) - penalty) / 1000)); },
+      penalise: function (ms) { penalty += ms; },
+      stop: function () { done = true; cancelAnimationFrame(raf); }
+    };
+  }
+
+  function numberKeypad(onDigit, onDel, onEnter) {
+    var keys = el("div", "keys");
+    ["1","2","3","4","5","6","7","8","9","del","0","ok"].forEach(function (k) {
+      var b = el("button", "key" + (k === "del" || k === "ok" ? " wide" : ""), k === "del" ? "&#9003;" : k === "ok" ? "Enter" : k);
+      b.addEventListener("click", function () {
+        if (k === "del") onDel(); else if (k === "ok") onEnter(); else onDigit(k);
+      });
+      keys.appendChild(b);
+    });
+    return keys;
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 5 — Quick Math  (Math)
+  // ════════════════════════════════════════════════════════════════════════
+  function runArith() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Solve as many as you can!"); st.appendChild(prompt);
+    var qEl = el("div", "mathq"); st.appendChild(qEl);
+    var padWrap = el("div"); st.appendChild(padWrap);
+    setStats([["Score", 0, "sc"], ["Time", "60", "tm"], ["Best", getBest("arith"), "bt"]]);
+
+    var S = SESSION;
+    var score = 0, answer = 0, val = "", ended = false;
+    var timer = makeTimer(st, 60, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); window.removeEventListener("keydown", keyHandler); });
+
+    function newQ() {
+      var lvl = Math.min(4, Math.floor(score / 6));
+      var a, b, op, ops = lvl < 1 ? ["+", "-"] : lvl < 2 ? ["+", "-", "×"] : ["+", "-", "×", "÷"];
+      op = ops[rnd(ops.length)];
+      if (op === "+") { a = 2 + rnd(15 + lvl * 12); b = 2 + rnd(15 + lvl * 12); answer = a + b; }
+      else if (op === "-") { a = 5 + rnd(20 + lvl * 15); b = 1 + rnd(a - 1); answer = a - b; }
+      else if (op === "×") { a = 2 + rnd(6 + lvl * 3); b = 2 + rnd(6 + lvl * 3); answer = a * b; }
+      else { answer = 2 + rnd(6 + lvl * 3); b = 2 + rnd(6 + lvl * 2); a = answer * b; }
+      qEl.textContent = a + " " + op + " " + b + " = ?";
+      val = ""; showVal();
+    }
+    function showVal() { qEl.textContent = qEl.textContent.replace(/=.*/, "= ") + (val || "?"); }
+
+    function typed(d) { if (val.length < 5) { val += d; tone(500, 50); showVal(); if (val === String(answer)) setTimeout(check, 120); } }
+    function check() {
+      if (ended) return;
+      if (parseInt(val, 10) === answer) { score++; stat("sc", score); goodChime(); flash(true); newQ(); }
+      else { flash(false); buzz(); timer.penalise(1500); val = ""; showVal(); }
+    }
+    function flash(good) { qEl.style.color = good ? "var(--green)" : "var(--red)"; setTimeout(function () { qEl.style.color = ""; }, 260); }
+
+    padWrap.appendChild(numberKeypad(typed, function () { val = val.slice(0, -1); showVal(); }, check));
+    window.addEventListener("keydown", keyHandler);
+    function keyHandler(e) { if (ended) return; if (/^\d$/.test(e.key)) typed(e.key); else if (e.key === "Backspace") { val = val.slice(0, -1); showVal(); } else if (e.key === "Enter") check(); }
+
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      window.removeEventListener("keydown", keyHandler);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#10133;" }); }, 250);
+    }
+    newQ();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 6 — True or False  (Math)
+  // ════════════════════════════════════════════════════════════════════════
+  function runEquate() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Is it correct?"); st.appendChild(prompt);
+    var qEl = el("div", "mathq"); st.appendChild(qEl);
+    var yn = el("div", "yn");
+    var yes = el("button", "ynbtn yes", "&#10003;"), no = el("button", "ynbtn no", "&#10007;");
+    yn.appendChild(yes); yn.appendChild(no); st.appendChild(yn);
+    setStats([["Score", 0, "sc"], ["Time", "60", "tm"], ["Best", getBest("equate"), "bt"]]);
+
+    var S = SESSION;
+    var score = 0, truth = true, ended = false;
+    var timer = makeTimer(st, 60, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); window.removeEventListener("keydown", keyHandler); });
+
+    function newQ() {
+      var lvl = Math.min(4, Math.floor(score / 6));
+      var ops = lvl < 1 ? ["+", "-"] : lvl < 2 ? ["+", "-", "×"] : ["+", "-", "×", "÷"];
+      var op = ops[rnd(ops.length)], a, b, real;
+      if (op === "+") { a = 2 + rnd(20 + lvl * 10); b = 2 + rnd(20 + lvl * 10); real = a + b; }
+      else if (op === "-") { a = 5 + rnd(25 + lvl * 12); b = 1 + rnd(a - 1); real = a - b; }
+      else if (op === "×") { a = 2 + rnd(7 + lvl * 3); b = 2 + rnd(7 + lvl * 3); real = a * b; }
+      else { real = 2 + rnd(7 + lvl * 3); b = 2 + rnd(6 + lvl * 2); a = real * b; }
+      truth = Math.random() < 0.5;
+      var shown = real;
+      if (!truth) { var off = (rnd(2) ? 1 : -1) * (1 + rnd(3 + lvl * 2)); shown = real + off; if (shown === real) shown += 1; }
+      qEl.textContent = a + " " + op + " " + b + " = " + shown;
+    }
+    function answer(said) {
+      if (ended) return;
+      if (said === truth) { score++; stat("sc", score); goodChime(); flash(true); }
+      else { buzz(); flash(false); timer.penalise(2000); }
+      newQ();
+    }
+    function flash(good) { qEl.style.color = good ? "var(--green)" : "var(--red)"; setTimeout(function () { qEl.style.color = ""; }, 220); }
+    yes.addEventListener("click", function () { answer(true); });
+    no.addEventListener("click", function () { answer(false); });
+    window.addEventListener("keydown", keyHandler);
+    function keyHandler(e) { if (ended) return; if (e.key === "ArrowLeft" || e.key.toLowerCase() === "t") answer(true); else if (e.key === "ArrowRight" || e.key.toLowerCase() === "f") answer(false); }
+
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      window.removeEventListener("keydown", keyHandler);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#9989;" }); }, 250);
+    }
+    newQ();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 7 — Colour Clash (Stroop)  (Focus)
+  // ════════════════════════════════════════════════════════════════════════
+  function runStroop() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Tap the <strong>ink colour</strong>, ignore the word"); st.appendChild(prompt);
+    var word = el("div", "stroopword", "RED"); st.appendChild(word);
+    var opts = el("div", "opts"); st.appendChild(opts);
+    setStats([["Score", 0, "sc"], ["Time", "45", "tm"], ["Best", getBest("stroop"), "bt"]]);
+
+    var COLOURS = [["Red", "#ef4444"], ["Green", "#22c55e"], ["Blue", "#3b82f6"], ["Yellow", "#eab308"], ["Purple", "#a855f7"], ["Orange", "#f97316"]];
+    var S = SESSION;
+    var score = 0, inkIdx = 0, ended = false;
+    var timer = makeTimer(st, 45, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      var wordIdx = rnd(COLOURS.length);
+      inkIdx = rnd(COLOURS.length);
+      word.textContent = COLOURS[wordIdx][0].toUpperCase();
+      word.style.color = COLOURS[inkIdx][1];
+
+      // four options including the correct ink colour
+      var pool = [inkIdx], guard = 0;
+      while (pool.length < 4 && guard++ < 50) { var r = rnd(COLOURS.length); if (pool.indexOf(r) < 0) pool.push(r); }
+      pool.sort(function () { return Math.random() - 0.5; });
+      opts.innerHTML = "";
+      pool.forEach(function (ci) {
+        var b = el("button", "opt", COLOURS[ci][0]);
+        b.style.background = COLOURS[ci][1];
+        b.addEventListener("click", function () { answer(ci); });
+        opts.appendChild(b);
+      });
+    }
+    function answer(ci) {
+      if (ended) return;
+      if (ci === inkIdx) { score++; stat("sc", score); tone(700, 90); newQ(); }
+      else { buzz(); timer.penalise(2000); word.style.transform = "scale(.9)"; setTimeout(function () { word.style.transform = ""; }, 150); }
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#127752;" }); }, 250);
+    }
+    newQ();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 8 — Number Hunt (Schulte)  (Focus)
+  // ════════════════════════════════════════════════════════════════════════
+  function runSchulte() {
+    var st = stageReset();
+    var info = el("div", "huntnext"); st.appendChild(info);
+    var grid = el("div", "hunt"); st.appendChild(grid);
+    setStats([["Found", 0, "fd"], ["Time", "60", "tm"], ["Best", getBest("schulte"), "bt"]]);
+
+    var S = SESSION;
+    var N = 5, size = N * N, next = 1, found = 0, ended = false;
+    var timer = makeTimer(st, 60, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function board() {
+      next = 1; info.innerHTML = 'Find <b>1</b>';
+      grid.style.gridTemplateColumns = "repeat(" + N + ",1fr)";
+      grid.innerHTML = "";
+      var nums = []; for (var i = 1; i <= size; i++) nums.push(i);
+      nums.sort(function () { return Math.random() - 0.5; });
+      nums.forEach(function (n) {
+        var t = el("button", "htile", String(n));
+        t.addEventListener("click", function () {
+          if (ended) return;
+          if (n === next) {
+            t.classList.add("hit"); tone(500 + next * 12, 70); found++; stat("fd", found); next++;
+            if (next > size) { goodChime(); setTimeout(board, 260); }
+            else info.innerHTML = 'Find <b>' + next + '</b>';
+          } else { t.classList.add("miss"); buzz(); timer.penalise(1000); setTimeout(function () { t.classList.remove("miss"); }, 320); }
+        });
+        grid.appendChild(t);
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(found, { title: "Time!", em: "&#128269;" }); }, 250);
+    }
+    board();
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 9 — Quick Tap (go / no-go)  (Speed)
+  // ════════════════════════════════════════════════════════════════════════
+  function runReaction() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Tap <strong>green</strong>, never red!"); st.appendChild(prompt);
+    var zone = el("div", "rzone"); st.appendChild(zone);
+    setStats([["Hits", 0, "ht"], ["Time", "30", "tm"], ["Best", getBest("reaction"), "bt"]]);
+
+    var S = SESSION;
+    var hits = 0, ended = false, dot = null, spawnT = null, hideT = null;
+    var timer = makeTimer(st, 30, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); clearTimeout(spawnT); if (hideT) clearTimeout(hideT); });
+
+    function spawn() {
+      if (ended) return;
+      var bad = Math.random() < 0.28;
+      var sz = 54 + rnd(26);
+      dot = el("button", "rdot " + (bad ? "stop" : "go"));
+      dot.style.width = dot.style.height = sz + "px";
+      dot.style.left = (10 + Math.random() * 80) + "%";
+      dot.style.top = (12 + Math.random() * 76) + "%";
+      dot.dataset.bad = bad ? "1" : "";
+      dot.addEventListener("click", function () {
+        if (ended) return;
+        if (bad) { buzz(); timer.penalise(1500); flashZone("#fee"); clearDot(); nextSoon(120); }
+        else { hits++; stat("ht", hits); tone(760, 80); clearDot(); nextSoon(90); }
+      });
+      zone.appendChild(dot);
+      requestAnimationFrame(function () { if (dot) dot.classList.add("in"); });
+      // green dots time out if ignored; red dots vanishing on their own is the goal
+      var life = bad ? 700 + rnd(400) : 900 + rnd(500);
+      hideT = setTimeout(function () { clearDot(); nextSoon(150); }, life);
+    }
+    function clearDot() { if (hideT) clearTimeout(hideT); if (dot && dot.parentNode) dot.parentNode.removeChild(dot); dot = null; }
+    function nextSoon(min) { if (ended) return; spawnT = setTimeout(spawn, min + rnd(350)); }
+    function flashZone(c) { zone.style.background = c; setTimeout(function () { zone.style.background = ""; }, 160); }
+
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      clearTimeout(spawnT); clearDot();
+      setTimeout(function () { if (S === SESSION) endGame(hits, { title: "Time!", em: "&#9889;" }); }, 250);
+    }
+    nextSoon(400);
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  GAME 10 — Word Scramble  (Language)
+  // ════════════════════════════════════════════════════════════════════════
+  var WORDS = ["apple","bread","chair","dance","eagle","flame","grape","house","juice","knife",
+    "lemon","music","night","ocean","piano","queen","river","stone","table","uncle",
+    "voice","water","zebra","brave","cloud","dream","earth","field","glass","heart",
+    "light","mango","north","peace","plant","smile","sugar","tiger","train","world",
+    "bible","grace","faith","psalm","angel","cross","choir","truth","mercy","glory"];
+
+  function runAnagram() {
+    var st = stageReset();
+    var prompt = el("div", "prompt", "Unscramble the word"); st.appendChild(prompt);
+    var answerEl = el("div", "answer"); st.appendChild(answerEl);
+    var scrambled = el("div", "scrambled"); st.appendChild(scrambled);
+    var row = el("div", "anrow");
+    var clearB = el("button", "btn", "Clear"), skipB = el("button", "btn ghost", "Skip");
+    row.appendChild(clearB); row.appendChild(skipB); st.appendChild(row);
+    setStats([["Words", 0, "wd"], ["Time", "60", "tm"], ["Best", getBest("anagram"), "bt"]]);
+
+    var S = SESSION;
+    var solved = 0, target = "", picked = [], ended = false;
+    var pool = WORDS.slice().sort(function () { return Math.random() - 0.5; }), pi = 0;
+    var timer = makeTimer(st, 60, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function scramble(wnd) {
+      var arr = wnd.split(""), out;
+      do { out = arr.slice().sort(function () { return Math.random() - 0.5; }); } while (out.join("") === wnd);
+      return out;
+    }
+    function newWord() {
+      target = pool[pi % pool.length]; pi++;
+      picked = [];
+      var letters = scramble(target);
+      scrambled.innerHTML = "";
+      letters.forEach(function (ch, i) {
+        var t = el("button", "ltile", ch); t.dataset.i = i;
+        t.addEventListener("click", function () {
+          if (ended || t.classList.contains("used")) return;
+          t.classList.add("used"); picked.push({ ch: ch, tile: t }); tone(520, 55); draw();
+          if (picked.length === target.length) check();
+        });
+        scrambled.appendChild(t);
+      });
+      draw();
+    }
+    function draw() {
+      answerEl.innerHTML = "";
+      picked.forEach(function (p) { answerEl.appendChild(el("div", "aslot", p.ch)); });
+      for (var i = picked.length; i < target.length; i++) answerEl.appendChild(el("div", "aslot", "&nbsp;"));
+    }
+    function check() {
+      var guess = picked.map(function (p) { return p.ch; }).join("");
+      if (guess === target) { solved++; stat("wd", solved); goodChime(); prompt.innerHTML = "Yes! &#127881;"; setTimeout(function () { if (!ended && S === SESSION) { prompt.innerHTML = "Unscramble the word"; newWord(); } }, 550); }
+      else { buzz(); setTimeout(clear, 350); }
+    }
+    function clear() { picked.forEach(function (p) { p.tile.classList.remove("used"); }); picked = []; draw(); }
+    clearB.addEventListener("click", clear);
+    skipB.addEventListener("click", function () { if (!ended) { timer.penalise(1500); newWord(); } });
+
+    function finish() {
+      if (ended) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { endGame(solved, { title: "Time!", em: "&#128218;" }); }, 250);
+    }
+    newWord();
+  }
+
+  var GAME_RUNNERS = {
+    matrix: runMatrix, simon: runSimon, cards: runCards, span: runSpan,
+    arith: runArith, equate: runEquate, stroop: runStroop, schulte: runSchulte,
+    reaction: runReaction, anagram: runAnagram
+  };
 
   // ── leaderboard ─────────────────────────────────────────────────────────
   var boardCache = null;
