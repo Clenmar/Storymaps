@@ -80,6 +80,29 @@
   .sync { font-size: 11.5px; color: var(--muted); min-width: 88px; text-align: right; font-variant-numeric: tabular-nums; }
   .sync.err { color: #b5493c; font-weight: 600; }
 
+  /* ── flag bar (categories) ────────────────────────────────────────── */
+  .flagbar {
+    display: flex; align-items: center; gap: 7px; flex-wrap: wrap;
+    background: var(--paper); border: 1px solid var(--rule); border-radius: 10px;
+    padding: 9px 12px; margin-bottom: 12px;
+  }
+  .flagbar .lbl { font-size: 10.5px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); margin-right: 3px; }
+  .flagchip {
+    display: inline-flex; align-items: center; gap: 6px; cursor: pointer;
+    font-family: inherit; font-size: 12.5px; font-weight: 600; color: var(--muted);
+    background: transparent; border: 1px solid var(--rule); border-radius: 20px; padding: 4px 11px;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .flagchip .dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; background: var(--muted); }
+  .flagchip .n { font-variant-numeric: tabular-nums; opacity: 0.6; font-weight: 500; }
+  .flagchip:hover { border-color: var(--muted); color: var(--ink); background: transparent; }
+  .flagchip.on { color: #fff; border-color: transparent; }
+  .flagchip.on .dot { background: rgba(255,255,255,0.85); }
+  .flagchip.on .n { opacity: 0.8; }
+  .flagchip.zero { opacity: 0.45; }
+  .flagchip.all { border-style: dashed; }
+  .flagchip.all.on { background: var(--indigo); border-style: solid; }
+
   /* week progress */
   .weekprog { background: var(--paper); border: 1px solid var(--rule); border-radius: 10px; padding: 11px 14px; margin-bottom: 18px; }
   .weekprog .top { display: flex; justify-content: space-between; align-items: baseline; font-size: 12px; color: var(--muted); margin-bottom: 7px; }
@@ -141,6 +164,9 @@
   .chip.person { color: #fff; }
   .chip.time { font-variant-numeric: tabular-nums; background: transparent; border: 1px solid var(--rule); color: var(--muted); }
   .chip.rep { background: transparent; border: 1px dashed var(--rule); color: var(--muted); }
+  .chip.flag { color: #fff; }
+  li.item { border-left: 3px solid transparent; padding-left: 3px; }
+  li.item.flagged { border-left-color: var(--flagc, transparent); }
   .note-dot { flex: 0 0 auto; color: var(--rule); font-size: 13px; margin-top: 1px; }
   .note-dot.has { color: var(--gold); }
 
@@ -299,6 +325,7 @@
       <button class="plain" id="themeBtn" title="Light or dark">Dark</button>
       <button class="plain" id="repeatBtn" title="Items that appear every week">Repeating</button>
       <button class="plain" id="peopleBtn" title="Who is in this family">People</button>
+      <button class="plain" id="flagsBtn" title="Edit your flags and their colours">Flags</button>
       <button class="plain" id="tidyBtn" title="Sort each day by time">Tidy by time</button>
       <button class="plain" id="printBtn">Print</button>
       <button class="plain" id="exportBtn">Export</button>
@@ -323,6 +350,8 @@
       <span class="sync" id="syncState"></span>
     </div>
   </div>
+
+  <div class="flagbar" id="flagbar"></div>
 
   <div class="weekprog">
     <div class="top"><span id="progLabel">Nothing planned yet</span><strong id="progPct">0%</strong></div>
@@ -364,6 +393,10 @@
       <div class="field">
         <label for="editDay">Day</label>
         <select id="editDay"></select>
+      </div>
+      <div class="field">
+        <label>Flags</label>
+        <div id="editTags" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px"></div>
       </div>
       <div class="field">
         <label for="noteArea">Notes</label>
@@ -421,6 +454,35 @@
   </div>
 </div>
 
+<!-- ── flags sheet ────────────────────────────────────────────────────── -->
+<div class="scrim" id="flagScrim" role="dialog" aria-modal="true">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="ey">Several calendars in one</div>
+      <div class="ttl">Flags</div>
+    </div>
+    <div class="sheet-body">
+      <div id="flagEdit"></div>
+      <div class="field two" style="margin-top:16px">
+        <div>
+          <label for="newFlagName">New flag</label>
+          <input type="text" id="newFlagName" placeholder="e.g. Homework">
+        </div>
+        <div style="flex:0 0 78px">
+          <label for="newFlagColour">Colour</label>
+          <input type="color" id="newFlagColour" value="#2a6f97" style="width:100%;height:41px;margin-top:7px;padding:3px;border:1px solid var(--rule);border-radius:8px;background:var(--field);cursor:pointer">
+        </div>
+      </div>
+      <div class="hint">Flags let one planner hold several calendars at once — tick the ones you want along the top of the board and everything else drops away. Removing a flag here leaves items that carry it untouched.</div>
+      <div class="msg" id="flagMsg"></div>
+    </div>
+    <div class="sheet-foot">
+      <button class="plain" id="flagClose">Close</button>
+      <button class="solid" id="flagAdd">Add flag</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── admin sheet ────────────────────────────────────────────────────── -->
 <div class="scrim" id="adminScrim" role="dialog" aria-modal="true">
   <div class="sheet">
@@ -463,7 +525,9 @@
   var week = mondayOf(new Date());
   var state = freshWeek();
   var members = [];
-  var filterWho = "";
+  var categories = [];                     // [{name, colour}] — the family's flags
+  var filterWho = "", filterTags = [];     // filterTags: [] = show everything
+  var NO_FLAG = " none";              // pseudo-flag for items with no flag at all
   var active = null;                       // {day, id}
   var saveTimer = null, pollTimer = null, dirty = false, lastUpdatedAt = null;
   var undoBuf = null, toastTimer = null;
@@ -501,6 +565,20 @@
     var p = t.split(":"), h = parseInt(p[0], 10), m = p[1];
     var ap = h >= 12 ? "pm" : "am", hh = h % 12 || 12;
     return hh + (m === "00" ? "" : ":" + m) + ap;
+  }
+  function catColour(name) {
+    for (var i = 0; i < categories.length; i++) {
+      if (categories[i].name.toLowerCase() === String(name).toLowerCase()) return categories[i].colour;
+    }
+    return "#7a7568";
+  }
+  // An item is on screen only if it passes both the person and the flag filter.
+  function visible(it) {
+    if (filterWho && it.assignedTo !== filterWho) return false;
+    if (!filterTags.length) return true;
+    var tags = it.tags || [];
+    if (!tags.length) return filterTags.indexOf(NO_FLAG) >= 0;
+    return tags.some(function (t) { return filterTags.indexOf(t) >= 0; });
   }
   function personColour(name) {
     var h = 0;
@@ -557,6 +635,7 @@
       state = normalise(r.days);
       lastUpdatedAt = r.updatedAt || null;
       if (r.members) { members = r.members; fillPeople(); }
+      if (r.categories) categories = r.categories;
       lsSet(localKeyFor(wk), JSON.stringify(state));
       setSync("Saved");
       render();
@@ -638,14 +717,16 @@
 
   function itemHTML(day, it) {
     var hasNote = it.note && it.note.trim().length;
-    var dim = filterWho && it.assignedTo !== filterWho;
+    var flags = it.tags || [];
     var tags = "";
+    flags.forEach(function (f) { tags += '<span class="chip flag" style="background:' + catColour(f) + '">' + esc(f) + '</span>'; });
     if (it.time)       tags += '<span class="chip time">' + esc(fmtTime(it.time)) + '</span>';
     if (it.assignedTo) tags += '<span class="chip person" style="background:' + personColour(it.assignedTo) + '">' + esc(it.assignedTo) + '</span>';
     if (it.repeating)  tags += '<span class="chip rep">weekly</span>';
     else if (it.addedBy) tags += '<span class="chip">' + esc(it.addedBy) + '</span>';
 
-    return '<li class="item' + (it.done ? " done" : "") + (dim ? " dim" : "") + '" data-day="' + day + '" data-id="' + esc(it.id) + '">' +
+    return '<li class="item' + (it.done ? " done" : "") + (flags.length ? " flagged" : "") + '" data-day="' + day + '" data-id="' + esc(it.id) + '"' +
+      (flags.length ? ' style="--flagc:' + catColour(flags[0]) + '"' : '') + '>' +
       '<span class="grip" title="Drag to move">&#8942;&#8942;</span>' +
       '<span class="box' + (it.done ? " checked" : "") + '" role="checkbox" aria-checked="' + (it.done ? "true" : "false") + '" tabindex="0">' + CHECK + '</span>' +
       '<span class="txt">' + esc(it.title) + (tags ? '<span class="tags">' + tags + '</span>' : '') + '</span>' +
@@ -654,13 +735,16 @@
   }
 
   function render() {
+    renderFlagbar();
     var board = $("board");
     board.innerHTML = "";
     var tName = isCurrentWeek() ? todayName() : null;
-    var allDone = 0, allTotal = 0;
+    var allDone = 0, allTotal = 0, hidden = 0;
 
     DAYS.forEach(function (day, idx) {
-      var items = state.days[day] || [];
+      var all = state.days[day] || [];
+      var items = all.filter(visible);
+      hidden += all.length - items.length;
       var done = items.filter(function (i) { return i.done; }).length;
       allDone += done; allTotal += items.length;
 
@@ -673,7 +757,9 @@
         '<div class="date">' + addDays(week, idx).toLocaleDateString(undefined, { month: "short", day: "numeric" }) + '</div></div></div>';
 
       var list = '<ul class="items" data-day="' + day + '">';
-      list += items.length ? items.map(function (it) { return itemHTML(day, it); }).join("") : '<li class="empty">Nothing yet.</li>';
+      list += items.length
+        ? items.map(function (it) { return itemHTML(day, it); }).join("")
+        : '<li class="empty">' + (all.length ? "Nothing under these flags." : "Nothing yet.") + '</li>';
       list += '</ul>';
 
       var add = '<div class="add"><input type="text" placeholder="Add to ' + day + '" data-day="' + day + '" aria-label="Add item to ' + day + '">' +
@@ -686,11 +772,60 @@
     var pct = allTotal ? Math.round(allDone / allTotal * 100) : 0;
     $("progBar").style.width = pct + "%";
     $("progPct").textContent = pct + "%";
-    $("progLabel").textContent = allTotal
+    $("progLabel").textContent = (allTotal
       ? allDone + " of " + allTotal + " done this week" + (allDone === allTotal ? " — the whole week is clear" : "")
-      : "Nothing planned yet";
+      : (hidden ? "Nothing matches this view" : "Nothing planned yet"))
+      + (hidden ? " · " + hidden + " hidden" : "");
 
     wire();
+  }
+
+  // ── Flag bar: the "several calendars in one" switcher ──────────────────
+  function renderFlagbar() {
+    var bar = $("flagbar");
+    var counts = {}, untagged = 0;
+    DAYS.forEach(function (d) {
+      (state.days[d] || []).forEach(function (it) {
+        var t = it.tags || [];
+        if (!t.length) { untagged++; return; }
+        t.forEach(function (x) { counts[x] = (counts[x] || 0) + 1; });
+      });
+    });
+
+    // any flag used this week that is not in the family's list still gets a chip
+    var names = categories.map(function (c) { return c.name; });
+    Object.keys(counts).forEach(function (n) { if (names.indexOf(n) < 0) names.push(n); });
+
+    var html = '<span class="lbl">Show</span>' +
+      '<button class="flagchip all' + (filterTags.length ? "" : " on") + '" data-flag="">Everything</button>';
+
+    names.forEach(function (n) {
+      var on = filterTags.indexOf(n) >= 0, c = catColour(n), n2 = counts[n] || 0;
+      html += '<button class="flagchip' + (on ? " on" : "") + (n2 ? "" : " zero") + '" data-flag="' + esc(n) + '"' +
+        (on ? ' style="background:' + c + '"' : '') + '>' +
+        '<span class="dot"' + (on ? '' : ' style="background:' + c + '"') + '></span>' +
+        esc(n) + (n2 ? ' <span class="n">' + n2 + '</span>' : '') + '</button>';
+    });
+
+    if (untagged) {
+      var onN = filterTags.indexOf(NO_FLAG) >= 0;
+      html += '<button class="flagchip' + (onN ? " on" : "") + '" data-flag="' + NO_FLAG + '"' +
+        (onN ? ' style="background:var(--muted)"' : '') + '><span class="dot"></span>No flag <span class="n">' + untagged + '</span></button>';
+    }
+
+    bar.innerHTML = html;
+    Array.prototype.forEach.call(bar.querySelectorAll("[data-flag]"), function (b) {
+      b.addEventListener("click", function () {
+        var f = b.getAttribute("data-flag");
+        if (!f) filterTags = [];
+        else {
+          var i = filterTags.indexOf(f);
+          if (i >= 0) filterTags.splice(i, 1); else filterTags.push(f);
+        }
+        setPref("filterTags", filterTags);
+        render();
+      });
+    });
   }
 
   function addItem(day, title) {
@@ -705,8 +840,20 @@
       time = String(parseInt(m[1], 10)).padStart(2, "0") + ":" + m[2]; title = m[3].trim();
     }
 
+    // "#exercise run 5k" -> flag it as Exercise
+    var tags = [];
+    title = title.replace(/#([\w-]+)/g, function (_, word) {
+      var match = categories.filter(function (c) { return c.name.toLowerCase().replace(/\s+/g, "") === word.toLowerCase(); })[0];
+      tags.push(match ? match.name : word);
+      return "";
+    }).replace(/\s{2,}/g, " ").trim();
+    if (!title) return;
+
+    // Adding while a flag view is on? Inherit those flags.
+    if (!tags.length) tags = filterTags.filter(function (t) { return t !== NO_FLAG; });
+
     state.days[day].push({
-      id: newId(), title: title, done: false, note: "", time: time,
+      id: newId(), title: title, done: false, note: "", time: time, tags: tags,
       assignedTo: filterWho || "", addedBy: (auth && auth.who) || "",
       repeating: false, createdAt: new Date().toISOString()
     });
@@ -859,10 +1006,38 @@
     $("editDay").value = day;
     $("noteArea").value = it.note || "";
     $("editRepeat").checked = !!it.repeating;
+    renderTagPicker(it);
     $("noteMeta").textContent = it.addedBy ? "Added by " + it.addedBy : "";
     $("scrim").classList.add("open");
   }
   function closeNote() { $("scrim").classList.remove("open"); active = null; }
+
+  function renderTagPicker(it) {
+    var box = $("editTags");
+    var own = it.tags || [];
+    var names = categories.map(function (c) { return c.name; });
+    own.forEach(function (t) { if (names.indexOf(t) < 0) names.push(t); });
+    if (!names.length) { box.innerHTML = '<span class="hint" style="margin:0">No flags yet — add some under “Flags”.</span>'; return; }
+
+    box.innerHTML = names.map(function (n) {
+      var on = own.indexOf(n) >= 0, c = catColour(n);
+      return '<button class="flagchip' + (on ? " on" : "") + '" data-tag="' + esc(n) + '"' + (on ? ' style="background:' + c + '"' : '') + '>' +
+        '<span class="dot"' + (on ? '' : ' style="background:' + c + '"') + '></span>' + esc(n) + '</button>';
+    }).join("");
+
+    Array.prototype.forEach.call(box.querySelectorAll("[data-tag]"), function (b) {
+      b.addEventListener("click", function () {
+        var t = b.getAttribute("data-tag");
+        editField(function (item) {
+          item.tags = item.tags || [];
+          var i = item.tags.indexOf(t);
+          if (i >= 0) item.tags.splice(i, 1); else item.tags.push(t);
+          renderTagPicker(item);
+        });
+        render();
+      });
+    });
+  }
 
   function editField(fn) {
     if (!active) return;
@@ -938,7 +1113,7 @@
       DAYS.forEach(function (d) { if (!tpl[d]) tpl[d] = []; });
       var same = function (x) { return x.title.trim().toLowerCase() === it.title.trim().toLowerCase(); };
       if (on) {
-        if (!tpl[day].some(same)) tpl[day].push({ id: newId(), title: it.title, note: it.note || "", assignedTo: it.assignedTo || "", time: it.time || "" });
+        if (!tpl[day].some(same)) tpl[day].push({ id: newId(), title: it.title, note: it.note || "", assignedTo: it.assignedTo || "", time: it.time || "", tags: (it.tags || []).slice() });
       } else {
         tpl[day] = tpl[day].filter(function (x) { return !same(x); });
       }
@@ -982,6 +1157,58 @@
   $("repClose").addEventListener("click", function () { $("repScrim").classList.remove("open"); });
   $("repScrim").addEventListener("click", function (e) { if (e.target === $("repScrim")) $("repScrim").classList.remove("open"); });
 
+  // ── Flags (categories) ─────────────────────────────────────────────────
+  function saveCategories() {
+    if (offline) { renderFlagEdit(); render(); return Promise.resolve(); }
+    return api("PUT", "/api/categories", { categories: categories }).then(function (r) {
+      categories = r.categories; renderFlagEdit(); render();
+    }).catch(function (e) { $("flagMsg").className = "msg bad"; $("flagMsg").textContent = e.message; });
+  }
+
+  function renderFlagEdit() {
+    var box = $("flagEdit");
+    if (!categories.length) { box.innerHTML = '<div class="hint">No flags yet. Add your first one below.</div>'; return; }
+    box.innerHTML = categories.map(function (c, i) {
+      return '<div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--rule)">' +
+        '<input type="color" value="' + esc(c.colour) + '" data-cc="' + i + '" style="width:32px;height:26px;padding:2px;border:1px solid var(--rule);border-radius:6px;background:var(--field);cursor:pointer">' +
+        '<span style="flex:1;font-size:13.5px">' + esc(c.name) + '</span>' +
+        '<button class="plain" data-cx="' + i + '">Remove</button></div>';
+    }).join("");
+
+    Array.prototype.forEach.call(box.querySelectorAll("[data-cc]"), function (inp) {
+      inp.addEventListener("change", function () {
+        categories[parseInt(inp.getAttribute("data-cc"), 10)].colour = inp.value;
+        saveCategories();
+      });
+    });
+    Array.prototype.forEach.call(box.querySelectorAll("[data-cx]"), function (b) {
+      b.addEventListener("click", function () {
+        categories.splice(parseInt(b.getAttribute("data-cx"), 10), 1);
+        saveCategories();
+      });
+    });
+  }
+
+  $("flagsBtn").addEventListener("click", function () {
+    $("flagMsg").textContent = "";
+    renderFlagEdit();
+    $("flagScrim").classList.add("open");
+  });
+  $("flagClose").addEventListener("click", function () { $("flagScrim").classList.remove("open"); });
+  $("flagScrim").addEventListener("click", function (e) { if (e.target === $("flagScrim")) $("flagScrim").classList.remove("open"); });
+  $("flagAdd").addEventListener("click", function () {
+    var name = $("newFlagName").value.trim(), m = $("flagMsg");
+    if (!name) { m.className = "msg bad"; m.textContent = "Give the flag a name."; return; }
+    if (categories.some(function (c) { return c.name.toLowerCase() === name.toLowerCase(); })) {
+      m.className = "msg bad"; m.textContent = "You already have that flag."; return;
+    }
+    categories.push({ name: name, colour: $("newFlagColour").value });
+    $("newFlagName").value = "";
+    m.className = "msg"; m.textContent = "";
+    saveCategories();
+  });
+  $("newFlagName").addEventListener("keydown", function (e) { if (e.key === "Enter") $("flagAdd").click(); });
+
   // ── People ─────────────────────────────────────────────────────────────
   $("peopleBtn").addEventListener("click", function () {
     $("peopleList").value = members.join("\n");
@@ -1019,8 +1246,8 @@
           if (dup) return;
           state.days[d].push({
             id: newId(), title: it.title, done: false, note: it.note || "", time: it.time || "",
-            assignedTo: it.assignedTo || "", addedBy: it.addedBy || "", repeating: false,
-            createdAt: new Date().toISOString()
+            tags: (it.tags || []).slice(), assignedTo: it.assignedTo || "", addedBy: it.addedBy || "",
+            repeating: false, createdAt: new Date().toISOString()
           });
           moved++;
         });
@@ -1112,7 +1339,14 @@
       ? "Offline — saved on this device only"
       : (auth.family || "Your family") + (auth.who ? " · signed in as " + auth.who : "");
     members = (auth && auth.members) || [];
+    if (offline && !categories.length) categories = [
+      { name: "House task", colour: "#2a6f97" }, { name: "Reminder", colour: "#c2922b" },
+      { name: "Exercise", colour: "#2f8f5b" }, { name: "Routine", colour: "#7b5ea7" },
+      { name: "People to call", colour: "#c0563c" }, { name: "Church", colour: "#8a6d3b" },
+      { name: "Appointment", colour: "#3f5f8f" }, { name: "Shopping", colour: "#a0527a" }
+    ];
     filterWho = prefs().filterWho || "";
+    filterTags = prefs().filterTags || [];
     fillPeople();
     loadWeek();
     startPolling();
