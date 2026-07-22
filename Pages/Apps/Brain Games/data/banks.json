@@ -183,6 +183,86 @@
         {
           "text": "She nodded her head slowly.",
           "drop": "head"
+        },
+        {
+          "text": "He ascended up the stairs.",
+          "drop": "up"
+        },
+        {
+          "text": "She descended down the hill.",
+          "drop": "down"
+        },
+        {
+          "text": "Please revert back to me.",
+          "drop": "back"
+        },
+        {
+          "text": "The two roads merge together.",
+          "drop": "together"
+        },
+        {
+          "text": "The nail protruded out.",
+          "drop": "out"
+        },
+        {
+          "text": "Rumours circulated around the office.",
+          "drop": "around"
+        },
+        {
+          "text": "We postponed the trip until later.",
+          "drop": "later"
+        },
+        {
+          "text": "The shop sells foreign imports.",
+          "drop": "foreign"
+        },
+        {
+          "text": "It was an unexpected surprise.",
+          "drop": "unexpected"
+        },
+        {
+          "text": "The island was a safe haven.",
+          "drop": "safe"
+        },
+        {
+          "text": "Give me the actual facts.",
+          "drop": "actual"
+        },
+        {
+          "text": "We tried various different methods.",
+          "drop": "various"
+        },
+        {
+          "text": "Tell me the honest truth.",
+          "drop": "honest"
+        },
+        {
+          "text": "The mission was successfully accomplished.",
+          "drop": "successfully"
+        },
+        {
+          "text": "Water is absolutely essential.",
+          "drop": "absolutely"
+        },
+        {
+          "text": "Please enter in the room.",
+          "drop": "in"
+        },
+        {
+          "text": "She gave good advice in advance.",
+          "drop": "advance"
+        },
+        {
+          "text": "The audience clapped their hands.",
+          "drop": "hands"
+        },
+        {
+          "text": "He blinked his eyes quickly.",
+          "drop": "eyes"
+        },
+        {
+          "text": "They gathered a group of people together.",
+          "drop": "together"
         }
       ],
       "description": "Sentences with exactly one redundant word to remove. Used by the Brevity game (tap the word the sentence does not need).",
@@ -358,6 +438,86 @@
         {
           "text": "We was watching a film.",
           "drop": "was"
+        },
+        {
+          "text": "She writed a poem.",
+          "drop": "writed"
+        },
+        {
+          "text": "He teached us maths.",
+          "drop": "teached"
+        },
+        {
+          "text": "They bringed food.",
+          "drop": "bringed"
+        },
+        {
+          "text": "I catched the ball.",
+          "drop": "catched"
+        },
+        {
+          "text": "We eated dinner already.",
+          "drop": "eated"
+        },
+        {
+          "text": "He drawed a picture.",
+          "drop": "drawed"
+        },
+        {
+          "text": "She swimmed very fast.",
+          "drop": "swimmed"
+        },
+        {
+          "text": "The mans are waiting.",
+          "drop": "mans"
+        },
+        {
+          "text": "Two womans left early.",
+          "drop": "womans"
+        },
+        {
+          "text": "Whose coming tonight?",
+          "drop": "Whose"
+        },
+        {
+          "text": "Lets go now.",
+          "drop": "Lets"
+        },
+        {
+          "text": "He cant swim well.",
+          "drop": "cant"
+        },
+        {
+          "text": "We wont lose today.",
+          "drop": "wont"
+        },
+        {
+          "text": "The informations are useful.",
+          "drop": "informations"
+        },
+        {
+          "text": "She gave good advices.",
+          "drop": "advices"
+        },
+        {
+          "text": "Many peoples came.",
+          "drop": "peoples"
+        },
+        {
+          "text": "This is more better.",
+          "drop": "more"
+        },
+        {
+          "text": "He is the most fastest.",
+          "drop": "most"
+        },
+        {
+          "text": "Him and I went out.",
+          "drop": "Him"
+        },
+        {
+          "text": "She have a red car.",
+          "drop": "have"
         }
       ],
       "description": "Sentences containing one spelling or grammar error. Used by Error Spotting (tap the wrong word).",
@@ -662,6 +822,146 @@
         },
         {
           "prompt": "Remember this <span class=\"slot\">&#9634;</span> never give up.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "As soon as we arrived <span class=\"slot\">&#9634;</span> dinner was served.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He wanted one thing <span class=\"slot\">&#9634;</span> peace and quiet.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The lights went out <span class=\"slot\">&#9634;</span> the room fell silent.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "Whenever she laughs <span class=\"slot\">&#9634;</span> everyone joins in.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "We packed everything <span class=\"slot\">&#9634;</span> tents, food, and maps.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The clock struck twelve <span class=\"slot\">&#9634;</span> the guests departed.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "To succeed here <span class=\"slot\">&#9634;</span> you must work hard.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "There is only one rule <span class=\"slot\">&#9634;</span> be honest.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "It was raining <span class=\"slot\">&#9634;</span> so we drove slowly.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "She finished early <span class=\"slot\">&#9634;</span> everyone was impressed.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "He collects three things <span class=\"slot\">&#9634;</span> stamps, coins, and shells.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "After the game <span class=\"slot\">&#9634;</span> we celebrated together.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The plan failed <span class=\"slot\">&#9634;</span> nevertheless, they tried again.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "He gave one command <span class=\"slot\">&#9634;</span> follow me.",
           "options": [
             ",",
             ";",
@@ -1023,6 +1323,186 @@
             "vast"
           ],
           "answer": 0
+        },
+        {
+          "prompt": "The desert was very <b>hot</b>.",
+          "options": [
+            "scorching",
+            "warm",
+            "mild",
+            "sunny"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The knife was very <b>sharp</b>.",
+          "options": [
+            "razor-sharp",
+            "keen",
+            "fine",
+            "pointed"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The film was very <b>scary</b>.",
+          "options": [
+            "terrifying",
+            "creepy",
+            "eerie",
+            "tense"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The baby was very <b>cute</b>.",
+          "options": [
+            "adorable",
+            "sweet",
+            "pretty",
+            "nice"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He was very <b>rich</b>.",
+          "options": [
+            "wealthy",
+            "loaded",
+            "comfortable",
+            "well-off"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The story was very <b>sad</b>.",
+          "options": [
+            "tragic",
+            "gloomy",
+            "sombre",
+            "down"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The music was very <b>loud</b>.",
+          "options": [
+            "thunderous",
+            "noisy",
+            "strong",
+            "heavy"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The room was very <b>hot</b>.",
+          "options": [
+            "sweltering",
+            "warm",
+            "stuffy",
+            "close"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "She was very <b>tired</b>.",
+          "options": [
+            "drained",
+            "weary",
+            "sleepy",
+            "worn"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The coffee was very <b>strong</b>.",
+          "options": [
+            "potent",
+            "bold",
+            "rich",
+            "dark"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The dog was very <b>loyal</b>.",
+          "options": [
+            "devoted",
+            "faithful",
+            "true",
+            "steady"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The town was very <b>quiet</b>.",
+          "options": [
+            "tranquil",
+            "calm",
+            "still",
+            "peaceful"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The soup was very <b>bland</b>.",
+          "options": [
+            "tasteless",
+            "plain",
+            "dull",
+            "mild"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The child was very <b>naughty</b>.",
+          "options": [
+            "mischievous",
+            "bad",
+            "wild",
+            "cheeky"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The sky was very <b>dark</b>.",
+          "options": [
+            "inky",
+            "dim",
+            "grey",
+            "cloudy"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The road was very <b>long</b>.",
+          "options": [
+            "endless",
+            "extended",
+            "lengthy",
+            "far"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The gift was very <b>expensive</b>.",
+          "options": [
+            "costly",
+            "pricey",
+            "dear",
+            "steep"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The lion was very <b>fierce</b>.",
+          "options": [
+            "ferocious",
+            "angry",
+            "wild",
+            "bold"
+          ],
+          "answer": 0
         }
       ],
       "description": "Replace a bland <b>bolded</b> word with the strongest synonym. Used by Expression.",
@@ -1225,6 +1705,90 @@
             "Even though it was cold,",
             "they kept",
             "walking home."
+          ]
+        },
+        {
+          "chunks": [
+            "Because the alarm failed,",
+            "he overslept",
+            "and missed work."
+          ]
+        },
+        {
+          "chunks": [
+            "After the guests left,",
+            "she tidied",
+            "the whole house."
+          ]
+        },
+        {
+          "chunks": [
+            "When the river rose,",
+            "the village",
+            "was evacuated."
+          ]
+        },
+        {
+          "chunks": [
+            "Although the recipe was hard,",
+            "the cake",
+            "turned out well."
+          ]
+        },
+        {
+          "chunks": [
+            "If the sun comes out,",
+            "we will",
+            "go to the beach."
+          ]
+        },
+        {
+          "chunks": [
+            "Since money was tight,",
+            "they saved",
+            "every coin."
+          ]
+        },
+        {
+          "chunks": [
+            "As the lights dimmed,",
+            "the audience",
+            "grew quiet."
+          ]
+        },
+        {
+          "chunks": [
+            "Before the exam began,",
+            "the students",
+            "sharpened their pencils."
+          ]
+        },
+        {
+          "chunks": [
+            "While the kettle boiled,",
+            "he read",
+            "the newspaper."
+          ]
+        },
+        {
+          "chunks": [
+            "Once the door closed,",
+            "the room",
+            "went dark."
+          ]
+        },
+        {
+          "chunks": [
+            "Whenever it snows,",
+            "the children",
+            "build a snowman."
+          ]
+        },
+        {
+          "chunks": [
+            "Even though he apologised,",
+            "she was",
+            "still upset."
           ]
         }
       ],
@@ -1476,6 +2040,126 @@
             "They lost a bet",
             "The coach insisted",
             "It was tradition"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Ada baked bread on Fridays and shared loaves with her neighbours.</div><div class=\"qq\">When did Ada bake bread?</div>",
+          "options": [
+            "Fridays",
+            "Sundays",
+            "Mondays",
+            "Daily"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The museum was free on the first Sunday of each month.</div><div class=\"qq\">When was the museum free?</div>",
+          "options": [
+            "First Sunday of the month",
+            "Every Sunday",
+            "Every day",
+            "On holidays"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Jon lost his keys, so he waited outside until his sister came home.</div><div class=\"qq\">Why did Jon wait outside?</div>",
+          "options": [
+            "He lost his keys",
+            "It was raining",
+            "He was early",
+            "He forgot the address"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The class planted twenty trees, but three did not survive the winter.</div><div class=\"qq\">How many trees survived?</div>",
+          "options": [
+            "Seventeen",
+            "Twenty",
+            "Three",
+            "Ten"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The bakery raised its prices, so fewer customers came in the morning.</div><div class=\"qq\">What happened after prices rose?</div>",
+          "options": [
+            "Fewer customers came",
+            "The bakery closed",
+            "Prices fell again",
+            "More bread was baked"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Ben fixed the fence, painted the gate, and mowed the lawn before noon.</div><div class=\"qq\">Which did Ben NOT do?</div>",
+          "options": [
+            "Wash the car",
+            "Fix the fence",
+            "Paint the gate",
+            "Mow the lawn"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The shop delivers free for orders over fifty cedis.</div><div class=\"qq\">When is delivery free?</div>",
+          "options": [
+            "Orders over fifty cedis",
+            "All orders",
+            "Orders under ten",
+            "On weekends"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Nana read two chapters each night and finished the book in a week.</div><div class=\"qq\">How much did Nana read each night?</div>",
+          "options": [
+            "Two chapters",
+            "One chapter",
+            "Half the book",
+            "A page"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Because the power went out, the family lit candles and told stories.</div><div class=\"qq\">What did the family do?</div>",
+          "options": [
+            "Lit candles and told stories",
+            "Went to bed",
+            "Left the house",
+            "Watched TV"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The garden needed water daily, so Kofi set a morning alarm.</div><div class=\"qq\">Why did Kofi set an alarm?</div>",
+          "options": [
+            "To water the garden",
+            "To catch a bus",
+            "To cook breakfast",
+            "To feed the dog"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The team won four games and lost one during the season.</div><div class=\"qq\">How many games did the team lose?</div>",
+          "options": [
+            "One",
+            "Four",
+            "Five",
+            "Two"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Maya practised every evening and finally learned the whole song.</div><div class=\"qq\">What did Maya learn?</div>",
+          "options": [
+            "A song",
+            "A dance",
+            "A poem",
+            "A speech"
           ],
           "answer": 0
         }
@@ -1732,6 +2416,126 @@
             "0303-555-118"
           ],
           "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The seminar is in Room 3B at 10:15 am.</div><div class=\"qq\">Which room?</div>",
+          "options": [
+            "3B",
+            "3D",
+            "B3",
+            "13B"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Your booking code is KX-9052.</div><div class=\"qq\">What is the booking code?</div>",
+          "options": [
+            "KX-9052",
+            "KX-9025",
+            "XK-9052",
+            "KX-9502"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The bus departs from Bay 4 every 20 minutes.</div><div class=\"qq\">Which bay?</div>",
+          "options": [
+            "4",
+            "14",
+            "40",
+            "2"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The parcel arrives on Wednesday afternoon.</div><div class=\"qq\">On which day does it arrive?</div>",
+          "options": [
+            "Wednesday",
+            "Tuesday",
+            "Thursday",
+            "Monday"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Membership costs 60 cedis a year for adults.</div><div class=\"qq\">How much is membership?</div>",
+          "options": [
+            "60 cedis",
+            "16 cedis",
+            "06 cedis",
+            "66 cedis"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The lecture hall seats 320 people.</div><div class=\"qq\">How many does it seat?</div>",
+          "options": [
+            "320",
+            "230",
+            "302",
+            "32"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Check-in closes 45 minutes before departure.</div><div class=\"qq\">How long before departure?</div>",
+          "options": [
+            "45 minutes",
+            "15 minutes",
+            "54 minutes",
+            "40 minutes"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The recipe needs 250 ml of milk.</div><div class=\"qq\">How much milk?</div>",
+          "options": [
+            "250 ml",
+            "205 ml",
+            "520 ml",
+            "25 ml"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The clinic's emergency line is 0800-121-999.</div><div class=\"qq\">What is the emergency line?</div>",
+          "options": [
+            "0800-121-999",
+            "0800-112-999",
+            "0800-121-099",
+            "0080-121-999"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Locker 47 is reserved for the visiting team.</div><div class=\"qq\">Which locker?</div>",
+          "options": [
+            "47",
+            "74",
+            "44",
+            "17"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The film starts at 8:40 pm in Screen 2.</div><div class=\"qq\">When does the film start?</div>",
+          "options": [
+            "8:40 pm",
+            "8:04 pm",
+            "8:14 pm",
+            "4:40 pm"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The warranty lasts 24 months from purchase.</div><div class=\"qq\">How long is the warranty?</div>",
+          "options": [
+            "24 months",
+            "12 months",
+            "42 months",
+            "20 months"
+          ],
+          "answer": 0
         }
       ],
       "description": "Short info blurb + one detail to extract quickly. Used by Agility.",
@@ -1984,6 +2788,126 @@
             "Courts",
             "Judges",
             "Loss"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He returned every day to teach the boy to read, asking nothing in return.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Selflessness",
+            "Reading",
+            "Boys",
+            "Teaching"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She kept the promise she made years ago, even when it was hard.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Faithfulness",
+            "Promises",
+            "Years",
+            "Difficulty"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The tiny ant carried a crumb ten times its size without stopping.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Determination",
+            "Ants",
+            "Food",
+            "Size"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He listened patiently to every worry, never once looking at his watch.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Patience",
+            "Worries",
+            "Watches",
+            "Talking"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">They welcomed the stranger, fed him, and gave him a place to sleep.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Hospitality",
+            "Strangers",
+            "Food",
+            "Sleep"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Even after losing the match, she congratulated the winner with a smile.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Sportsmanship",
+            "Matches",
+            "Losing",
+            "Smiles"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He worked two jobs for years so his sister could finish school.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Sacrifice",
+            "Jobs",
+            "School",
+            "Sisters"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The old man planted trees he knew he would never sit beneath.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Selflessness",
+            "Trees",
+            "Age",
+            "Shade"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She stood up for the new student when the others laughed.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Courage",
+            "Students",
+            "Laughing",
+            "School"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Despite the ridicule, he kept inventing until the machine finally worked.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Perseverance",
+            "Machines",
+            "Ridicule",
+            "Inventing"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">They divided the last meal so everyone had a share.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Generosity",
+            "Meals",
+            "Sharing",
+            "Hunger"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He admitted he was wrong and thanked her for correcting him.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Humility",
+            "Arguments",
+            "Corrections",
+            "Thanks"
           ],
           "answer": 0
         }
@@ -2262,6 +3186,138 @@
             "A raft",
             "A canoe",
             "A ship"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The hungry cat chased a small grey mouse.",
+          "q": "What did the cat chase?",
+          "options": [
+            "A mouse",
+            "A bird",
+            "A ball",
+            "A dog"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A red balloon floated over the busy fair.",
+          "q": "What floated over the fair?",
+          "options": [
+            "A balloon",
+            "A kite",
+            "A bird",
+            "A cloud"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The kind baker gave warm bread to the child.",
+          "q": "What did the baker give?",
+          "options": [
+            "Bread",
+            "Cake",
+            "Milk",
+            "Fruit"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A green frog jumped across the muddy pond.",
+          "q": "What jumped across the pond?",
+          "options": [
+            "A frog",
+            "A fish",
+            "A duck",
+            "A turtle"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The tired driver parked the truck by the road.",
+          "q": "What did the driver park?",
+          "options": [
+            "A truck",
+            "A car",
+            "A bus",
+            "A van"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A bright star shone above the sleeping town.",
+          "q": "What shone above the town?",
+          "options": [
+            "A star",
+            "The moon",
+            "A lamp",
+            "A plane"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The busy bee gathered nectar from the flowers.",
+          "q": "What did the bee gather?",
+          "options": [
+            "Nectar",
+            "Pollen",
+            "Water",
+            "Leaves"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The proud rooster crowed at the rising sun.",
+          "q": "What did the rooster do?",
+          "options": [
+            "Crowed",
+            "Slept",
+            "Ran",
+            "Flew"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A brave girl climbed the tall apple tree.",
+          "q": "What did the girl climb?",
+          "options": [
+            "An apple tree",
+            "A ladder",
+            "A hill",
+            "A wall"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A white swan glided across the still lake.",
+          "q": "What glided across the lake?",
+          "options": [
+            "A swan",
+            "A boat",
+            "A duck",
+            "A leaf"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The old train chugged through the dark tunnel.",
+          "q": "Where did the train go?",
+          "options": [
+            "Through a tunnel",
+            "Over a bridge",
+            "Along a beach",
+            "Into a station"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The gentle breeze scattered the fallen leaves.",
+          "q": "What did the breeze scatter?",
+          "options": [
+            "Leaves",
+            "Papers",
+            "Sand",
+            "Snow"
           ],
           "answer": 0
         }
@@ -3137,6 +4193,336 @@
             "Thomas"
           ],
           "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God give Moses on stone tablets?",
+          "options": [
+            "The Ten Commandments",
+            "A map",
+            "A blessing",
+            "A song"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was the strong man in the Bible?",
+          "options": [
+            "Samson",
+            "Goliath",
+            "Saul",
+            "Gideon"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "How many brothers did Joseph have?",
+          "options": [
+            "Eleven",
+            "Ten",
+            "Twelve",
+            "Nine"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did Jesus calm with his words?",
+          "options": [
+            "A storm",
+            "A fire",
+            "A crowd",
+            "A flood"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Where did Jesus grow up?",
+          "options": [
+            "Nazareth",
+            "Bethlehem",
+            "Jerusalem",
+            "Cana"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did the dove bring back to Noah?",
+          "options": [
+            "An olive leaf",
+            "A fish",
+            "A seed",
+            "An acorn"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was Mary's husband?",
+          "options": [
+            "Joseph",
+            "Zechariah",
+            "Simon",
+            "Judas"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who wrote most of the Psalms?",
+          "options": [
+            "David",
+            "Solomon",
+            "Moses",
+            "Paul"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did Cain and Abel bring to God?",
+          "options": [
+            "Offerings",
+            "Money",
+            "Songs",
+            "Letters"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God create on the fourth day?",
+          "options": [
+            "The sun, moon and stars",
+            "Fish",
+            "Birds",
+            "Man"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many people did Jesus feed with five loaves?",
+          "options": [
+            "Five thousand",
+            "Four thousand",
+            "Three thousand",
+            "Ten thousand"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Whose shout made the walls of Jericho fall?",
+          "options": [
+            "Joshua's army",
+            "Moses' army",
+            "Gideon's men",
+            "Caleb's men"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What did Jacob see in his dream at Bethel?",
+          "options": [
+            "A ladder to heaven",
+            "A burning bush",
+            "A great fish",
+            "A chariot"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who was David's close friend, the son of Saul?",
+          "options": [
+            "Jonathan",
+            "Absalom",
+            "Nathan",
+            "Joab"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What did Elijah leave behind when he was taken up?",
+          "options": [
+            "His cloak",
+            "His staff",
+            "His sandals",
+            "His ring"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "On which sea did Jesus walk?",
+          "options": [
+            "The Sea of Galilee",
+            "The Red Sea",
+            "The Dead Sea",
+            "The Mediterranean"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who was turned into a pillar of salt?",
+          "options": [
+            "Lot's wife",
+            "Rahab",
+            "Miriam",
+            "Delilah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many books are in the New Testament?",
+          "options": [
+            "27",
+            "39",
+            "66",
+            "12"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What did God provide instead of Isaac as a sacrifice?",
+          "options": [
+            "A ram",
+            "A lamb",
+            "A goat",
+            "A dove"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who was the tax collector called down from a tree?",
+          "options": [
+            "Zacchaeus",
+            "Matthew",
+            "Levi",
+            "Simon"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was the mother of John the Baptist?",
+          "options": [
+            "Elizabeth",
+            "Mary",
+            "Anna",
+            "Salome"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "In what language was most of the Old Testament written?",
+          "options": [
+            "Hebrew",
+            "Greek",
+            "Latin",
+            "Aramaic"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was the Roman governor at Jesus' trial?",
+          "options": [
+            "Pontius Pilate",
+            "Herod",
+            "Felix",
+            "Festus"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "How many chapters are in the book of Psalms?",
+          "options": [
+            "150",
+            "100",
+            "120",
+            "119"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which disciple is called the beloved disciple?",
+          "options": [
+            "John",
+            "Peter",
+            "James",
+            "Andrew"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What was the name of Abraham's first son?",
+          "options": [
+            "Ishmael",
+            "Isaac",
+            "Esau",
+            "Jacob"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which prophet saw a valley of dry bones?",
+          "options": [
+            "Ezekiel",
+            "Isaiah",
+            "Jeremiah",
+            "Daniel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What is the shortest verse in the Bible?",
+          "options": [
+            "Jesus wept",
+            "God is love",
+            "Pray always",
+            "Give thanks"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who wrote the book of Revelation?",
+          "options": [
+            "John",
+            "Paul",
+            "Peter",
+            "Luke"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which king saw a hand writing on the wall?",
+          "options": [
+            "Belshazzar",
+            "Nebuchadnezzar",
+            "Darius",
+            "Cyrus"
+          ],
+          "answer": 0
         }
       ],
       "description": "Multiple-choice Bible-knowledge questions, tagged by difficulty. Used by Bible Trivia.",
@@ -3489,6 +4875,138 @@
             "sorrow",
             "judgment",
             "loss"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Honour your father and your <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "mother",
+            "elders",
+            "king",
+            "master"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Love your <span class=\"slot\">____</span> as yourself.&rdquo;",
+          "options": [
+            "neighbour",
+            "enemy",
+            "brother",
+            "friend"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;The joy of the Lord is your <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "strength",
+            "song",
+            "peace",
+            "light"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Do not be afraid, only <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "believe",
+            "wait",
+            "pray",
+            "rest"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;I have fought the good <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "fight",
+            "race",
+            "war",
+            "battle"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Let your light so <span class=\"slot\">____</span> before men.&rdquo;",
+          "options": [
+            "shine",
+            "glow",
+            "burn",
+            "rise"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Man shall not live by <span class=\"slot\">____</span> alone.&rdquo;",
+          "options": [
+            "bread",
+            "food",
+            "words",
+            "faith"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Come to me, all who are <span class=\"slot\">____</span> and burdened.&rdquo;",
+          "options": [
+            "weary",
+            "weak",
+            "lost",
+            "broken"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;Be strong and <span class=\"slot\">____</span>; do not be afraid.&rdquo;",
+          "options": [
+            "courageous",
+            "faithful",
+            "patient",
+            "humble"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;The truth shall make you <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "free",
+            "whole",
+            "wise",
+            "glad"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;I am the vine; you are the <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "branches",
+            "fruit",
+            "roots",
+            "leaves"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;Pray without <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "ceasing",
+            "doubting",
+            "fear",
+            "end"
           ],
           "answer": 0
         }
@@ -4309,6 +5827,294 @@
           "py": "jiāngù",
           "en": "to balance both",
           "hsk": 6
+        },
+        {
+          "hz": "中",
+          "py": "zhōng",
+          "en": "middle",
+          "hsk": 1
+        },
+        {
+          "hz": "国",
+          "py": "guó",
+          "en": "country",
+          "hsk": 1
+        },
+        {
+          "hz": "男",
+          "py": "nán",
+          "en": "male",
+          "hsk": 1
+        },
+        {
+          "hz": "女",
+          "py": "nǚ",
+          "en": "female",
+          "hsk": 1
+        },
+        {
+          "hz": "上",
+          "py": "shàng",
+          "en": "up / on",
+          "hsk": 1
+        },
+        {
+          "hz": "下",
+          "py": "xià",
+          "en": "down / under",
+          "hsk": 1
+        },
+        {
+          "hz": "来",
+          "py": "lái",
+          "en": "to come",
+          "hsk": 1
+        },
+        {
+          "hz": "去",
+          "py": "qù",
+          "en": "to go",
+          "hsk": 1
+        },
+        {
+          "hz": "白",
+          "py": "bái",
+          "en": "white",
+          "hsk": 2
+        },
+        {
+          "hz": "黑",
+          "py": "hēi",
+          "en": "black",
+          "hsk": 2
+        },
+        {
+          "hz": "红",
+          "py": "hóng",
+          "en": "red",
+          "hsk": 2
+        },
+        {
+          "hz": "长",
+          "py": "cháng",
+          "en": "long",
+          "hsk": 2
+        },
+        {
+          "hz": "新",
+          "py": "xīn",
+          "en": "new",
+          "hsk": 2
+        },
+        {
+          "hz": "旧",
+          "py": "jiù",
+          "en": "old (thing)",
+          "hsk": 2
+        },
+        {
+          "hz": "开",
+          "py": "kāi",
+          "en": "to open",
+          "hsk": 2
+        },
+        {
+          "hz": "关",
+          "py": "guān",
+          "en": "to close",
+          "hsk": 2
+        },
+        {
+          "hz": "结束",
+          "py": "jiéshù",
+          "en": "to end",
+          "hsk": 3
+        },
+        {
+          "hz": "开始",
+          "py": "kāishǐ",
+          "en": "to begin",
+          "hsk": 3
+        },
+        {
+          "hz": "迟到",
+          "py": "chídào",
+          "en": "to be late",
+          "hsk": 3
+        },
+        {
+          "hz": "检查",
+          "py": "jiǎnchá",
+          "en": "to inspect",
+          "hsk": 3
+        },
+        {
+          "hz": "联系",
+          "py": "liánxì",
+          "en": "to contact",
+          "hsk": 3
+        },
+        {
+          "hz": "完成",
+          "py": "wánchéng",
+          "en": "to complete",
+          "hsk": 3
+        },
+        {
+          "hz": "参观",
+          "py": "cānguān",
+          "en": "to visit (a place)",
+          "hsk": 3
+        },
+        {
+          "hz": "主意",
+          "py": "zhǔyi",
+          "en": "idea",
+          "hsk": 3
+        },
+        {
+          "hz": "竞争",
+          "py": "jìngzhēng",
+          "en": "to compete",
+          "hsk": 4
+        },
+        {
+          "hz": "效果",
+          "py": "xiàoguǒ",
+          "en": "effect",
+          "hsk": 4
+        },
+        {
+          "hz": "目标",
+          "py": "mùbiāo",
+          "en": "goal",
+          "hsk": 4
+        },
+        {
+          "hz": "方式",
+          "py": "fāngshì",
+          "en": "way / method",
+          "hsk": 4
+        },
+        {
+          "hz": "态度",
+          "py": "tàidù",
+          "en": "attitude",
+          "hsk": 4
+        },
+        {
+          "hz": "困难",
+          "py": "kùnnan",
+          "en": "difficulty",
+          "hsk": 4
+        },
+        {
+          "hz": "支持",
+          "py": "zhīchí",
+          "en": "to support",
+          "hsk": 4
+        },
+        {
+          "hz": "反对",
+          "py": "fǎnduì",
+          "en": "to oppose",
+          "hsk": 4
+        },
+        {
+          "hz": "依赖",
+          "py": "yīlài",
+          "en": "to rely on",
+          "hsk": 5
+        },
+        {
+          "hz": "忽略",
+          "py": "hūlüè",
+          "en": "to overlook",
+          "hsk": 5
+        },
+        {
+          "hz": "塑造",
+          "py": "sùzào",
+          "en": "to shape",
+          "hsk": 5
+        },
+        {
+          "hz": "显著",
+          "py": "xiǎnzhù",
+          "en": "remarkable",
+          "hsk": 5
+        },
+        {
+          "hz": "频繁",
+          "py": "pínfán",
+          "en": "frequent",
+          "hsk": 5
+        },
+        {
+          "hz": "潜在",
+          "py": "qiánzài",
+          "en": "latent",
+          "hsk": 5
+        },
+        {
+          "hz": "局面",
+          "py": "júmiàn",
+          "en": "situation",
+          "hsk": 5
+        },
+        {
+          "hz": "妥协",
+          "py": "tuǒxié",
+          "en": "to compromise",
+          "hsk": 5
+        },
+        {
+          "hz": "兑现",
+          "py": "duìxiàn",
+          "en": "to honour (a promise)",
+          "hsk": 6
+        },
+        {
+          "hz": "凸显",
+          "py": "tūxiǎn",
+          "en": "to highlight",
+          "hsk": 6
+        },
+        {
+          "hz": "制约",
+          "py": "zhìyuē",
+          "en": "to restrict",
+          "hsk": 6
+        },
+        {
+          "hz": "巩固",
+          "py": "gǒnggù",
+          "en": "to consolidate",
+          "hsk": 6
+        },
+        {
+          "hz": "崇尚",
+          "py": "chóngshàng",
+          "en": "to esteem",
+          "hsk": 6
+        },
+        {
+          "hz": "渲染",
+          "py": "xuànrǎn",
+          "en": "to play up",
+          "hsk": 6
+        },
+        {
+          "hz": "秉持",
+          "py": "bǐngchí",
+          "en": "to uphold",
+          "hsk": 6
+        },
+        {
+          "hz": "辐射",
+          "py": "fúshè",
+          "en": "to radiate",
+          "hsk": 6
         }
       ],
       "description": "Chinese vocabulary tagged by HSK level. Feeds Meaning, Pinyin, Characters and Listening (difficulty maps Easy=HSK1-2, Medium=3-4, Hard=5-6).",
@@ -4559,6 +6365,106 @@
             "经济",
             "的",
             "发展"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "He is my teacher.",
+          "words": [
+            "他",
+            "是",
+            "我的",
+            "老师"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "I want to buy some water.",
+          "words": [
+            "我",
+            "想",
+            "买",
+            "水"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "They are Chinese.",
+          "words": [
+            "他们",
+            "是",
+            "中国人"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "I go to work by bus every day.",
+          "words": [
+            "我",
+            "每天",
+            "坐",
+            "公共汽车",
+            "去",
+            "上班"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "She can speak a little English.",
+          "words": [
+            "她",
+            "会",
+            "说",
+            "一点儿",
+            "英语"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "We have decided to help him.",
+          "words": [
+            "我们",
+            "已经",
+            "决定",
+            "帮助",
+            "他",
+            "了"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "This decision will affect the whole company.",
+          "words": [
+            "这个",
+            "决定",
+            "会",
+            "影响",
+            "整个",
+            "公司"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "He always insists on his own opinion.",
+          "words": [
+            "他",
+            "总是",
+            "坚持",
+            "自己",
+            "的",
+            "意见"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "We should respect each other's culture.",
+          "words": [
+            "我们",
+            "应该",
+            "尊重",
+            "彼此",
+            "的",
+            "文化"
           ]
         }
       ],
