@@ -1,0 +1,2680 @@
+{
+  "meta": {
+    "app": "TWC Brain Games",
+    "version": 1,
+    "updated": "2026-07-22",
+    "purpose": "Content banks for the quiz-style games. This file is the single source of truth; the app fetches it at startup.",
+    "instructionsForAI": [
+      "To grow a bank, APPEND new objects to its items[] array following itemSchema. Never modify, reorder or delete existing items.",
+      "Avoid duplicates: two items clash if their dedupeKey fields match after trimming and lowercasing. Check the whole array before adding.",
+      "Keep difficulty balanced toward targetPerValue for each difficulty/level value.",
+      "The app SHUFFLES answer options at display time, so always place the correct option at index 0 and set answer:0 (unless a bank's schema shows an explicit answer index, e.g. punct).",
+      "Keep answers unambiguous and distractors plausible. Bible facts must be widely accepted. Chinese pinyin must use tone marks and English meanings must stay distinct.",
+      "Do not change the JSON shape or key names — only append to items[]."
+    ]
+  },
+  "banks": {
+    "brevity": {
+      "items": [
+        {
+          "text": "She returned back home before dark.",
+          "drop": "back"
+        },
+        {
+          "text": "They cooperated together on the project.",
+          "drop": "together"
+        },
+        {
+          "text": "Please repeat that sentence again.",
+          "drop": "again"
+        },
+        {
+          "text": "We studied the past history of the town.",
+          "drop": "past"
+        },
+        {
+          "text": "He added an additional chair for the guest.",
+          "drop": "additional"
+        },
+        {
+          "text": "The end result was a great success.",
+          "drop": "end"
+        },
+        {
+          "text": "She sat down on the wooden bench.",
+          "drop": "down"
+        },
+        {
+          "text": "I personally think we should leave now.",
+          "drop": "personally"
+        },
+        {
+          "text": "The final outcome pleased everyone there.",
+          "drop": "final"
+        },
+        {
+          "text": "They gathered together for evening prayer.",
+          "drop": "together"
+        },
+        {
+          "text": "It was a completely unique painting.",
+          "drop": "completely"
+        },
+        {
+          "text": "We must plan ahead for tomorrow.",
+          "drop": "ahead"
+        },
+        {
+          "text": "He told a false lie to his friend.",
+          "drop": "false"
+        },
+        {
+          "text": "The two twins looked exactly alike.",
+          "drop": "two"
+        },
+        {
+          "text": "She whispered quietly under her breath.",
+          "drop": "quietly"
+        },
+        {
+          "text": "He nodded his head in agreement.",
+          "drop": "head"
+        },
+        {
+          "text": "She shrugged her shoulders slightly.",
+          "drop": "shoulders"
+        },
+        {
+          "text": "They exited out of the building.",
+          "drop": "out"
+        },
+        {
+          "text": "Combine the two ingredients together.",
+          "drop": "together"
+        },
+        {
+          "text": "The reason is because he was late.",
+          "drop": "because"
+        },
+        {
+          "text": "We had a mutual agreement between us.",
+          "drop": "mutual"
+        },
+        {
+          "text": "Kindly ask him to please respond.",
+          "drop": "Kindly"
+        }
+      ],
+      "description": "Sentences with exactly one redundant word to remove. Used by the Brevity game (tap the word the sentence does not need).",
+      "game": "brevity",
+      "dedupeKey": "text",
+      "itemSchema": {
+        "text": "a sentence containing exactly ONE redundant word",
+        "drop": "that redundant word, appearing once, matched case-insensitively"
+      }
+    },
+    "typo": {
+      "items": [
+        {
+          "text": "The childrens played in the yard.",
+          "drop": "childrens"
+        },
+        {
+          "text": "She recieved a letter this morning.",
+          "drop": "recieved"
+        },
+        {
+          "text": "We definately need more time.",
+          "drop": "definately"
+        },
+        {
+          "text": "He is taller then his brother.",
+          "drop": "then"
+        },
+        {
+          "text": "Their going to the market later.",
+          "drop": "Their"
+        },
+        {
+          "text": "The dog wagged it's tail happily.",
+          "drop": "it's"
+        },
+        {
+          "text": "I could of helped you yesterday.",
+          "drop": "of"
+        },
+        {
+          "text": "The weather is beautifull today.",
+          "drop": "beautifull"
+        },
+        {
+          "text": "We was late for the service.",
+          "drop": "was"
+        },
+        {
+          "text": "Its a wonderful day outside.",
+          "drop": "Its"
+        },
+        {
+          "text": "He runned all the way home.",
+          "drop": "runned"
+        },
+        {
+          "text": "Your welcome to join us tonight.",
+          "drop": "Your"
+        },
+        {
+          "text": "The teacher gived us homework.",
+          "drop": "gived"
+        },
+        {
+          "text": "They finded the missing keys.",
+          "drop": "finded"
+        },
+        {
+          "text": "She dont like waiting in line.",
+          "drop": "dont"
+        },
+        {
+          "text": "He beleived every single word.",
+          "drop": "beleived"
+        },
+        {
+          "text": "We should of left much earlier.",
+          "drop": "of"
+        },
+        {
+          "text": "The cat layed on the warm mat.",
+          "drop": "layed"
+        },
+        {
+          "text": "She has less coins than before.",
+          "drop": "less"
+        },
+        {
+          "text": "Me and him walked to school.",
+          "drop": "Me"
+        },
+        {
+          "text": "The books is on the table.",
+          "drop": "is"
+        }
+      ],
+      "description": "Sentences containing one spelling or grammar error. Used by Error Spotting (tap the wrong word).",
+      "game": "typo",
+      "dedupeKey": "text",
+      "itemSchema": {
+        "text": "a sentence with exactly ONE wrong word",
+        "drop": "the wrong word exactly as it appears, appearing once"
+      }
+    },
+    "punct": {
+      "items": [
+        {
+          "prompt": "She had one dream <span class=\"slot\">&#9634;</span> to serve others.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "It rained all day <span class=\"slot\">&#9634;</span> so we stayed inside.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He was late <span class=\"slot\">&#9634;</span> therefore he missed the bus.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "Bring these items <span class=\"slot\">&#9634;</span> a pen, paper, and ink.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "Although it was hard <span class=\"slot\">&#9634;</span> she never gave up.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The team practiced daily <span class=\"slot\">&#9634;</span> they wanted to win.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "We visited three cities <span class=\"slot\">&#9634;</span> Accra, Lagos, and Nairobi.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "When the bell rang <span class=\"slot\">&#9634;</span> the students left.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The choir sang beautifully <span class=\"slot\">&#9634;</span> the crowd wept.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "He studied hard <span class=\"slot\">&#9634;</span> but he still felt nervous.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "There was only one rule <span class=\"slot\">&#9634;</span> be kind.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The sun set <span class=\"slot\">&#9634;</span> and the stars appeared.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "She packed a bag <span class=\"slot\">&#9634;</span> she was ready to travel.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "Remember one thing <span class=\"slot\">&#9634;</span> stay humble.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The road was long <span class=\"slot\">&#9634;</span> yet they pressed on.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He had three hobbies <span class=\"slot\">&#9634;</span> reading, running, and cooking.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        }
+      ],
+      "description": "Choose the punctuation mark for the ▢ slot. Used by Punctuation.",
+      "game": "punct",
+      "dedupeKey": "prompt",
+      "itemSchema": {
+        "prompt": "HTML sentence with one <span class=\"slot\">&#9634;</span> gap",
+        "options": [
+          "always exactly these four: \",\", \";\", \":\", \"—\""
+        ],
+        "answer": "index of the correct mark"
+      }
+    },
+    "express": {
+      "items": [
+        {
+          "prompt": "The meal was very <b>good</b>.",
+          "options": [
+            "delicious",
+            "nice",
+            "okay",
+            "fine"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "She was very <b>happy</b> about the news.",
+          "options": [
+            "overjoyed",
+            "glad",
+            "okay",
+            "fine"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The mountain was very <b>big</b>.",
+          "options": [
+            "towering",
+            "large",
+            "tall",
+            "wide"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He walked <b>quickly</b> to the door.",
+          "options": [
+            "rushed",
+            "moved",
+            "went",
+            "strolled"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "It was a very <b>bad</b> mistake.",
+          "options": [
+            "grievous",
+            "poor",
+            "small",
+            "minor"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The room was very <b>cold</b>.",
+          "options": [
+            "freezing",
+            "cool",
+            "chilly",
+            "breezy"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "She spoke in a <b>quiet</b> voice.",
+          "options": [
+            "hushed",
+            "low",
+            "soft",
+            "small"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The crowd was very <b>loud</b>.",
+          "options": [
+            "deafening",
+            "noisy",
+            "busy",
+            "lively"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He felt very <b>tired</b> after work.",
+          "options": [
+            "exhausted",
+            "sleepy",
+            "bored",
+            "weak"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The story was very <b>interesting</b>.",
+          "options": [
+            "captivating",
+            "nice",
+            "good",
+            "fun"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The gift made her very <b>happy</b>.",
+          "options": [
+            "elated",
+            "content",
+            "calm",
+            "pleased"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The soup was very <b>hot</b>.",
+          "options": [
+            "scalding",
+            "warm",
+            "nice",
+            "tasty"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The night was very <b>dark</b>.",
+          "options": [
+            "pitch-black",
+            "dim",
+            "shady",
+            "grey"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He was very <b>angry</b> at the news.",
+          "options": [
+            "furious",
+            "upset",
+            "cross",
+            "annoyed"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The climb was very <b>hard</b>.",
+          "options": [
+            "gruelling",
+            "tricky",
+            "tough",
+            "tiring"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The baby was very <b>small</b>.",
+          "options": [
+            "tiny",
+            "little",
+            "short",
+            "slim"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "Replace a bland <b>bolded</b> word with the strongest synonym. Used by Expression.",
+      "game": "express",
+      "dedupeKey": "prompt",
+      "itemSchema": {
+        "prompt": "HTML sentence with the bland word in <b>…</b>",
+        "options": [
+          "4 words; index 0 must be the strongest/best synonym"
+        ],
+        "answer": 0
+      }
+    },
+    "invert": {
+      "items": [
+        {
+          "chunks": [
+            "Because it was raining,",
+            "we decided",
+            "to stay home."
+          ]
+        },
+        {
+          "chunks": [
+            "After the long journey,",
+            "the travelers",
+            "finally rested."
+          ]
+        },
+        {
+          "chunks": [
+            "When the sun rose,",
+            "the birds",
+            "began to sing."
+          ]
+        },
+        {
+          "chunks": [
+            "Although she was tired,",
+            "she continued",
+            "to help others."
+          ]
+        },
+        {
+          "chunks": [
+            "Before the meeting started,",
+            "everyone",
+            "took their seats."
+          ]
+        },
+        {
+          "chunks": [
+            "If you work hard,",
+            "you will",
+            "see the results."
+          ]
+        },
+        {
+          "chunks": [
+            "As the music played,",
+            "the children",
+            "danced with joy."
+          ]
+        },
+        {
+          "chunks": [
+            "Since the store was closed,",
+            "we went",
+            "somewhere else."
+          ]
+        },
+        {
+          "chunks": [
+            "While he was reading,",
+            "the phone",
+            "suddenly rang."
+          ]
+        },
+        {
+          "chunks": [
+            "Once the game ended,",
+            "the fans",
+            "cheered loudly."
+          ]
+        },
+        {
+          "chunks": [
+            "Even though it was late,",
+            "the workers",
+            "kept going."
+          ]
+        },
+        {
+          "chunks": [
+            "After the rain stopped,",
+            "a rainbow",
+            "filled the sky."
+          ]
+        },
+        {
+          "chunks": [
+            "Before the sun had risen,",
+            "the fishermen",
+            "set out to sea."
+          ]
+        },
+        {
+          "chunks": [
+            "Because the road was blocked,",
+            "the driver",
+            "took another route."
+          ]
+        },
+        {
+          "chunks": [
+            "Whenever the choir sang,",
+            "the whole church",
+            "fell silent."
+          ]
+        }
+      ],
+      "description": "Clauses to reorder into one clear sentence. Used by Inversion.",
+      "game": "invert",
+      "dedupeKey": "chunks",
+      "itemSchema": {
+        "chunks": [
+          "2-4 clause fragments in the CORRECT reading order"
+        ]
+      }
+    },
+    "comprehend": {
+      "items": [
+        {
+          "prompt": "<div class=\"passage\">Maria planted tomatoes in the spring. By summer, the plants were full of red fruit, and she shared them with her neighbours.</div><div class=\"qq\">What did Maria grow?</div>",
+          "options": [
+            "Tomatoes",
+            "Corn",
+            "Roses",
+            "Beans"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The library closes at 8 pm on weekdays but at 5 pm on Saturdays. On Sundays it stays shut all day.</div><div class=\"qq\">When does the library close on Saturday?</div>",
+          "options": [
+            "5 pm",
+            "8 pm",
+            "It is shut",
+            "6 pm"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The team lost their first three games. After changing their strategy, they won the next five in a row.</div><div class=\"qq\">How many games did the team win?</div>",
+          "options": [
+            "Five",
+            "Three",
+            "Eight",
+            "Two"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">David saved for a year to buy a bicycle. When he finally had enough money, the shop had already sold out.</div><div class=\"qq\">Did David buy the bicycle?</div>",
+          "options": [
+            "No",
+            "Yes",
+            "He bought two",
+            "He got a refund"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The recipe needs two cups of flour, one egg, and a pinch of salt. Sugar is optional.</div><div class=\"qq\">Which ingredient is optional?</div>",
+          "options": [
+            "Sugar",
+            "Flour",
+            "Egg",
+            "Salt"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Rain fell heavily all morning. By afternoon the sky cleared, and a rainbow appeared over the hills.</div><div class=\"qq\">What appeared in the afternoon?</div>",
+          "options": [
+            "A rainbow",
+            "More rain",
+            "Snow",
+            "Fog"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Peter woke up late and missed the bus. He decided to walk and arrived just as the class began.</div><div class=\"qq\">How did Peter get to class?</div>",
+          "options": [
+            "He walked",
+            "By bus",
+            "By car",
+            "He was absent"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The museum's new exhibit features paintings from the 1800s. Photography is not allowed inside.</div><div class=\"qq\">What is not allowed in the exhibit?</div>",
+          "options": [
+            "Photography",
+            "Talking",
+            "Eating",
+            "Walking"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Grace practised the piano every day for a month. At the recital her hard work paid off with a flawless performance.</div><div class=\"qq\">How was Grace's performance?</div>",
+          "options": [
+            "Flawless",
+            "Poor",
+            "Average",
+            "Cancelled"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The shop offers a discount on Mondays for students only. Teachers pay the full price.</div><div class=\"qq\">Who gets the Monday discount?</div>",
+          "options": [
+            "Students",
+            "Teachers",
+            "Everyone",
+            "No one"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Kofi watered the plants before school and again after dinner. Within weeks the garden was blooming.</div><div class=\"qq\">How often did Kofi water the plants?</div>",
+          "options": [
+            "Twice a day",
+            "Once a week",
+            "Every hour",
+            "Never"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The bakery sells out of bread by 10 am most days. Ama arrived at 11 and found only pastries left.</div><div class=\"qq\">What was left when Ama arrived?</div>",
+          "options": [
+            "Pastries",
+            "Bread",
+            "Nothing",
+            "Cakes"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "Short passage + comprehension question. Used by Comprehension.",
+      "game": "comprehend",
+      "dedupeKey": "prompt",
+      "itemSchema": {
+        "prompt": "HTML: <div class=\"passage\">…</div><div class=\"qq\">question?</div>",
+        "options": [
+          "4 answers; index 0 correct"
+        ],
+        "answer": 0
+      }
+    },
+    "scan": {
+      "items": [
+        {
+          "prompt": "<div class=\"passage\">Flight 204 departs at 9:45 am from Gate 12.</div><div class=\"qq\">Which gate?</div>",
+          "options": [
+            "12",
+            "24",
+            "9",
+            "45"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The Wi-Fi password is Blue-River-77.</div><div class=\"qq\">What is the password?</div>",
+          "options": [
+            "Blue-River-77",
+            "Red-River-77",
+            "Blue-River-70",
+            "Blue-Lake-77"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Order #5821 ships on Friday to Accra.</div><div class=\"qq\">What is the order number?</div>",
+          "options": [
+            "5821",
+            "5812",
+            "8521",
+            "5281"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The meeting has moved from Room B to Room D at 3 pm.</div><div class=\"qq\">Which room now?</div>",
+          "options": [
+            "Room D",
+            "Room B",
+            "Room C",
+            "Room A"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Dr. Osei is available on Tuesday and Thursday afternoons.</div><div class=\"qq\">Which days?</div>",
+          "options": [
+            "Tue & Thu",
+            "Mon & Wed",
+            "Wed & Fri",
+            "Tue & Fri"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Tickets cost $15 for adults and $8 for children.</div><div class=\"qq\">How much for children?</div>",
+          "options": [
+            "$8",
+            "$15",
+            "$5",
+            "$18"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The cake bakes at 180°C for 25 minutes.</div><div class=\"qq\">For how long?</div>",
+          "options": [
+            "25 minutes",
+            "15 minutes",
+            "35 minutes",
+            "20 minutes"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Contact support at help@twc.org before Monday.</div><div class=\"qq\">What is the email?</div>",
+          "options": [
+            "help@twc.org",
+            "info@twc.org",
+            "help@twc.com",
+            "helptwc.org"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The event is on the 3rd floor, Suite 306.</div><div class=\"qq\">Which suite?</div>",
+          "options": [
+            "306",
+            "360",
+            "603",
+            "036"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Bus route 7 stops at Market, Church, and School.</div><div class=\"qq\">Which route number?</div>",
+          "options": [
+            "7",
+            "11",
+            "17",
+            "70"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The parcel weighs 4 kg and ships from Depot 9.</div><div class=\"qq\">How much does it weigh?</div>",
+          "options": [
+            "4 kg",
+            "9 kg",
+            "14 kg",
+            "40 kg"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Choir rehearsal is on Thursday at 6:30 pm in Hall C.</div><div class=\"qq\">What time is rehearsal?</div>",
+          "options": [
+            "6:30 pm",
+            "6:13 pm",
+            "7:30 pm",
+            "3:60 pm"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "Short info blurb + one detail to extract quickly. Used by Agility.",
+      "game": "scan",
+      "dedupeKey": "prompt",
+      "itemSchema": {
+        "prompt": "HTML: <div class=\"passage\">…</div><div class=\"qq\">question?</div>",
+        "options": [
+          "4 answers; index 0 correct"
+        ],
+        "answer": 0
+      }
+    },
+    "theme": {
+      "items": [
+        {
+          "prompt": "<div class=\"passage\">Every morning she wakes before dawn, laces her shoes, and runs five miles. Rain or shine, she never skips a day.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Discipline",
+            "The weather",
+            "Running shoes",
+            "Sleeping in"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The old bridge had stood for a century. Carts, cars, and countless footsteps had crossed it, yet it never failed.</div><div class=\"qq\">Central theme?</div>",
+          "options": [
+            "Endurance",
+            "Traffic",
+            "Rivers",
+            "Building cars"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He gave his lunch to a stranger, helped an elderly woman cross the road, and stayed late to tutor a classmate.</div><div class=\"qq\">This is mostly about…</div>",
+          "options": [
+            "Kindness",
+            "Hunger",
+            "School",
+            "Traffic"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Despite losing everything in the flood, the villagers rebuilt their homes, stronger than before.</div><div class=\"qq\">The theme is…</div>",
+          "options": [
+            "Resilience",
+            "Floods",
+            "Houses",
+            "The weather"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The choir practised for months, blending each voice until they finally sang as one.</div><div class=\"qq\">Central theme?</div>",
+          "options": [
+            "Unity",
+            "Music theory",
+            "Months",
+            "Loud voices"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He apologised, returned what he had taken, and worked for weeks to earn back their trust.</div><div class=\"qq\">The theme is…</div>",
+          "options": [
+            "Redemption",
+            "Stealing",
+            "Hard work",
+            "Money"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">No matter how many times the toddler fell, she stood back up and tried to walk again.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Perseverance",
+            "Walking",
+            "Falling down",
+            "Toddlers"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">They shared their harvest with neighbours, gave to the poor, and kept nothing extra for themselves.</div><div class=\"qq\">The theme is…</div>",
+          "options": [
+            "Generosity",
+            "Farming",
+            "Food",
+            "Neighbours"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The scientist failed a hundred times but recorded each result and kept on experimenting.</div><div class=\"qq\">Central idea?</div>",
+          "options": [
+            "Persistence",
+            "Science class",
+            "Failure",
+            "Taking notes"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She studied every night, asked endless questions, and never accepted an easy answer.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Curiosity",
+            "Sleeping",
+            "Night time",
+            "Easy answers"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He returned the extra change, admitted his error to the boss, and refused to lie even when it cost him.</div><div class=\"qq\">The theme is…</div>",
+          "options": [
+            "Honesty",
+            "Money",
+            "Jobs",
+            "Mistakes"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Night after night she stayed by the sick child's bed, never once complaining.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Devotion",
+            "Sickness",
+            "Sleep",
+            "Night time"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "Short paragraph + its central theme. Used by Main Idea.",
+      "game": "theme",
+      "dedupeKey": "prompt",
+      "itemSchema": {
+        "prompt": "HTML: <div class=\"passage\">…</div><div class=\"qq\">question?</div>",
+        "options": [
+          "4 themes; index 0 correct"
+        ],
+        "answer": 0
+      }
+    },
+    "speedread": {
+      "items": [
+        {
+          "text": "The red fox jumped over the tall wooden fence.",
+          "q": "What jumped over the fence?",
+          "options": [
+            "A fox",
+            "A dog",
+            "A cat",
+            "A bird"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "Sarah bought three green apples at the busy market.",
+          "q": "How many apples did Sarah buy?",
+          "options": [
+            "Three",
+            "Two",
+            "Four",
+            "Five"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The early train to London leaves at noon each day.",
+          "q": "Where is the train going?",
+          "options": [
+            "London",
+            "Paris",
+            "Rome",
+            "Berlin"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A gentle rain fell softly on the quiet village.",
+          "q": "What fell on the village?",
+          "options": [
+            "Rain",
+            "Snow",
+            "Leaves",
+            "Hail"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The brave firefighter carried the child to safety.",
+          "q": "Who carried the child?",
+          "options": [
+            "A firefighter",
+            "A doctor",
+            "A teacher",
+            "A police officer"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "They planted yellow flowers along the garden path.",
+          "q": "What colour were the flowers?",
+          "options": [
+            "Yellow",
+            "Red",
+            "Blue",
+            "White"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The old clock in the hall struck twelve loud times.",
+          "q": "How many times did the clock strike?",
+          "options": [
+            "Twelve",
+            "Ten",
+            "Six",
+            "Nine"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "Grandmother baked warm bread for the whole family.",
+          "q": "What did grandmother bake?",
+          "options": [
+            "Bread",
+            "Cake",
+            "Cookies",
+            "Pie"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The little boat sailed slowly across the calm lake.",
+          "q": "Where did the boat sail?",
+          "options": [
+            "Across a lake",
+            "Down a river",
+            "Out to sea",
+            "Along a canal"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A tall giraffe reached the leaves at the treetop.",
+          "q": "Which animal reached the leaves?",
+          "options": [
+            "A giraffe",
+            "An elephant",
+            "A monkey",
+            "A zebra"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The busy baker sold fresh bread to every customer.",
+          "q": "What did the baker sell?",
+          "options": [
+            "Bread",
+            "Cakes",
+            "Fruit",
+            "Milk"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A silver plane flew high above the snowy mountains.",
+          "q": "What flew above the mountains?",
+          "options": [
+            "A plane",
+            "A bird",
+            "A kite",
+            "A balloon"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "One sentence flashed word-by-word, then a question. Used by Speed Read.",
+      "game": "speedread",
+      "dedupeKey": "text",
+      "itemSchema": {
+        "text": "a 6-10 word sentence",
+        "q": "question about it",
+        "options": [
+          "4 answers; index 0 correct"
+        ],
+        "answer": 0
+      }
+    },
+    "bibleTrivia": {
+      "items": [
+        {
+          "diff": 0,
+          "q": "Who built the ark?",
+          "options": [
+            "Noah",
+            "Moses",
+            "Abraham",
+            "David"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was swallowed by a great fish?",
+          "options": [
+            "Jonah",
+            "Elijah",
+            "Peter",
+            "Paul"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "How many disciples did Jesus choose?",
+          "options": [
+            "Twelve",
+            "Seven",
+            "Ten",
+            "Three"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "In which town was Jesus born?",
+          "options": [
+            "Bethlehem",
+            "Nazareth",
+            "Jerusalem",
+            "Jericho"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who led Israel out of Egypt?",
+          "options": [
+            "Moses",
+            "Joshua",
+            "Aaron",
+            "Samuel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What is the first book of the Bible?",
+          "options": [
+            "Genesis",
+            "Exodus",
+            "Matthew",
+            "Psalms"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was thrown into the lions' den?",
+          "options": [
+            "Daniel",
+            "Joseph",
+            "Jonah",
+            "Job"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who betrayed Jesus with a kiss?",
+          "options": [
+            "Judas",
+            "Peter",
+            "Thomas",
+            "John"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who interpreted Pharaoh's dreams?",
+          "options": [
+            "Joseph",
+            "Daniel",
+            "Moses",
+            "Jacob"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "On which mountain did Moses receive the commandments?",
+          "options": [
+            "Sinai",
+            "Zion",
+            "Carmel",
+            "Olives"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What was Jesus' first recorded miracle?",
+          "options": [
+            "Turning water into wine",
+            "Healing a leper",
+            "Walking on water",
+            "Feeding the 5000"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who denied Jesus three times?",
+          "options": [
+            "Peter",
+            "Judas",
+            "James",
+            "Thomas"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who was the first king of Israel?",
+          "options": [
+            "Saul",
+            "David",
+            "Solomon",
+            "Samuel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who baptised Jesus?",
+          "options": [
+            "John the Baptist",
+            "Peter",
+            "Andrew",
+            "Elijah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many days did Jesus fast in the wilderness?",
+          "options": [
+            "Forty",
+            "Seven",
+            "Three",
+            "Twelve"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who was the mother of Isaac?",
+          "options": [
+            "Sarah",
+            "Rebekah",
+            "Rachel",
+            "Leah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was the oldest man recorded in the Bible?",
+          "options": [
+            "Methuselah",
+            "Noah",
+            "Adam",
+            "Enoch"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which prophet was taken to heaven in a whirlwind?",
+          "options": [
+            "Elijah",
+            "Elisha",
+            "Enoch",
+            "Isaiah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who succeeded Moses as leader of Israel?",
+          "options": [
+            "Joshua",
+            "Caleb",
+            "Aaron",
+            "Gideon"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which tax collector climbed a sycamore tree to see Jesus?",
+          "options": [
+            "Zacchaeus",
+            "Matthew",
+            "Nicodemus",
+            "Bartimaeus"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "In which city were believers first called Christians?",
+          "options": [
+            "Antioch",
+            "Jerusalem",
+            "Rome",
+            "Ephesus"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was Timothy's grandmother?",
+          "options": [
+            "Lois",
+            "Eunice",
+            "Priscilla",
+            "Dorcas"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which judge defeated the Midianites with 300 men?",
+          "options": [
+            "Gideon",
+            "Samson",
+            "Deborah",
+            "Ehud"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "How many books are in the Protestant Bible?",
+          "options": [
+            "66",
+            "72",
+            "40",
+            "39"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was the first man God created?",
+          "options": [
+            "Adam",
+            "Noah",
+            "Cain",
+            "Abel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was Jesus' mother?",
+          "options": [
+            "Mary",
+            "Martha",
+            "Ruth",
+            "Sarah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "In which garden did Adam and Eve live?",
+          "options": [
+            "Eden",
+            "Gethsemane",
+            "Babylon",
+            "Canaan"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who killed the giant Goliath?",
+          "options": [
+            "David",
+            "Samson",
+            "Saul",
+            "Joshua"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What sign did God give after the flood?",
+          "options": [
+            "A rainbow",
+            "A star",
+            "A cloud",
+            "A dove"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "How many days did God work before resting?",
+          "options": [
+            "Six",
+            "Seven",
+            "Three",
+            "Five"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What was Jesus laid in as a baby?",
+          "options": [
+            "A manger",
+            "A basket",
+            "A cradle",
+            "A boat"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who walked on water to Jesus?",
+          "options": [
+            "Peter",
+            "John",
+            "James",
+            "Andrew"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many plagues struck Egypt?",
+          "options": [
+            "Ten",
+            "Seven",
+            "Twelve",
+            "Three"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What food did God provide in the wilderness?",
+          "options": [
+            "Manna",
+            "Bread",
+            "Fish",
+            "Fruit"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Which woman betrayed Samson?",
+          "options": [
+            "Delilah",
+            "Jezebel",
+            "Rahab",
+            "Ruth"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who wrote most of the New Testament letters?",
+          "options": [
+            "Paul",
+            "Peter",
+            "John",
+            "Luke"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What animal did Jesus ride into Jerusalem?",
+          "options": [
+            "A donkey",
+            "A horse",
+            "A camel",
+            "A mule"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many people were saved on the ark?",
+          "options": [
+            "Eight",
+            "Four",
+            "Twelve",
+            "Two"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What was Matthew's job before following Jesus?",
+          "options": [
+            "Tax collector",
+            "Fisherman",
+            "Shepherd",
+            "Carpenter"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Which sea did God part for Israel?",
+          "options": [
+            "Red Sea",
+            "Dead Sea",
+            "Sea of Galilee",
+            "Mediterranean"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which king tried to kill the baby Jesus?",
+          "options": [
+            "Herod",
+            "Pilate",
+            "Nero",
+            "Caesar"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What is the last book of the Bible?",
+          "options": [
+            "Revelation",
+            "Malachi",
+            "Jude",
+            "Acts"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was blinded on the road to Damascus?",
+          "options": [
+            "Saul",
+            "Silas",
+            "Stephen",
+            "Philip"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which prophet was told to marry Gomer?",
+          "options": [
+            "Hosea",
+            "Amos",
+            "Joel",
+            "Micah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who rebuilt the walls of Jerusalem?",
+          "options": [
+            "Nehemiah",
+            "Ezra",
+            "Zerubbabel",
+            "Haggai"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "How many years did Israel wander in the wilderness?",
+          "options": [
+            "Forty",
+            "Seventy",
+            "Twelve",
+            "Four"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which queen risked her life to save the Jews?",
+          "options": [
+            "Esther",
+            "Vashti",
+            "Bathsheba",
+            "Deborah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who baptised in the Jordan and ate locusts?",
+          "options": [
+            "John the Baptist",
+            "Elijah",
+            "Elisha",
+            "Andrew"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "Multiple-choice Bible-knowledge questions, tagged by difficulty. Used by Bible Trivia.",
+      "game": "bibletrivia",
+      "dedupeKey": "q",
+      "difficulty": {
+        "field": "diff",
+        "values": {
+          "0": "easy / well-known",
+          "1": "medium",
+          "2": "hard / for scripture buffs"
+        },
+        "targetPerValue": 40
+      },
+      "itemSchema": {
+        "diff": "0 | 1 | 2",
+        "q": "question",
+        "options": [
+          "4 answers; index 0 correct"
+        ],
+        "answer": 0
+      }
+    },
+    "bibleVerse": {
+      "items": [
+        {
+          "diff": 0,
+          "prompt": "&ldquo;For God so loved the <span class=\"slot\">____</span> that he gave his only Son.&rdquo;",
+          "options": [
+            "world",
+            "people",
+            "earth",
+            "nations"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;The Lord is my <span class=\"slot\">____</span>; I shall not want.&rdquo;",
+          "options": [
+            "shepherd",
+            "strength",
+            "refuge",
+            "light"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;I can do all things through <span class=\"slot\">____</span> who strengthens me.&rdquo;",
+          "options": [
+            "Christ",
+            "God",
+            "faith",
+            "grace"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;In the <span class=\"slot\">____</span> God created the heavens and the earth.&rdquo;",
+          "options": [
+            "beginning",
+            "garden",
+            "light",
+            "Spirit"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Love is patient, love is <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "kind",
+            "gentle",
+            "pure",
+            "humble"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Be still, and know that I am <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "God",
+            "holy",
+            "near",
+            "love"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Trust in the Lord with all your <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "heart",
+            "soul",
+            "strength",
+            "might"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Your word is a lamp to my feet and a <span class=\"slot\">____</span> to my path.&rdquo;",
+          "options": [
+            "light",
+            "guide",
+            "torch",
+            "map"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;The fear of the Lord is the beginning of <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "wisdom",
+            "knowledge",
+            "life",
+            "faith"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Weeping may endure for a night, but <span class=\"slot\">____</span> comes in the morning.&rdquo;",
+          "options": [
+            "joy",
+            "hope",
+            "peace",
+            "light"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;All things work together for <span class=\"slot\">____</span> to those who love God.&rdquo;",
+          "options": [
+            "good",
+            "glory",
+            "grace",
+            "peace"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Rejoice in the Lord <span class=\"slot\">____</span>; again I will say, rejoice.&rdquo;",
+          "options": [
+            "always",
+            "daily",
+            "greatly",
+            "ever"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;They that wait upon the Lord shall renew their <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "strength",
+            "spirit",
+            "hope",
+            "faith"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;For all have sinned and fall short of the <span class=\"slot\">____</span> of God.&rdquo;",
+          "options": [
+            "glory",
+            "grace",
+            "law",
+            "kingdom"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;The just shall live by his <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "faith",
+            "works",
+            "word",
+            "law"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;A soft answer turns away <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "wrath",
+            "anger",
+            "evil",
+            "strife"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;He must increase, but I must <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "decrease",
+            "follow",
+            "remain",
+            "depart"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;Iron sharpens iron, so one person sharpens <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "another",
+            "a friend",
+            "the mind",
+            "a blade"
+          ],
+          "answer": 0
+        }
+      ],
+      "description": "Fill-in-the-blank of a well-known verse, by difficulty. Used by Finish the Verse.",
+      "game": "bibleverse",
+      "dedupeKey": "prompt",
+      "difficulty": {
+        "field": "diff",
+        "values": {
+          "0": "easy",
+          "1": "medium",
+          "2": "hard"
+        },
+        "targetPerValue": 20
+      },
+      "itemSchema": {
+        "diff": "0 | 1 | 2",
+        "prompt": "the verse with one <span class=\"slot\">____</span> blank, in “curly quotes”",
+        "options": [
+          "4 words; index 0 correct"
+        ],
+        "answer": 0
+      }
+    },
+    "bibleBooks": {
+      "items": [
+        "Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy",
+        "Joshua",
+        "Judges",
+        "Ruth",
+        "1 Samuel",
+        "2 Samuel",
+        "1 Kings",
+        "2 Kings",
+        "1 Chronicles",
+        "2 Chronicles",
+        "Ezra",
+        "Nehemiah",
+        "Esther",
+        "Job",
+        "Psalms",
+        "Proverbs",
+        "Ecclesiastes",
+        "Song of Solomon",
+        "Isaiah",
+        "Jeremiah",
+        "Lamentations",
+        "Ezekiel",
+        "Daniel",
+        "Hosea",
+        "Joel",
+        "Amos",
+        "Obadiah",
+        "Jonah",
+        "Micah",
+        "Nahum",
+        "Habakkuk",
+        "Zephaniah",
+        "Haggai",
+        "Zechariah",
+        "Malachi",
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John",
+        "Acts",
+        "Romans",
+        "1 Corinthians",
+        "2 Corinthians",
+        "Galatians",
+        "Ephesians",
+        "Philippians",
+        "Colossians",
+        "1 Thessalonians",
+        "2 Thessalonians",
+        "1 Timothy",
+        "2 Timothy",
+        "Titus",
+        "Philemon",
+        "Hebrews",
+        "James",
+        "1 Peter",
+        "2 Peter",
+        "1 John",
+        "2 John",
+        "3 John",
+        "Jude",
+        "Revelation"
+      ],
+      "description": "The 66 books of the Bible in canonical order. Used by Books in Order to generate ordering puzzles. Do NOT reorder; only correct spelling.",
+      "game": "biblebooks",
+      "dedupeKey": "self",
+      "itemSchema": "array of book names in order"
+    },
+    "vocab": {
+      "items": [
+        {
+          "hz": "我",
+          "py": "wǒ",
+          "en": "I / me",
+          "hsk": 1
+        },
+        {
+          "hz": "你",
+          "py": "nǐ",
+          "en": "you",
+          "hsk": 1
+        },
+        {
+          "hz": "好",
+          "py": "hǎo",
+          "en": "good",
+          "hsk": 1
+        },
+        {
+          "hz": "谢谢",
+          "py": "xièxie",
+          "en": "thanks",
+          "hsk": 1
+        },
+        {
+          "hz": "水",
+          "py": "shuǐ",
+          "en": "water",
+          "hsk": 1
+        },
+        {
+          "hz": "人",
+          "py": "rén",
+          "en": "person",
+          "hsk": 1
+        },
+        {
+          "hz": "大",
+          "py": "dà",
+          "en": "big",
+          "hsk": 1
+        },
+        {
+          "hz": "小",
+          "py": "xiǎo",
+          "en": "small",
+          "hsk": 1
+        },
+        {
+          "hz": "吃",
+          "py": "chī",
+          "en": "to eat",
+          "hsk": 1
+        },
+        {
+          "hz": "喝",
+          "py": "hē",
+          "en": "to drink",
+          "hsk": 1
+        },
+        {
+          "hz": "老师",
+          "py": "lǎoshī",
+          "en": "teacher",
+          "hsk": 1
+        },
+        {
+          "hz": "学生",
+          "py": "xuésheng",
+          "en": "student",
+          "hsk": 1
+        },
+        {
+          "hz": "朋友",
+          "py": "péngyou",
+          "en": "friend",
+          "hsk": 2
+        },
+        {
+          "hz": "时间",
+          "py": "shíjiān",
+          "en": "time",
+          "hsk": 2
+        },
+        {
+          "hz": "忙",
+          "py": "máng",
+          "en": "busy",
+          "hsk": 2
+        },
+        {
+          "hz": "便宜",
+          "py": "piányi",
+          "en": "cheap",
+          "hsk": 2
+        },
+        {
+          "hz": "快乐",
+          "py": "kuàilè",
+          "en": "happy",
+          "hsk": 2
+        },
+        {
+          "hz": "帮助",
+          "py": "bāngzhù",
+          "en": "to help",
+          "hsk": 2
+        },
+        {
+          "hz": "已经",
+          "py": "yǐjīng",
+          "en": "already",
+          "hsk": 2
+        },
+        {
+          "hz": "因为",
+          "py": "yīnwèi",
+          "en": "because",
+          "hsk": 2
+        },
+        {
+          "hz": "但是",
+          "py": "dànshì",
+          "en": "but",
+          "hsk": 2
+        },
+        {
+          "hz": "累",
+          "py": "lèi",
+          "en": "tired",
+          "hsk": 2
+        },
+        {
+          "hz": "快",
+          "py": "kuài",
+          "en": "fast",
+          "hsk": 2
+        },
+        {
+          "hz": "慢",
+          "py": "màn",
+          "en": "slow",
+          "hsk": 2
+        },
+        {
+          "hz": "环境",
+          "py": "huánjìng",
+          "en": "environment",
+          "hsk": 3
+        },
+        {
+          "hz": "简单",
+          "py": "jiǎndān",
+          "en": "simple",
+          "hsk": 3
+        },
+        {
+          "hz": "需要",
+          "py": "xūyào",
+          "en": "to need",
+          "hsk": 3
+        },
+        {
+          "hz": "提高",
+          "py": "tígāo",
+          "en": "to improve",
+          "hsk": 3
+        },
+        {
+          "hz": "习惯",
+          "py": "xíguàn",
+          "en": "habit",
+          "hsk": 3
+        },
+        {
+          "hz": "健康",
+          "py": "jiànkāng",
+          "en": "health",
+          "hsk": 3
+        },
+        {
+          "hz": "选择",
+          "py": "xuǎnzé",
+          "en": "to choose",
+          "hsk": 3
+        },
+        {
+          "hz": "关系",
+          "py": "guānxi",
+          "en": "relationship",
+          "hsk": 3
+        },
+        {
+          "hz": "决定",
+          "py": "juédìng",
+          "en": "to decide",
+          "hsk": 3
+        },
+        {
+          "hz": "影响",
+          "py": "yǐngxiǎng",
+          "en": "influence",
+          "hsk": 3
+        },
+        {
+          "hz": "满意",
+          "py": "mǎnyì",
+          "en": "satisfied",
+          "hsk": 3
+        },
+        {
+          "hz": "邻居",
+          "py": "línjū",
+          "en": "neighbour",
+          "hsk": 3
+        },
+        {
+          "hz": "复杂",
+          "py": "fùzá",
+          "en": "complex",
+          "hsk": 4
+        },
+        {
+          "hz": "推迟",
+          "py": "tuīchí",
+          "en": "to postpone",
+          "hsk": 4
+        },
+        {
+          "hz": "骄傲",
+          "py": "jiāo'ào",
+          "en": "proud",
+          "hsk": 4
+        },
+        {
+          "hz": "顺利",
+          "py": "shùnlì",
+          "en": "smooth / successful",
+          "hsk": 4
+        },
+        {
+          "hz": "详细",
+          "py": "xiángxì",
+          "en": "detailed",
+          "hsk": 4
+        },
+        {
+          "hz": "尊重",
+          "py": "zūnzhòng",
+          "en": "to respect",
+          "hsk": 4
+        },
+        {
+          "hz": "鼓励",
+          "py": "gǔlì",
+          "en": "to encourage",
+          "hsk": 4
+        },
+        {
+          "hz": "批评",
+          "py": "pīpíng",
+          "en": "to criticise",
+          "hsk": 4
+        },
+        {
+          "hz": "责任",
+          "py": "zérèn",
+          "en": "responsibility",
+          "hsk": 4
+        },
+        {
+          "hz": "保护",
+          "py": "bǎohù",
+          "en": "to protect",
+          "hsk": 4
+        },
+        {
+          "hz": "严格",
+          "py": "yángé",
+          "en": "strict",
+          "hsk": 4
+        },
+        {
+          "hz": "积极",
+          "py": "jījí",
+          "en": "positive / active",
+          "hsk": 4
+        },
+        {
+          "hz": "佩服",
+          "py": "pèifú",
+          "en": "to admire",
+          "hsk": 5
+        },
+        {
+          "hz": "谨慎",
+          "py": "jǐnshèn",
+          "en": "cautious",
+          "hsk": 5
+        },
+        {
+          "hz": "具体",
+          "py": "jùtǐ",
+          "en": "concrete / specific",
+          "hsk": 5
+        },
+        {
+          "hz": "抱怨",
+          "py": "bàoyuàn",
+          "en": "to complain",
+          "hsk": 5
+        },
+        {
+          "hz": "承担",
+          "py": "chéngdān",
+          "en": "to undertake",
+          "hsk": 5
+        },
+        {
+          "hz": "忽视",
+          "py": "hūshì",
+          "en": "to ignore",
+          "hsk": 5
+        },
+        {
+          "hz": "谦虚",
+          "py": "qiānxū",
+          "en": "modest",
+          "hsk": 5
+        },
+        {
+          "hz": "分析",
+          "py": "fēnxī",
+          "en": "to analyse",
+          "hsk": 5
+        },
+        {
+          "hz": "现象",
+          "py": "xiànxiàng",
+          "en": "phenomenon",
+          "hsk": 5
+        },
+        {
+          "hz": "效率",
+          "py": "xiàolǜ",
+          "en": "efficiency",
+          "hsk": 5
+        },
+        {
+          "hz": "措施",
+          "py": "cuòshī",
+          "en": "measure / step",
+          "hsk": 5
+        },
+        {
+          "hz": "促进",
+          "py": "cùjìn",
+          "en": "to promote",
+          "hsk": 5
+        },
+        {
+          "hz": "潜力",
+          "py": "qiánlì",
+          "en": "potential",
+          "hsk": 6
+        },
+        {
+          "hz": "崛起",
+          "py": "juéqǐ",
+          "en": "to rise / emerge",
+          "hsk": 6
+        },
+        {
+          "hz": "严峻",
+          "py": "yánjùn",
+          "en": "severe / grim",
+          "hsk": 6
+        },
+        {
+          "hz": "卓越",
+          "py": "zhuóyuè",
+          "en": "outstanding",
+          "hsk": 6
+        },
+        {
+          "hz": "弥补",
+          "py": "míbǔ",
+          "en": "to make up for",
+          "hsk": 6
+        },
+        {
+          "hz": "贯彻",
+          "py": "guànchè",
+          "en": "to implement",
+          "hsk": 6
+        },
+        {
+          "hz": "契机",
+          "py": "qìjī",
+          "en": "turning point",
+          "hsk": 6
+        },
+        {
+          "hz": "沉浸",
+          "py": "chénjìn",
+          "en": "to immerse",
+          "hsk": 6
+        },
+        {
+          "hz": "严谨",
+          "py": "yánjǐn",
+          "en": "rigorous",
+          "hsk": 6
+        },
+        {
+          "hz": "枢纽",
+          "py": "shūniǔ",
+          "en": "hub / pivot",
+          "hsk": 6
+        },
+        {
+          "hz": "迄今",
+          "py": "qìjīn",
+          "en": "so far / to date",
+          "hsk": 6
+        },
+        {
+          "hz": "徘徊",
+          "py": "páihuái",
+          "en": "to hesitate / linger",
+          "hsk": 6
+        }
+      ],
+      "description": "Chinese vocabulary tagged by HSK level. Feeds Meaning, Pinyin, Characters and Listening (difficulty maps Easy=HSK1-2, Medium=3-4, Hard=5-6).",
+      "games": [
+        "zhmeaning",
+        "zhpinyin",
+        "zhchar",
+        "zhlisten"
+      ],
+      "dedupeKey": "hz",
+      "difficulty": {
+        "field": "hsk",
+        "values": {
+          "1": "HSK1",
+          "2": "HSK2",
+          "3": "HSK3",
+          "4": "HSK4",
+          "5": "HSK5",
+          "6": "HSK6"
+        },
+        "targetPerValue": 20
+      },
+      "itemSchema": {
+        "hz": "characters",
+        "py": "pinyin WITH tone marks",
+        "en": "English meaning (distinct enough to be a wrong option for others)",
+        "hsk": "1-6"
+      }
+    },
+    "zhSentences": {
+      "items": [
+        {
+          "lvl": 0,
+          "en": "I drink water every day.",
+          "words": [
+            "我",
+            "每天",
+            "喝",
+            "水"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "He is a teacher.",
+          "words": [
+            "他",
+            "是",
+            "老师"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "I like to eat Chinese food.",
+          "words": [
+            "我",
+            "喜欢",
+            "吃",
+            "中国菜"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "This is my friend.",
+          "words": [
+            "这",
+            "是",
+            "我的",
+            "朋友"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "I think this book is very interesting.",
+          "words": [
+            "我",
+            "觉得",
+            "这本书",
+            "很",
+            "有意思"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "Although it is raining, I still want to go.",
+          "words": [
+            "虽然",
+            "下雨",
+            "但是",
+            "我",
+            "还是",
+            "想",
+            "去"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "She has already decided to study Chinese.",
+          "words": [
+            "她",
+            "已经",
+            "决定",
+            "学",
+            "中文",
+            "了"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "My friend helped me a lot.",
+          "words": [
+            "我的",
+            "朋友",
+            "帮助",
+            "了",
+            "我",
+            "很多"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "We should protect the environment.",
+          "words": [
+            "我们",
+            "应该",
+            "保护",
+            "环境"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "This measure will promote economic development.",
+          "words": [
+            "这个",
+            "措施",
+            "会",
+            "促进",
+            "经济",
+            "发展"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "He took on an important responsibility.",
+          "words": [
+            "他",
+            "承担",
+            "了",
+            "一个",
+            "重要的",
+            "责任"
+          ]
+        }
+      ],
+      "description": "Chinese sentences split into word tiles to reorder, by level. Used by Sentence Builder.",
+      "game": "zhsentence",
+      "dedupeKey": "en",
+      "difficulty": {
+        "field": "lvl",
+        "values": {
+          "0": "easy (HSK1-2)",
+          "1": "medium (HSK3-4)",
+          "2": "hard (HSK5-6)"
+        },
+        "targetPerValue": 8
+      },
+      "itemSchema": {
+        "lvl": "0 | 1 | 2",
+        "en": "the English meaning (shown as a hint)",
+        "words": [
+          "the Chinese words in the ONE natural/canonical order"
+        ]
+      }
+    }
+  }
+}
