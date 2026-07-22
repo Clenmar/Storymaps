@@ -446,6 +446,7 @@
     <div class="gbar">
       <button class="btn ghost" id="lbBack">&#8592; Back</button>
       <div class="name"><span id="lbFamily">Leaderboard</span></div>
+      <button class="btn" id="lbShare" style="display:none">&#128257; Share</button>
     </div>
     <div class="board-tabs" id="lbTabs"></div>
     <div class="board-tabs" id="lbGameTabs"></div>
@@ -1941,10 +1942,12 @@
     show("leader");
     $("lbFamily").textContent = auth ? auth.family + " leaderboard" : "Leaderboard";
     if (!auth) {
+      $("lbShare").style.display = "none";
       $("lbTabs").innerHTML = ""; $("lbGameTabs").innerHTML = ""; $("lbGameTabs").style.display = "none";
       $("lbBody").innerHTML = '<div class="lb-empty">Sign in with your family password to see and join the leaderboard.<br><br><button class="btn primary" id="lbSign">Sign in</button></div>';
       var b = $("lbSign"); if (b) b.addEventListener("click", openSign); return;
     }
+    $("lbShare").style.display = "";
     renderTabs();
     $("lbBody").innerHTML = '<div class="lb-empty">Loading…</div>';
     api("GET", "/api/board").then(function (r) { boardCache = r; renderBoard(); })
@@ -2006,6 +2009,53 @@
 
   $("leaderBtn").addEventListener("click", openLeader);
   $("lbBack").addEventListener("click", function () { show("home"); });
+
+  // ── share the leaderboard ───────────────────────────────────────────────
+  function medalText(i) { return i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : (i + 1) + "."; }
+
+  function boardShareText() {
+    if (!boardCache) return "";
+    var fam = boardCache.name || (auth && auth.family) || "Our family";
+    var lines = [];
+    if (lbCat === "total") {
+      lines.push("🏆 " + fam + " — Brain Games leaderboard");
+      (boardCache.players || []).slice(0, 12).forEach(function (p, i) { lines.push(medalText(i) + " " + p.player + " — " + p.total); });
+    } else {
+      var list = (boardCache.games && boardCache.games[lbGame]) || [];
+      lines.push("🏆 " + fam + " — " + GAMES[lbGame].name);
+      list.slice(0, 12).forEach(function (p, i) { lines.push(medalText(i) + " " + p.player + " — " + p.score + " " + GAMES[lbGame].unit); });
+    }
+    if (lines.length === 1) lines.push("No scores yet — be the first!");
+    lines.push("");
+    lines.push("Play at " + location.origin + location.pathname);
+    return lines.join("\n");
+  }
+
+  $("lbShare").addEventListener("click", function () {
+    var text = boardShareText();
+    if (!text) { toast("Nothing to share yet"); return; }
+    var title = "TWC Brain Games leaderboard";
+    if (navigator.share) {
+      navigator.share({ title: title, text: text }).catch(function () {});
+      return;
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { toast("Leaderboard copied — paste it anywhere"); })
+        .catch(function () { shareFallback(text); });
+      return;
+    }
+    shareFallback(text);
+  });
+
+  function shareFallback(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      var okc = document.execCommand("copy"); document.body.removeChild(ta);
+      toast(okc ? "Leaderboard copied — paste it anywhere" : "Copy not supported on this device");
+    } catch (e) { toast("Copy not supported on this device"); }
+  }
 
   // ── posting scores ──────────────────────────────────────────────────────
   function postScore(game, score, improved) {

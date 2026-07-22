@@ -969,6 +969,166 @@
             "—"
           ],
           "answer": 2
+        },
+        {
+          "prompt": "When the rain stopped <span class=\"slot\">&#9634;</span> the birds began to sing.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He asked for one thing <span class=\"slot\">&#9634;</span> a second chance.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The wind picked up <span class=\"slot\">&#9634;</span> the sea grew rough.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "After the harvest <span class=\"slot\">&#9634;</span> the village held a feast.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "She packed three books <span class=\"slot\">&#9634;</span> a novel, a diary, and an atlas.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "He locked the door <span class=\"slot\">&#9634;</span> then he checked the windows.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The road was icy <span class=\"slot\">&#9634;</span> the driver slowed right down.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "Before the show begins <span class=\"slot\">&#9634;</span> please silence your phones.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "There is one thing I need <span class=\"slot\">&#9634;</span> your honesty.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The lights dimmed <span class=\"slot\">&#9634;</span> the curtain slowly rose.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "If you finish early <span class=\"slot\">&#9634;</span> you may leave.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "We bought supplies <span class=\"slot\">&#9634;</span> rope, nails, and glue.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "The bell rang <span class=\"slot\">&#9634;</span> and the class fell silent.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "He trained for years <span class=\"slot\">&#9634;</span> his patience was rewarded.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 1
+        },
+        {
+          "prompt": "Remember the rule <span class=\"slot\">&#9634;</span> safety comes first.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 2
+        },
+        {
+          "prompt": "As the crowd cheered <span class=\"slot\">&#9634;</span> the winner waved back.",
+          "options": [
+            ",",
+            ";",
+            ":",
+            "—"
+          ],
+          "answer": 0
         }
       ],
       "description": "Choose the punctuation mark for the ▢ slot. Used by Punctuation.",
@@ -1503,6 +1663,86 @@
             "bold"
           ],
           "answer": 0
+        },
+        {
+          "prompt": "The cave was very <b>dark</b>.",
+          "options": [
+            "pitch-dark",
+            "dim",
+            "shadowy",
+            "murky"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The river was very <b>fast</b>.",
+          "options": [
+            "raging",
+            "swift",
+            "quick",
+            "brisk"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The bread was very <b>fresh</b>.",
+          "options": [
+            "just-baked",
+            "new",
+            "warm",
+            "soft"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The old man was very <b>wise</b>.",
+          "options": [
+            "sagacious",
+            "clever",
+            "smart",
+            "sharp"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The child was very <b>hungry</b>.",
+          "options": [
+            "ravenous",
+            "peckish",
+            "empty",
+            "keen"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The night was very <b>quiet</b>.",
+          "options": [
+            "silent",
+            "calm",
+            "still",
+            "hushed"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The runner was very <b>fast</b>.",
+          "options": [
+            "lightning-quick",
+            "speedy",
+            "brisk",
+            "nimble"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "The room was very <b>messy</b>.",
+          "options": [
+            "chaotic",
+            "untidy",
+            "cluttered",
+            "dusty"
+          ],
+          "answer": 0
         }
       ],
       "description": "Replace a bland <b>bolded</b> word with the strongest synonym. Used by Expression.",
@@ -1789,6 +2029,153 @@
             "Even though he apologised,",
             "she was",
             "still upset."
+          ]
+        },
+        {
+          "chunks": [
+            "Because the power failed,",
+            "the whole street",
+            "went dark."
+          ]
+        },
+        {
+          "chunks": [
+            "After the concert ended,",
+            "the fans",
+            "went home."
+          ]
+        },
+        {
+          "chunks": [
+            "When the tide came in,",
+            "the sandcastle",
+            "washed away."
+          ]
+        },
+        {
+          "chunks": [
+            "Although the road was long,",
+            "the pilgrims",
+            "kept walking."
+          ]
+        },
+        {
+          "chunks": [
+            "If the seeds get water,",
+            "they will",
+            "begin to grow."
+          ]
+        },
+        {
+          "chunks": [
+            "Since the shop was shut,",
+            "we bought",
+            "bread elsewhere."
+          ]
+        },
+        {
+          "chunks": [
+            "As the sun set,",
+            "the temperature",
+            "started to drop."
+          ]
+        },
+        {
+          "chunks": [
+            "Before the guests arrived,",
+            "the cook",
+            "set the table."
+          ]
+        },
+        {
+          "chunks": [
+            "While the storm raged,",
+            "the family",
+            "stayed indoors."
+          ]
+        },
+        {
+          "chunks": [
+            "Once the bell rang,",
+            "the pupils",
+            "rushed outside."
+          ]
+        },
+        {
+          "chunks": [
+            "Whenever he travels,",
+            "he sends",
+            "a postcard home."
+          ]
+        },
+        {
+          "chunks": [
+            "Even though it was late,",
+            "the shop",
+            "was still open."
+          ]
+        },
+        {
+          "chunks": [
+            "Because she trained hard,",
+            "the athlete",
+            "won the race."
+          ]
+        },
+        {
+          "chunks": [
+            "After the rain fell,",
+            "the flowers",
+            "opened wide."
+          ]
+        },
+        {
+          "chunks": [
+            "When the music began,",
+            "the dancers",
+            "took the floor."
+          ]
+        },
+        {
+          "chunks": [
+            "Although money was short,",
+            "they gave",
+            "what they could."
+          ]
+        },
+        {
+          "chunks": [
+            "If you tell the truth,",
+            "people will",
+            "learn to trust you."
+          ]
+        },
+        {
+          "chunks": [
+            "Since the bridge was closed,",
+            "the drivers",
+            "found another way."
+          ]
+        },
+        {
+          "chunks": [
+            "As the plane landed,",
+            "the passengers",
+            "began to clap."
+          ]
+        },
+        {
+          "chunks": [
+            "Before the match started,",
+            "the captain",
+            "gave a speech."
+          ]
+        },
+        {
+          "chunks": [
+            "While the baby napped,",
+            "the mother",
+            "cleaned the room."
           ]
         }
       ],
@@ -2160,6 +2547,246 @@
             "A dance",
             "A poem",
             "A speech"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Lisa watered her tomato plants twice a day until they bore red fruit.</div><div class=\"qq\">How often did Lisa water the plants?</div>",
+          "options": [
+            "Twice a day",
+            "Once a week",
+            "Every hour",
+            "Never"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The bakery gives day-old bread to the shelter each evening.</div><div class=\"qq\">Who gets the day-old bread?</div>",
+          "options": [
+            "The shelter",
+            "The staff",
+            "The school",
+            "No one"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Owusu ran out of petrol and pushed his car to the station.</div><div class=\"qq\">Why did Owusu push his car?</div>",
+          "options": [
+            "He ran out of petrol",
+            "The engine broke",
+            "A tyre burst",
+            "He was practising"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The choir rehearses on Tuesdays and performs on Sundays.</div><div class=\"qq\">When does the choir perform?</div>",
+          "options": [
+            "Sundays",
+            "Tuesdays",
+            "Fridays",
+            "Mondays"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Ama scored 8 out of 10 on the first test and 10 on the second.</div><div class=\"qq\">What did Ama score on the second test?</div>",
+          "options": [
+            "10",
+            "8",
+            "9",
+            "5"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The zoo's panda sleeps all day and eats bamboo at night.</div><div class=\"qq\">What does the panda eat?</div>",
+          "options": [
+            "Bamboo",
+            "Fish",
+            "Leaves",
+            "Fruit"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Because the lift was broken, they climbed six flights of stairs.</div><div class=\"qq\">Why did they climb the stairs?</div>",
+          "options": [
+            "The lift was broken",
+            "For exercise",
+            "The stairs were faster",
+            "It was a fire drill"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Kojo painted the fence white and the gate blue.</div><div class=\"qq\">What colour was the gate?</div>",
+          "options": [
+            "Blue",
+            "White",
+            "Green",
+            "Red"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The train has ten carriages, but only the first three are for families.</div><div class=\"qq\">How many carriages are for families?</div>",
+          "options": [
+            "Three",
+            "Ten",
+            "Seven",
+            "One"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Every winter the lake freezes, and children skate on it.</div><div class=\"qq\">What do children do on the frozen lake?</div>",
+          "options": [
+            "Skate",
+            "Swim",
+            "Fish",
+            "Sail"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The teacher praised Efua for helping a classmate who was struggling.</div><div class=\"qq\">Why was Efua praised?</div>",
+          "options": [
+            "She helped a classmate",
+            "She scored highest",
+            "She was quiet",
+            "She arrived early"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Dad cooks on weekends, and Mum cooks on weekdays.</div><div class=\"qq\">Who cooks on Saturdays?</div>",
+          "options": [
+            "Dad",
+            "Mum",
+            "Both",
+            "Neither"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The seeds sprouted after a week and flowered a month later.</div><div class=\"qq\">When did the seeds sprout?</div>",
+          "options": [
+            "After a week",
+            "After a month",
+            "After a day",
+            "After a year"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Nii saved for two years and finally bought a laptop for school.</div><div class=\"qq\">What did Nii buy?</div>",
+          "options": [
+            "A laptop",
+            "A phone",
+            "A bike",
+            "A camera"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The museum lets children in free but charges adults ten cedis.</div><div class=\"qq\">How much do children pay?</div>",
+          "options": [
+            "Nothing",
+            "Ten cedis",
+            "Five cedis",
+            "Two cedis"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The storm knocked out the power, so we ate dinner by candlelight.</div><div class=\"qq\">Why did they use candles?</div>",
+          "options": [
+            "The power went out",
+            "It was a birthday",
+            "They had no table",
+            "The lights were dim"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Adjoa reads one chapter each night and finished the novel in twelve days.</div><div class=\"qq\">How much does Adjoa read each night?</div>",
+          "options": [
+            "One chapter",
+            "Two chapters",
+            "A page",
+            "Half the book"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The shop opens at eight, but the café inside opens at nine.</div><div class=\"qq\">When does the café open?</div>",
+          "options": [
+            "Nine",
+            "Eight",
+            "Ten",
+            "Seven"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The farmer sold all his mangoes but kept the pineapples for the family.</div><div class=\"qq\">What did the farmer keep?</div>",
+          "options": [
+            "Pineapples",
+            "Mangoes",
+            "Bananas",
+            "Oranges"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">After losing the first set, Kwame won the next two and took the match.</div><div class=\"qq\">How many sets did Kwame win?</div>",
+          "options": [
+            "Two",
+            "One",
+            "Three",
+            "None"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Because it was her birthday, the whole class sang for Yaa.</div><div class=\"qq\">Why did the class sing for Yaa?</div>",
+          "options": [
+            "It was her birthday",
+            "She won a prize",
+            "She was leaving",
+            "She was sick"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The recipe makes eight pancakes, and each child ate two.</div><div class=\"qq\">If four children ate, how many pancakes were eaten?</div>",
+          "options": [
+            "Eight",
+            "Four",
+            "Two",
+            "Six"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The library is quiet, except on Saturdays when children's story hour is held.</div><div class=\"qq\">When is the library not quiet?</div>",
+          "options": [
+            "Saturdays",
+            "Sundays",
+            "Mondays",
+            "Fridays"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Kofi forgot his lunch, so his friend shared half a sandwich with him.</div><div class=\"qq\">What did Kofi's friend share?</div>",
+          "options": [
+            "Half a sandwich",
+            "An apple",
+            "Some juice",
+            "A biscuit"
           ],
           "answer": 0
         }
@@ -2536,6 +3163,246 @@
             "20 months"
           ],
           "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The workshop is in Room 5C at 2:30 pm.</div><div class=\"qq\">Which room?</div>",
+          "options": [
+            "5C",
+            "5D",
+            "C5",
+            "15C"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Your ticket number is T-8830.</div><div class=\"qq\">What is the ticket number?</div>",
+          "options": [
+            "T-8830",
+            "T-8380",
+            "T-8803",
+            "P-8830"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The ferry leaves from Pier 9 every half hour.</div><div class=\"qq\">Which pier?</div>",
+          "options": [
+            "9",
+            "19",
+            "6",
+            "90"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The appointment is on Thursday at 4:15 pm.</div><div class=\"qq\">What time is the appointment?</div>",
+          "options": [
+            "4:15 pm",
+            "4:50 pm",
+            "5:15 pm",
+            "4:05 pm"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The subscription costs 90 cedis per year.</div><div class=\"qq\">How much per year?</div>",
+          "options": [
+            "90 cedis",
+            "19 cedis",
+            "99 cedis",
+            "09 cedis"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The stadium holds 45,000 spectators.</div><div class=\"qq\">How many does it hold?</div>",
+          "options": [
+            "45,000",
+            "54,000",
+            "40,500",
+            "4,500"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Boarding closes 30 minutes before takeoff.</div><div class=\"qq\">How long before takeoff does boarding close?</div>",
+          "options": [
+            "30 minutes",
+            "13 minutes",
+            "20 minutes",
+            "40 minutes"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Add 300 grams of sugar to the mix.</div><div class=\"qq\">How much sugar?</div>",
+          "options": [
+            "300 grams",
+            "30 grams",
+            "3 grams",
+            "330 grams"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Call the helpline on 0501-244-700.</div><div class=\"qq\">What is the helpline number?</div>",
+          "options": [
+            "0501-244-700",
+            "0501-424-700",
+            "0501-244-070",
+            "0510-244-700"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Seat 22F is by the window.</div><div class=\"qq\">Which seat is by the window?</div>",
+          "options": [
+            "22F",
+            "2F",
+            "22E",
+            "12F"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The play begins at 7:05 pm in Theatre B.</div><div class=\"qq\">When does the play begin?</div>",
+          "options": [
+            "7:05 pm",
+            "7:50 pm",
+            "5:07 pm",
+            "7:15 pm"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The guarantee covers 36 months of use.</div><div class=\"qq\">How long is the guarantee?</div>",
+          "options": [
+            "36 months",
+            "63 months",
+            "30 months",
+            "16 months"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Invoice INV-7412 is due at the end of March.</div><div class=\"qq\">What is the invoice number?</div>",
+          "options": [
+            "INV-7412",
+            "INV-7142",
+            "INV-4712",
+            "IVN-7412"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The tour meets at Gate 2 at 9 am sharp.</div><div class=\"qq\">Where does the tour meet?</div>",
+          "options": [
+            "Gate 2",
+            "Gate 12",
+            "Gate 20",
+            "Gate 3"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Turn off the oven after 40 minutes.</div><div class=\"qq\">After how long?</div>",
+          "options": [
+            "40 minutes",
+            "14 minutes",
+            "50 minutes",
+            "44 minutes"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The hotel is at 118 Palm Avenue.</div><div class=\"qq\">What is the street number?</div>",
+          "options": [
+            "118",
+            "181",
+            "811",
+            "108"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The class has 32 students and one teacher.</div><div class=\"qq\">How many students?</div>",
+          "options": [
+            "32",
+            "23",
+            "320",
+            "3"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The coupon gives 25% off until Friday.</div><div class=\"qq\">What is the discount?</div>",
+          "options": [
+            "25%",
+            "52%",
+            "20%",
+            "15%"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The delivery window is between 11 am and 1 pm.</div><div class=\"qq\">When is delivery?</div>",
+          "options": [
+            "11 am to 1 pm",
+            "1 pm to 3 pm",
+            "9 am to 11 am",
+            "11 pm to 1 am"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Package weight: 3.5 kg. Destination: Kumasi.</div><div class=\"qq\">What is the destination?</div>",
+          "options": [
+            "Kumasi",
+            "Accra",
+            "Takoradi",
+            "Tamale"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The meeting is rescheduled to the 19th.</div><div class=\"qq\">On which date is the meeting now?</div>",
+          "options": [
+            "The 19th",
+            "The 9th",
+            "The 91st",
+            "The 16th"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Platform 4 serves the express to the coast.</div><div class=\"qq\">Which platform?</div>",
+          "options": [
+            "4",
+            "14",
+            "40",
+            "2"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The gym membership renews on the 1st of each month.</div><div class=\"qq\">When does it renew?</div>",
+          "options": [
+            "The 1st",
+            "The 10th",
+            "The 21st",
+            "The 31st"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The parcel code is PX-0067.</div><div class=\"qq\">What is the parcel code?</div>",
+          "options": [
+            "PX-0067",
+            "PX-0076",
+            "XP-0067",
+            "PX-6700"
+          ],
+          "answer": 0
         }
       ],
       "description": "Short info blurb + one detail to extract quickly. Used by Agility.",
@@ -2908,6 +3775,246 @@
             "Arguments",
             "Corrections",
             "Thanks"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She stayed late every night to make sure each student understood the lesson.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Dedication",
+            "Nights",
+            "Lessons",
+            "Students"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He returned the wallet he found, though it held a month's wages.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Honesty",
+            "Money",
+            "Wallets",
+            "Luck"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The little boat kept sailing into the storm to rescue the stranded crew.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Bravery",
+            "Boats",
+            "Storms",
+            "Crews"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She gave her coat to the shivering child and walked home in the cold.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Compassion",
+            "Coats",
+            "Cold",
+            "Children"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">After failing the exam five times, he studied harder and finally passed.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Perseverance",
+            "Exams",
+            "Study",
+            "Failure"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">They shared the harvest equally so that no family went hungry.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Fairness",
+            "Harvest",
+            "Families",
+            "Hunger"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He forgave the man who had wronged him and offered him work.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Forgiveness",
+            "Work",
+            "Wrongs",
+            "Men"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The nurse worked double shifts to care for the flood victims.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Devotion",
+            "Floods",
+            "Shifts",
+            "Nurses"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She practised the violin at dawn while the whole house still slept.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Discipline",
+            "Dawn",
+            "Houses",
+            "Sleep"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He quietly paid the stranger's bill and left before being thanked.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Kindness",
+            "Bills",
+            "Strangers",
+            "Payment"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The old teacher spent his savings on books for the village school.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Generosity",
+            "Savings",
+            "Books",
+            "Villages"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Even when mocked, she kept telling the truth about what she saw.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Integrity",
+            "Mockery",
+            "Truth",
+            "Sight"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The team carried their injured player across the finish line together.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Teamwork",
+            "Injuries",
+            "Lines",
+            "Players"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He knelt to help the fallen runner instead of racing ahead to win.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Sportsmanship",
+            "Racing",
+            "Winning",
+            "Runners"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She apologised first, even though the quarrel was not her fault.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Humility",
+            "Quarrels",
+            "Faults",
+            "Words"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The farmer rose before dawn each day, whatever the weather.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Diligence",
+            "Dawn",
+            "Weather",
+            "Farms"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He kept his promise to visit his grandmother every single week.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Loyalty",
+            "Visits",
+            "Grandmothers",
+            "Weeks"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">They rebuilt the bridge by hand so the children could reach school.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Determination",
+            "Bridges",
+            "Hands",
+            "Schools"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">She listened for hours, never once interrupting his story.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Patience",
+            "Stories",
+            "Hours",
+            "Talking"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He gave up his seat and stood the whole journey for the elderly man.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Courtesy",
+            "Seats",
+            "Journeys",
+            "Age"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">Despite the danger, she spoke up for those who could not speak.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Courage",
+            "Danger",
+            "Speaking",
+            "Silence"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">The boy saved crumbs all week to feed the hungry birds.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Kindness",
+            "Crumbs",
+            "Birds",
+            "Weeks"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">They welcomed the refugees with food, blankets, and open arms.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Hospitality",
+            "Refugees",
+            "Food",
+            "Blankets"
+          ],
+          "answer": 0
+        },
+        {
+          "prompt": "<div class=\"passage\">He worked in silence for years so others could take the credit.</div><div class=\"qq\">What is the main idea?</div>",
+          "options": [
+            "Humility",
+            "Work",
+            "Years",
+            "Credit"
           ],
           "answer": 0
         }
@@ -3318,6 +4425,270 @@
             "Papers",
             "Sand",
             "Snow"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The hungry bear caught a shiny fish in the cold river.",
+          "q": "What did the bear catch?",
+          "options": [
+            "A fish",
+            "A frog",
+            "A bird",
+            "A snake"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A yellow taxi stopped outside the tall glass hotel.",
+          "q": "What stopped outside the hotel?",
+          "options": [
+            "A taxi",
+            "A bus",
+            "A truck",
+            "A bike"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The little girl planted a small seed in the warm soil.",
+          "q": "What did the girl plant?",
+          "options": [
+            "A seed",
+            "A flower",
+            "A tree",
+            "A bulb"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A grey owl watched silently from the old wooden barn.",
+          "q": "Where did the owl watch from?",
+          "options": [
+            "A barn",
+            "A tree",
+            "A roof",
+            "A cave"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The tired workers loaded heavy crates onto the waiting ship.",
+          "q": "What did the workers load?",
+          "options": [
+            "Crates",
+            "Barrels",
+            "Bags",
+            "Boxes"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A bright rainbow arched over the green rolling hills.",
+          "q": "What arched over the hills?",
+          "options": [
+            "A rainbow",
+            "A bridge",
+            "A cloud",
+            "A bird"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The clever fox slipped quietly past the sleeping hens.",
+          "q": "What did the fox slip past?",
+          "options": [
+            "Hens",
+            "Dogs",
+            "Geese",
+            "Cats"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A small boy kicked the leather ball across the dusty yard.",
+          "q": "What did the boy kick?",
+          "options": [
+            "A ball",
+            "A can",
+            "A stone",
+            "A shoe"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The old sailor tied a strong knot in the thick rope.",
+          "q": "What did the sailor tie?",
+          "options": [
+            "A knot",
+            "A sail",
+            "A net",
+            "A flag"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A red tractor ploughed the wide muddy field at dawn.",
+          "q": "What ploughed the field?",
+          "options": [
+            "A tractor",
+            "A horse",
+            "A truck",
+            "A plough alone"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The gentle nurse bandaged the boy's injured left knee.",
+          "q": "What did the nurse bandage?",
+          "options": [
+            "A knee",
+            "An arm",
+            "A hand",
+            "A foot"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A white cloud drifted slowly across the pale morning sky.",
+          "q": "What drifted across the sky?",
+          "options": [
+            "A cloud",
+            "A plane",
+            "A bird",
+            "A kite"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The busy chef chopped fresh onions for the evening stew.",
+          "q": "What did the chef chop?",
+          "options": [
+            "Onions",
+            "Carrots",
+            "Potatoes",
+            "Garlic"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A brown puppy chased its tail around the sunny garden.",
+          "q": "What did the puppy chase?",
+          "options": [
+            "Its tail",
+            "A ball",
+            "A cat",
+            "A bird"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The strong wind knocked the ripe apples off the tree.",
+          "q": "What did the wind knock off?",
+          "options": [
+            "Apples",
+            "Leaves",
+            "Nests",
+            "Branches"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A tall lighthouse flashed its bright beam across the dark sea.",
+          "q": "What flashed across the sea?",
+          "options": [
+            "A beam",
+            "A star",
+            "A ship",
+            "A wave"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The young artist painted a blue whale on the classroom wall.",
+          "q": "What did the artist paint?",
+          "options": [
+            "A whale",
+            "A shark",
+            "A boat",
+            "A fish"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A patient spider spun a wide web between the two fence posts.",
+          "q": "What did the spider spin?",
+          "options": [
+            "A web",
+            "A nest",
+            "A cocoon",
+            "A trap"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The proud farmer sold golden corn at the crowded market.",
+          "q": "What did the farmer sell?",
+          "options": [
+            "Corn",
+            "Wheat",
+            "Rice",
+            "Beans"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A curious cat pawed at the small toy under the sofa.",
+          "q": "What did the cat paw at?",
+          "options": [
+            "A toy",
+            "A mouse",
+            "A ball",
+            "A sock"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The kind driver stopped to help the stranded elderly couple.",
+          "q": "Whom did the driver help?",
+          "options": [
+            "An elderly couple",
+            "A lost child",
+            "A police officer",
+            "A cyclist"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A silver moon rose above the quiet snow-covered village.",
+          "q": "What rose above the village?",
+          "options": [
+            "The moon",
+            "The sun",
+            "A star",
+            "A lamp"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "The eager student raised her hand to answer the hard question.",
+          "q": "What did the student raise?",
+          "options": [
+            "Her hand",
+            "A flag",
+            "A book",
+            "A pen"
+          ],
+          "answer": 0
+        },
+        {
+          "text": "A wooden raft floated gently down the slow winding river.",
+          "q": "What floated down the river?",
+          "options": [
+            "A raft",
+            "A boat",
+            "A log",
+            "A canoe"
           ],
           "answer": 0
         }
@@ -4523,6 +5894,798 @@
             "Cyrus"
           ],
           "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God create on the second day?",
+          "options": [
+            "The sky",
+            "The sea",
+            "The stars",
+            "Animals"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was Jacob's twin brother?",
+          "options": [
+            "Esau",
+            "Laban",
+            "Levi",
+            "Judah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did Esau sell for a bowl of stew?",
+          "options": [
+            "His birthright",
+            "His coat",
+            "His sword",
+            "His field"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was called the father of many nations?",
+          "options": [
+            "Abraham",
+            "Isaac",
+            "Noah",
+            "Jacob"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God rain on Sodom and Gomorrah?",
+          "options": [
+            "Fire",
+            "Water",
+            "Hail",
+            "Locusts"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was the wife of Isaac?",
+          "options": [
+            "Rebekah",
+            "Rachel",
+            "Leah",
+            "Hannah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "How many sons did Jacob have?",
+          "options": [
+            "Twelve",
+            "Ten",
+            "Seven",
+            "Two"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did Joseph become in Egypt?",
+          "options": [
+            "A ruler",
+            "A slave forever",
+            "A soldier",
+            "A farmer"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did the wise men bring the baby Jesus?",
+          "options": [
+            "Gold, frankincense, and myrrh",
+            "Bread and wine",
+            "Sheep",
+            "Silver"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who saw angels on the night Jesus was born?",
+          "options": [
+            "Shepherds",
+            "Kings",
+            "Soldiers",
+            "Priests"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "In which town did Jesus turn water into wine?",
+          "options": [
+            "Cana",
+            "Nazareth",
+            "Capernaum",
+            "Bethany"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who built the temple in Jerusalem?",
+          "options": [
+            "Solomon",
+            "David",
+            "Moses",
+            "Ezra"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did Jesus teach us to do to our enemies?",
+          "options": [
+            "Love them",
+            "Ignore them",
+            "Fear them",
+            "Avoid them"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God make human beings in?",
+          "options": [
+            "His own image",
+            "A garden",
+            "The sea",
+            "One day"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "On which day did God rest?",
+          "options": [
+            "The seventh",
+            "The first",
+            "The third",
+            "The sixth"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What do Christians celebrate at Christmas?",
+          "options": [
+            "Jesus' birth",
+            "Jesus' resurrection",
+            "Pentecost",
+            "Passover"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What do Christians celebrate at Easter?",
+          "options": [
+            "Jesus' resurrection",
+            "Jesus' birth",
+            "The flood",
+            "Creation"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "How many days was Jesus in the tomb?",
+          "options": [
+            "Three",
+            "One",
+            "Seven",
+            "Forty"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God make to give light at night?",
+          "options": [
+            "The moon",
+            "The sun",
+            "A lamp",
+            "Fire"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was the mother of Cain and Abel?",
+          "options": [
+            "Eve",
+            "Sarah",
+            "Mary",
+            "Ruth"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did Adam and Eve eat that God forbade?",
+          "options": [
+            "The forbidden fruit",
+            "Bread",
+            "Fish",
+            "Herbs"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What is the greatest commandment about God?",
+          "options": [
+            "Love the Lord your God",
+            "Fear the Lord",
+            "Serve the Lord",
+            "Obey the Lord"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "What did God create on the third day?",
+          "options": [
+            "Land and plants",
+            "Fish",
+            "The sun",
+            "Man"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "q": "Who was the very first person God created?",
+          "options": [
+            "Adam",
+            "Noah",
+            "Cain",
+            "Abel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What animal spoke to the prophet Balaam?",
+          "options": [
+            "A donkey",
+            "A serpent",
+            "A raven",
+            "A lion"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Whom did the tenth plague of Egypt strike?",
+          "options": [
+            "The firstborn",
+            "The crops",
+            "The rivers",
+            "The cattle"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many spies did Moses send into Canaan?",
+          "options": [
+            "Twelve",
+            "Two",
+            "Seven",
+            "Forty"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who hid the spies in Jericho?",
+          "options": [
+            "Rahab",
+            "Ruth",
+            "Deborah",
+            "Naomi"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What guided Israel by night in the wilderness?",
+          "options": [
+            "A pillar of fire",
+            "A star",
+            "The moon",
+            "An angel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What guided Israel by day in the wilderness?",
+          "options": [
+            "A pillar of cloud",
+            "The sun",
+            "A star",
+            "A dove"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who anointed David as king?",
+          "options": [
+            "Samuel",
+            "Nathan",
+            "Elijah",
+            "Aaron"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What instrument did David play for King Saul?",
+          "options": [
+            "A harp",
+            "A flute",
+            "A trumpet",
+            "A drum"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Which queen visited King Solomon?",
+          "options": [
+            "The Queen of Sheba",
+            "Esther",
+            "Jezebel",
+            "Vashti"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What did Solomon ask God to give him?",
+          "options": [
+            "Wisdom",
+            "Riches",
+            "Long life",
+            "Power"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Which prophet was fed by ravens?",
+          "options": [
+            "Elijah",
+            "Elisha",
+            "Jonah",
+            "Amos"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many times did Naaman dip in the Jordan to be healed?",
+          "options": [
+            "Seven",
+            "Three",
+            "Ten",
+            "Twelve"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Which boy heard God calling him in the night?",
+          "options": [
+            "Samuel",
+            "David",
+            "Daniel",
+            "Josiah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Whom did Jesus raise after four days in the tomb?",
+          "options": [
+            "Lazarus",
+            "Jairus",
+            "Nicodemus",
+            "Bartimaeus"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "How many lepers did Jesus heal, of whom one returned to thank Him?",
+          "options": [
+            "Ten",
+            "Five",
+            "Three",
+            "Seven"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "With how many loaves did Jesus feed four thousand?",
+          "options": [
+            "Seven",
+            "Five",
+            "Ten",
+            "Two"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What is Jesus' famous sermon called?",
+          "options": [
+            "The Sermon on the Mount",
+            "The Sermon on the Sea",
+            "The Sermon at the Well",
+            "The Sermon of Peace"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "In the parable, who helped the wounded traveller?",
+          "options": [
+            "A Samaritan",
+            "A priest",
+            "A Levite",
+            "A soldier"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What did Jesus say to build your house upon?",
+          "options": [
+            "The rock",
+            "The sand",
+            "A hill",
+            "Stone steps"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What did the prodigal son do with his inheritance?",
+          "options": [
+            "Wasted it",
+            "Saved it",
+            "Buried it",
+            "Gave it away"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "For how many days did Jesus appear after rising, before ascending?",
+          "options": [
+            "Forty",
+            "Three",
+            "Seven",
+            "Ten"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Which disciple is remembered for doubting until he touched Jesus?",
+          "options": [
+            "Thomas",
+            "Peter",
+            "Philip",
+            "James"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "What kind of workers did Jesus first call to follow Him?",
+          "options": [
+            "Fishermen",
+            "Farmers",
+            "Soldiers",
+            "Priests"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "q": "Who was David's loyal friend, the son of Saul?",
+          "options": [
+            "Jonathan",
+            "Absalom",
+            "Nathan",
+            "Joab"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "On which mountain did Noah's ark come to rest?",
+          "options": [
+            "Ararat",
+            "Sinai",
+            "Carmel",
+            "Nebo"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was the father of John the Baptist?",
+          "options": [
+            "Zechariah",
+            "Zebedee",
+            "Zadok",
+            "Zacchaeus"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "How many years did Methuselah live?",
+          "options": [
+            "969",
+            "900",
+            "877",
+            "1000"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was the cupbearer to King Artaxerxes?",
+          "options": [
+            "Nehemiah",
+            "Ezra",
+            "Mordecai",
+            "Daniel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What did Aaron make from the people's gold?",
+          "options": [
+            "A calf",
+            "A snake",
+            "An ark",
+            "A crown"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which king of Salem blessed Abraham?",
+          "options": [
+            "Melchizedek",
+            "Abimelech",
+            "Nimrod",
+            "Og"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was the mother of Samuel?",
+          "options": [
+            "Hannah",
+            "Peninnah",
+            "Naomi",
+            "Ruth"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "From which city did the giant Goliath come?",
+          "options": [
+            "Gath",
+            "Gaza",
+            "Ashdod",
+            "Ekron"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who succeeded David as king of Israel?",
+          "options": [
+            "Solomon",
+            "Absalom",
+            "Adonijah",
+            "Rehoboam"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What words appeared on the wall at Belshazzar's feast?",
+          "options": [
+            "Mene, Mene, Tekel, Upharsin",
+            "Alpha and Omega",
+            "Holy, Holy, Holy",
+            "I Am"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who was in the fiery furnace with Shadrach and Meshach?",
+          "options": [
+            "Abednego",
+            "Daniel",
+            "Nehemiah",
+            "Mordecai"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who wrote the book of Acts?",
+          "options": [
+            "Luke",
+            "Paul",
+            "Peter",
+            "John"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which disciple was known as 'the Zealot'?",
+          "options": [
+            "Simon",
+            "Thomas",
+            "Philip",
+            "Andrew"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "In which city did Paul preach at the Areopagus?",
+          "options": [
+            "Athens",
+            "Corinth",
+            "Ephesus",
+            "Rome"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who baptised the Ethiopian eunuch?",
+          "options": [
+            "Philip",
+            "Peter",
+            "Paul",
+            "Barnabas"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What was the name of Timothy's mother?",
+          "options": [
+            "Eunice",
+            "Lois",
+            "Priscilla",
+            "Dorcas"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "How many churches are addressed in Revelation?",
+          "options": [
+            "Seven",
+            "Twelve",
+            "Three",
+            "Ten"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What was Abraham's first son's name?",
+          "options": [
+            "Ishmael",
+            "Isaac",
+            "Esau",
+            "Jacob"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which prophet saw a valley of dry bones come to life?",
+          "options": [
+            "Ezekiel",
+            "Isaiah",
+            "Jeremiah",
+            "Daniel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What was Dorcas (Tabitha) known for?",
+          "options": [
+            "Good works and charity",
+            "Prophecy",
+            "Singing",
+            "Fishing"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "What did the servant find for Isaac at the well?",
+          "options": [
+            "A wife",
+            "A camel",
+            "Water",
+            "Gold"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Which sea did the Israelites cross on dry land?",
+          "options": [
+            "The Red Sea",
+            "The Dead Sea",
+            "The Sea of Galilee",
+            "The Jordan"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Who led Israel to victory with only 300 men and trumpets?",
+          "options": [
+            "Gideon",
+            "Samson",
+            "Barak",
+            "Joshua"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "q": "Jonah warned that Nineveh would fall in how many days?",
+          "options": [
+            "Forty",
+            "Three",
+            "Seven",
+            "Ten"
+          ],
+          "answer": 0
         }
       ],
       "description": "Multiple-choice Bible-knowledge questions, tagged by difficulty. Used by Bible Trivia.",
@@ -5007,6 +7170,270 @@
             "doubting",
             "fear",
             "end"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;I am the good <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "shepherd",
+            "teacher",
+            "light",
+            "vine"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Come to me, all who are weary, and I will give you <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "rest",
+            "peace",
+            "joy",
+            "hope"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Do not let your hearts be <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "troubled",
+            "hard",
+            "cold",
+            "proud"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;The Lord is my rock and my <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "fortress",
+            "shield",
+            "refuge",
+            "song"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Let there be <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "light",
+            "peace",
+            "life",
+            "water"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;God is <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "love",
+            "near",
+            "great",
+            "holy"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Peace I leave with you; my <span class=\"slot\">____</span> I give you.&rdquo;",
+          "options": [
+            "peace",
+            "joy",
+            "love",
+            "grace"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "prompt": "&ldquo;Honour the Lord with your <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "wealth",
+            "heart",
+            "voice",
+            "hands"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Seek first the <span class=\"slot\">____</span> of God.&rdquo;",
+          "options": [
+            "kingdom",
+            "face",
+            "will",
+            "word"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Whatever you do, do it all for the <span class=\"slot\">____</span> of God.&rdquo;",
+          "options": [
+            "glory",
+            "love",
+            "fear",
+            "name"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;The Lord is close to the <span class=\"slot\">____</span>hearted.&rdquo;",
+          "options": [
+            "broken",
+            "pure",
+            "humble",
+            "faint"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Let everything that has <span class=\"slot\">____</span> praise the Lord.&rdquo;",
+          "options": [
+            "breath",
+            "life",
+            "voice",
+            "heart"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Perfect love drives out <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "fear",
+            "hate",
+            "doubt",
+            "sin"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;By grace you have been saved through <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "faith",
+            "works",
+            "love",
+            "hope"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;Do not be afraid, for I am <span class=\"slot\">____</span> you.&rdquo;",
+          "options": [
+            "with",
+            "near",
+            "calling",
+            "leading"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "prompt": "&ldquo;I have called you by <span class=\"slot\">____</span>; you are mine.&rdquo;",
+          "options": [
+            "name",
+            "grace",
+            "love",
+            "faith"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;In the beginning was the <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "Word",
+            "light",
+            "earth",
+            "Spirit"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;The Lord gave, and the Lord has taken <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "away",
+            "back",
+            "all",
+            "much"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;Whoever wants to be first must be <span class=\"slot\">____</span> of all.&rdquo;",
+          "options": [
+            "servant",
+            "leader",
+            "last",
+            "least"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;For we walk by faith, not by <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "sight",
+            "fear",
+            "law",
+            "flesh"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;Be doers of the word, and not <span class=\"slot\">____</span> only.&rdquo;",
+          "options": [
+            "hearers",
+            "talkers",
+            "readers",
+            "seekers"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;No one can serve two <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "masters",
+            "kings",
+            "gods",
+            "lords"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;The greatest of these is <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "love",
+            "faith",
+            "hope",
+            "grace"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "prompt": "&ldquo;Consider it pure joy when you face <span class=\"slot\">____</span>.&rdquo;",
+          "options": [
+            "trials",
+            "enemies",
+            "doubt",
+            "loss"
           ],
           "answer": 0
         }
@@ -6115,6 +8542,222 @@
           "py": "fúshè",
           "en": "to radiate",
           "hsk": 6
+        },
+        {
+          "hz": "爸爸",
+          "py": "bàba",
+          "en": "dad",
+          "hsk": 1
+        },
+        {
+          "hz": "妈妈",
+          "py": "māma",
+          "en": "mum",
+          "hsk": 1
+        },
+        {
+          "hz": "哥哥",
+          "py": "gēge",
+          "en": "older brother",
+          "hsk": 1
+        },
+        {
+          "hz": "姐姐",
+          "py": "jiějie",
+          "en": "older sister",
+          "hsk": 1
+        },
+        {
+          "hz": "猫",
+          "py": "māo",
+          "en": "cat",
+          "hsk": 1
+        },
+        {
+          "hz": "狗",
+          "py": "gǒu",
+          "en": "dog",
+          "hsk": 1
+        },
+        {
+          "hz": "早",
+          "py": "zǎo",
+          "en": "early",
+          "hsk": 2
+        },
+        {
+          "hz": "晚",
+          "py": "wǎn",
+          "en": "late",
+          "hsk": 2
+        },
+        {
+          "hz": "近",
+          "py": "jìn",
+          "en": "near",
+          "hsk": 2
+        },
+        {
+          "hz": "远",
+          "py": "yuǎn",
+          "en": "far",
+          "hsk": 2
+        },
+        {
+          "hz": "高",
+          "py": "gāo",
+          "en": "tall",
+          "hsk": 2
+        },
+        {
+          "hz": "矮",
+          "py": "ǎi",
+          "en": "short (height)",
+          "hsk": 2
+        },
+        {
+          "hz": "办法",
+          "py": "bànfǎ",
+          "en": "method",
+          "hsk": 3
+        },
+        {
+          "hz": "机会",
+          "py": "jīhuì",
+          "en": "opportunity",
+          "hsk": 3
+        },
+        {
+          "hz": "消息",
+          "py": "xiāoxi",
+          "en": "news",
+          "hsk": 3
+        },
+        {
+          "hz": "经验",
+          "py": "jīngyàn",
+          "en": "experience",
+          "hsk": 3
+        },
+        {
+          "hz": "复习",
+          "py": "fùxí",
+          "en": "to review",
+          "hsk": 3
+        },
+        {
+          "hz": "提醒",
+          "py": "tíxǐng",
+          "en": "to remind",
+          "hsk": 3
+        },
+        {
+          "hz": "冷静",
+          "py": "lěngjìng",
+          "en": "calm",
+          "hsk": 4
+        },
+        {
+          "hz": "后悔",
+          "py": "hòuhuǐ",
+          "en": "to regret",
+          "hsk": 4
+        },
+        {
+          "hz": "尊敬",
+          "py": "zūnjìng",
+          "en": "to honour",
+          "hsk": 4
+        },
+        {
+          "hz": "抱歉",
+          "py": "bàoqiàn",
+          "en": "sorry",
+          "hsk": 4
+        },
+        {
+          "hz": "完美",
+          "py": "wánměi",
+          "en": "perfect",
+          "hsk": 4
+        },
+        {
+          "hz": "幽默",
+          "py": "yōumò",
+          "en": "humorous",
+          "hsk": 4
+        },
+        {
+          "hz": "缓解",
+          "py": "huǎnjiě",
+          "en": "to ease",
+          "hsk": 5
+        },
+        {
+          "hz": "把握",
+          "py": "bǎwò",
+          "en": "to grasp",
+          "hsk": 5
+        },
+        {
+          "hz": "陈述",
+          "py": "chénshù",
+          "en": "to state",
+          "hsk": 5
+        },
+        {
+          "hz": "波动",
+          "py": "bōdòng",
+          "en": "to fluctuate",
+          "hsk": 5
+        },
+        {
+          "hz": "兼职",
+          "py": "jiānzhí",
+          "en": "part-time job",
+          "hsk": 5
+        },
+        {
+          "hz": "隐私",
+          "py": "yǐnsī",
+          "en": "privacy",
+          "hsk": 5
+        },
+        {
+          "hz": "揭示",
+          "py": "jiēshì",
+          "en": "to reveal",
+          "hsk": 6
+        },
+        {
+          "hz": "涵盖",
+          "py": "hángài",
+          "en": "to cover",
+          "hsk": 6
+        },
+        {
+          "hz": "奠定",
+          "py": "diàndìng",
+          "en": "to lay (a foundation)",
+          "hsk": 6
+        },
+        {
+          "hz": "攀升",
+          "py": "pānshēng",
+          "en": "to climb / surge",
+          "hsk": 6
+        },
+        {
+          "hz": "甄别",
+          "py": "zhēnbié",
+          "en": "to screen",
+          "hsk": 6
+        },
+        {
+          "hz": "制衡",
+          "py": "zhìhéng",
+          "en": "to check and balance",
+          "hsk": 6
         }
       ],
       "description": "Chinese vocabulary tagged by HSK level. Feeds Meaning, Pinyin, Characters and Listening (difficulty maps Easy=HSK1-2, Medium=3-4, Hard=5-6).",
@@ -6465,6 +9108,105 @@
             "彼此",
             "的",
             "文化"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "My mother is a doctor.",
+          "words": [
+            "我",
+            "妈妈",
+            "是",
+            "医生"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "I don't like coffee.",
+          "words": [
+            "我",
+            "不",
+            "喜欢",
+            "咖啡"
+          ]
+        },
+        {
+          "lvl": 0,
+          "en": "He has a little dog.",
+          "words": [
+            "他",
+            "有",
+            "一只",
+            "小狗"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "I want to improve my Chinese.",
+          "words": [
+            "我",
+            "想",
+            "提高",
+            "我的",
+            "中文"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "He often helps his neighbours.",
+          "words": [
+            "他",
+            "经常",
+            "帮助",
+            "邻居"
+          ]
+        },
+        {
+          "lvl": 1,
+          "en": "Because I was busy, I forgot to call.",
+          "words": [
+            "因为",
+            "我",
+            "很",
+            "忙",
+            "所以",
+            "忘了",
+            "打电话"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "We must seize this opportunity.",
+          "words": [
+            "我们",
+            "必须",
+            "抓住",
+            "这个",
+            "机会"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "His attitude affected the whole team.",
+          "words": [
+            "他",
+            "的",
+            "态度",
+            "影响",
+            "了",
+            "整个",
+            "团队"
+          ]
+        },
+        {
+          "lvl": 2,
+          "en": "This method can raise efficiency.",
+          "words": [
+            "这个",
+            "方法",
+            "可以",
+            "提高",
+            "效率"
           ]
         }
       ],
