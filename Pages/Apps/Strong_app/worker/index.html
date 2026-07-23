@@ -570,14 +570,20 @@ const DEFAULT_EXERCISES = [
   { id:'def_leg_raise',      name:'Hanging Leg Raise',               category:'Core',      primaryMuscle:'Abs',       equipment:'Bodyweight', imageUrl:img('Hanging_Leg_Raise') },
   { id:'def_cable_crunch',   name:'Cable Crunch',                    category:'Core',      primaryMuscle:'Abs',       equipment:'Cable',    imageUrl:img('Cable_Crunch') },
 
-  // ── CARDIO ──
-  { id:'def_run',            name:'Running',                         category:'Cardio',    primaryMuscle:'Cardio',    equipment:'None',     imageUrl:'' },
-  { id:'def_cycle',          name:'Cycling',                         category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Bike',     imageUrl:'' },
-  { id:'def_row',            name:'Rowing',                          category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Machine',  imageUrl:'' },
-  { id:'def_jumprope',       name:'Jump Rope',                       category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Rope',     imageUrl:'' },
+  // ── CARDIO ── (logged with distance / time / slope, not kg × reps)
+  { id:'def_run',            name:'Running',                         category:'Cardio',    primaryMuscle:'Cardio',    equipment:'None',     type:'cardio', imageUrl:'' },
+  { id:'def_treadmill',      name:'Treadmill',                       category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Machine',  type:'cardio', imageUrl:'' },
+  { id:'def_walk',           name:'Walking',                         category:'Cardio',    primaryMuscle:'Cardio',    equipment:'None',     type:'cardio', imageUrl:'' },
+  { id:'def_cycle',          name:'Cycling',                         category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Bike',     type:'cardio', imageUrl:'' },
+  { id:'def_row',            name:'Rowing',                          category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Machine',  type:'cardio', imageUrl:'' },
+  { id:'def_elliptical',     name:'Elliptical',                      category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Machine',  type:'cardio', imageUrl:'' },
+  { id:'def_stair',          name:'Stair Climber',                   category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Machine',  type:'cardio', imageUrl:'' },
+  { id:'def_swim',           name:'Swimming',                        category:'Cardio',    primaryMuscle:'Cardio',    equipment:'None',     type:'cardio', imageUrl:'' },
+  { id:'def_jumprope',       name:'Jump Rope',                       category:'Cardio',    primaryMuscle:'Cardio',    equipment:'Rope',     type:'cardio', imageUrl:'' },
 ];
 DEFAULT_EXERCISES.forEach(e => {
   e.isCustom = false;
+  if (!e.type) e.type = 'strength';
   e.videoUrl = '';
   // Derive 2-frame motion preview from imageUrl (slug-based)
   if (e.imageUrl && e.imageUrl.startsWith(IMG_BASE + '/')) {
@@ -689,6 +695,21 @@ function allExercises(){
 function getExercise(id){
   return allExercises().find(e => e.id === id);
 }
+// ── Cardio helpers (distance / time / slope instead of kg × reps) ──────────
+function isCardio(exDef){ return !!exDef && (exDef.type === 'cardio' || exDef.category === 'Cardio'); }
+function isCardioId(id){ return isCardio(getExercise(id)); }
+function parseTime(v){
+  v = String(v == null ? '' : v).trim();
+  if (!v) return 0;
+  if (v.indexOf(':') >= 0){ const p = v.split(':'); const m = parseInt(p[0],10)||0; const s = parseInt(p[1],10)||0; return m*60 + Math.min(59,s); }
+  return Math.round((parseFloat(v)||0) * 60); // bare number = minutes
+}
+function fmtTime(sec){
+  sec = Math.max(0, Math.round(Number(sec)||0));
+  const m = Math.floor(sec/60), s = sec%60;
+  return m + ':' + String(s).padStart(2,'0');
+}
+function freshSet(cardio){ return cardio ? { distance:0, time:0, slope:0, completed:false } : { weight:0, reps:0, rpe:null, completed:false }; }
 function exerciseImageHtml(ex, size='exercise-img'){
   const fbSize = size === 'exercise-img' ? 'exercise-img-fallback' : 'exercise-block-img-fb';
   const realSize = size;
@@ -861,12 +882,11 @@ function startFromRoutine(routineId){
       exerciseId: e.exerciseId,
       name:       e.name,
       notes:      '',
-      sets: (e.targetSets || []).map(s => ({
-        weight: s.weight || 0,
-        reps:   s.reps   || 0,
-        rpe:    null,
-        completed: false,
-      })),
+      sets: (e.targetSets && e.targetSets.length ? e.targetSets : [{}]).map(s => (
+        isCardioId(e.exerciseId)
+          ? { distance: s.distance||0, time: s.time||0, slope: s.slope||0, completed:false }
+          : { weight: s.weight||0, reps: s.reps||0, rpe:null, completed:false }
+      )),
     })),
   };
   saveActive();
@@ -906,54 +926,63 @@ function renderActiveWorkout(){
 
   wrap.innerHTML = STATE.active.exercises.map((e, ei) => {
     const exDef = getExercise(e.exerciseId);
-    const setsHtml = e.sets.map((s, si) => `
+    const cardio = isCardio(exDef);
+    const check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+    const trash = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>';
+    const setsHtml = e.sets.map((s, si) => {
+      const cells = cardio ? `
+        <td><input type="number" inputmode="decimal" step="0.1" class="set-input ${s.completed?'done':''}" value="${s.distance||''}" placeholder="-" oninput="updateSet(${ei},${si},'distance',this.value)"/></td>
+        <td><input type="text" inputmode="numeric" class="set-input ${s.completed?'done':''}" value="${s.time?fmtTime(s.time):''}" placeholder="mm:ss" oninput="updateSet(${ei},${si},'time',this.value)"/></td>
+        <td><input type="number" inputmode="decimal" step="0.5" class="set-input ${s.completed?'done':''}" value="${s.slope||''}" placeholder="-" oninput="updateSet(${ei},${si},'slope',this.value)"/></td>`
+      : `
+        <td><input type="number" inputmode="decimal" step="0.5" class="set-input ${s.completed?'done':''}" value="${s.weight||''}" placeholder="-" oninput="updateSet(${ei},${si},'weight',this.value)"/></td>
+        <td><input type="number" inputmode="numeric" class="set-input ${s.completed?'done':''}" value="${s.reps||''}" placeholder="-" oninput="updateSet(${ei},${si},'reps',this.value)"/></td>`;
+      return `
       <tr>
         <td><div class="set-num ${s.completed?'done':''}">${si+1}</div></td>
-        <td><input type="number" inputmode="decimal" step="0.5" class="set-input ${s.completed?'done':''}" value="${s.weight||''}" placeholder="-" oninput="updateSet(${ei},${si},'weight',this.value)"/></td>
-        <td><input type="number" inputmode="numeric" class="set-input ${s.completed?'done':''}" value="${s.reps||''}" placeholder="-" oninput="updateSet(${ei},${si},'reps',this.value)"/></td>
-        <td><div class="set-check ${s.completed?'done':''}" onclick="toggleSet(${ei},${si})">
-          ${s.completed ? '<svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"20 6 9 17 4 12\"/></svg>' : ''}
-        </div></td>
-        <td><button class="btn-icon" onclick="removeSet(${ei},${si})" title="Remove set">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg>
-        </button></td>
-      </tr>`).join('');
+        ${cells}
+        <td><div class="set-check ${s.completed?'done':''}" onclick="toggleSet(${ei},${si})">${s.completed ? check : ''}</div></td>
+        <td><button class="btn-icon" onclick="removeSet(${ei},${si})" title="Remove set">${trash}</button></td>
+      </tr>`;
+    }).join('');
+
+    const head = cardio
+      ? `<tr><th style="width:34px">SET</th><th>KM</th><th>TIME</th><th>SLOPE %</th><th style="width:42px">✓</th><th style="width:34px"></th></tr>`
+      : `<tr><th style="width:34px">SET</th><th>${STATE.prefs.unit.toUpperCase()}</th><th>REPS</th><th style="width:42px">✓</th><th style="width:34px"></th></tr>`;
 
     return `
       <div class="exercise-block">
         <div class="exercise-block-head">
           ${exerciseImageHtml(exDef, 'exercise-block-img')}
-          <div class="exercise-block-name">${escapeHtml(e.name)}</div>
+          <div class="exercise-block-name">${escapeHtml(e.name)}${cardio?' <span class="chip" style="font-size:.62rem;padding:2px 8px">CARDIO</span>':''}</div>
           <button class="btn-icon btn-danger" onclick="removeActiveExercise(${ei})" title="Remove exercise">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
         <table class="sets-table">
-          <thead>
-            <tr><th style="width:34px">SET</th><th>${STATE.prefs.unit.toUpperCase()}</th><th>REPS</th><th style="width:42px">✓</th><th style="width:34px"></th></tr>
-          </thead>
+          <thead>${head}</thead>
           <tbody>${setsHtml}</tbody>
         </table>
-        <button class="add-set-btn" onclick="addSet(${ei})">+ Add Set</button>
+        <button class="add-set-btn" onclick="addSet(${ei})">+ Add ${cardio?'Interval':'Set'}</button>
       </div>`;
   }).join('');
 }
 
 function addSet(ei){
   const e = STATE.active.exercises[ei];
-  // copy last set's weight/reps
+  const cardio = isCardioId(e.exerciseId);
   const last = e.sets[e.sets.length-1];
-  e.sets.push({
-    weight: last ? last.weight : 0,
-    reps:   last ? last.reps   : 0,
-    rpe:    null,
-    completed: false,
-  });
+  if (cardio) {
+    e.sets.push({ distance: last ? (last.distance||0) : 0, time: last ? (last.time||0) : 0, slope: last ? (last.slope||0) : 0, completed:false });
+  } else {
+    e.sets.push({ weight: last ? (last.weight||0) : 0, reps: last ? (last.reps||0) : 0, rpe:null, completed:false });
+  }
   saveActive();
   renderActiveWorkout();
 }
 function updateSet(ei, si, field, value){
-  STATE.active.exercises[ei].sets[si][field] = Number(value) || 0;
+  const s = STATE.active.exercises[ei].sets[si];
+  s[field] = (field === 'time') ? parseTime(value) : (Number(value) || 0);
   saveActive();
 }
 function toggleSet(ei, si){
@@ -981,7 +1010,7 @@ $('#btnAddExerciseToWorkout').addEventListener('click', () => openExercisePicker
     exerciseId: picked.id,
     name:       picked.name,
     notes:      '',
-    sets:       [{ weight: 0, reps: 0, rpe: null, completed: false }],
+    sets:       [ freshSet(isCardio(picked)) ],
   });
   saveActive();
   renderActiveWorkout();
@@ -1094,13 +1123,18 @@ $('#btnNewExercise').addEventListener('click', () => openExerciseEditor());
 function openExerciseDetail(id){
   const ex = getExercise(id);
   if (!ex) return;
+  const cardio = isCardio(ex);
   // find personal records & history for this exercise
   const history = [];
   STATE.workouts.forEach(w => {
     w.exercises.forEach(we => {
       if (we.exerciseId === id) {
         we.sets.forEach(s => {
-          if (s.weight && s.reps) {
+          if (cardio) {
+            if (s.distance || s.time) {
+              history.push({ date: w.completedAt, weight: s.distance || 0, distance: s.distance || 0, time: s.time || 0, slope: s.slope || 0 });
+            }
+          } else if (s.weight && s.reps) {
             history.push({
               date:   w.completedAt,
               weight: s.weight,
@@ -1114,9 +1148,11 @@ function openExerciseDetail(id){
     });
   });
   history.sort((a,b) => new Date(a.date) - new Date(b.date));
-  const max1RM = history.length ? Math.max(...history.map(h => h.est1RM)) : 0;
+  const max1RM = history.length ? Math.max(...history.map(h => h.est1RM || 0)) : 0;
   const maxWeight = history.length ? Math.max(...history.map(h => h.weight)) : 0;
-  const maxVolume = history.length ? Math.max(...history.map(h => h.volume)) : 0;
+  const maxVolume = history.length ? Math.max(...history.map(h => h.volume || 0)) : 0;
+  const maxDist = cardio && history.length ? Math.max(...history.map(h => h.distance || 0)) : 0;
+  const maxTime = cardio && history.length ? Math.max(...history.map(h => h.time || 0)) : 0;
 
   const customControls = ex.isCustom ? `
     <div class="flex mt-3" style="gap:8px">
@@ -1144,12 +1180,17 @@ function openExerciseDetail(id){
     <div class="detail-row"><div class="lbl">Muscle</div><div>${escapeHtml(ex.primaryMuscle || '—')}</div></div>
     <div class="detail-row"><div class="lbl">Equipment</div><div>${escapeHtml(ex.equipment || '—')}</div></div>
     ${ex.instructions ? `<div class="detail-row"><div class="lbl">How To</div><div>${escapeHtml(ex.instructions)}</div></div>` : ''}
-    ${history.length ? `
+    ${history.length ? (cardio ? `
+      <div class="stats mt-3">
+        <div class="stat"><div class="stat-num">${maxDist}</div><div class="stat-lbl">Best km</div></div>
+        <div class="stat"><div class="stat-num">${fmtTime(maxTime)}</div><div class="stat-lbl">Longest</div></div>
+        <div class="stat"><div class="stat-num">${history.length}</div><div class="stat-lbl">Sessions</div></div>
+      </div>` : `
       <div class="stats mt-3">
         <div class="stat"><div class="stat-num">${maxWeight}</div><div class="stat-lbl">Max ${STATE.prefs.unit}</div></div>
         <div class="stat"><div class="stat-num">${max1RM}</div><div class="stat-lbl">Est. 1RM</div></div>
         <div class="stat"><div class="stat-num">${maxVolume}</div><div class="stat-lbl">Top Vol</div></div>
-      </div>` : '<p class="text-muted text-sm mt-3">No history yet for this exercise.</p>'}
+      </div>`) : '<p class="text-muted text-sm mt-3">No history yet for this exercise.</p>'}
     ${chartHtml}
     ${customControls}
   `);
@@ -1294,15 +1335,22 @@ function openExerciseEditor(id){
       <div class="form-grid-2">
         <div class="form-row">
           <label class="label">Category</label>
-          <select class="select" name="category">
+          <select class="select" name="category" id="exCatSelect" onchange="if(this.value==='Cardio'){var t=document.querySelector('[name=type]');if(t)t.value='cardio';}">
             ${CATEGORIES.filter(c => c !== 'All').concat(['Other']).map(c =>
               `<option ${editing?.category===c?'selected':''}>${c}</option>`).join('')}
           </select>
         </div>
         <div class="form-row">
-          <label class="label">Equipment</label>
-          <input class="input" name="equipment" value="${escapeHtml(editing?.equipment||'')}" placeholder="Barbell, Dumbbell..."/>
+          <label class="label">Type</label>
+          <select class="select" name="type">
+            <option value="strength" ${(editing?.type||'strength')!=='cardio'?'selected':''}>Strength (kg × reps)</option>
+            <option value="cardio" ${editing?.type==='cardio'?'selected':''}>Cardio (distance / time / slope)</option>
+          </select>
         </div>
+      </div>
+      <div class="form-row">
+        <label class="label">Equipment</label>
+        <input class="input" name="equipment" value="${escapeHtml(editing?.equipment||'')}" placeholder="Barbell, Dumbbell, Machine..."/>
       </div>
       <div class="form-row">
         <label class="label">Primary Muscle</label>
@@ -1329,6 +1377,7 @@ function openExerciseEditor(id){
     const payload = {
       name:          fd.get('name'),
       category:      fd.get('category'),
+      type:          fd.get('type') || 'strength',
       equipment:     fd.get('equipment'),
       primaryMuscle: fd.get('primaryMuscle'),
       imageUrl:      fd.get('imageUrl'),
@@ -1605,10 +1654,15 @@ function openWorkoutDetail(id){
   if (!w) return;
   const exHtml = w.exercises.map(e => {
     const def = getExercise(e.exerciseId);
-    const setsHtml = e.sets.map((s, si) =>
-      `<tr><td><div class="set-num done">${si+1}</div></td>
-        <td>${s.weight||0} ${STATE.prefs.unit}</td>
-        <td>${s.reps||0} reps</td></tr>`).join('');
+    const cardio = isCardio(def) || e.sets.some(s => s.distance || s.time || s.slope);
+    const setsHtml = e.sets.map((s, si) => cardio
+      ? `<tr><td><div class="set-num done">${si+1}</div></td>
+          <td>${s.distance||0} km</td><td>${fmtTime(s.time||0)}</td><td>${s.slope||0}%</td></tr>`
+      : `<tr><td><div class="set-num done">${si+1}</div></td>
+          <td>${s.weight||0} ${STATE.prefs.unit}</td><td>${s.reps||0} reps</td></tr>`).join('');
+    const head = cardio
+      ? `<tr><th style="width:34px">SET</th><th>DISTANCE</th><th>TIME</th><th>SLOPE</th></tr>`
+      : `<tr><th style="width:34px">SET</th><th>WEIGHT</th><th>REPS</th></tr>`;
     return `
       <div class="exercise-block">
         <div class="exercise-block-head">
@@ -1616,7 +1670,7 @@ function openWorkoutDetail(id){
           <div class="exercise-block-name">${escapeHtml(e.name)}</div>
         </div>
         <table class="sets-table">
-          <thead><tr><th style="width:34px">SET</th><th>WEIGHT</th><th>REPS</th></tr></thead>
+          <thead>${head}</thead>
           <tbody>${setsHtml}</tbody>
         </table>
       </div>`;

@@ -1,0 +1,30 @@
+{
+  "app_id": "testimony",
+  "scenes": [
+    {
+      "i": 1,
+      "title": "Sign In",
+      "narr": "Open Testimony Log and sign in with your name and access code."
+    },
+    {
+      "i": 2,
+      "title": "Your Space",
+      "narr": "Inside, your personal record \u2014 with quick actions along the top."
+    },
+    {
+      "i": 3,
+      "title": "Record It",
+      "narr": "Write your testimony, and add a photo or a short voice memo."
+    },
+    {
+      "i": 4,
+      "title": "Look Back",
+      "narr": "Every testimony is saved. Search, print or download them anytime."
+    },
+    {
+      "i": 5,
+      "title": "Ask the AI",
+      "narr": "Stuck on a passage? Ask the built-in Biblical assistant."
+    }
+  ]
+}

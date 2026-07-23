@@ -1,0 +1,30 @@
+{
+  "app_id": "ftasks",
+  "scenes": [
+    {
+      "i": 1,
+      "title": "Unlock",
+      "narr": "Open Family Tasks and unlock with your family name and password."
+    },
+    {
+      "i": 2,
+      "title": "See Tasks",
+      "narr": "Your shared list \u2014 priorities, what is done, and what is still open."
+    },
+    {
+      "i": 3,
+      "title": "Add a Task",
+      "narr": "Add a new task and set its priority in a couple of taps."
+    },
+    {
+      "i": 4,
+      "title": "Email Alerts",
+      "narr": "Add family emails, and everyone is notified when tasks change."
+    },
+    {
+      "i": 5,
+      "title": "One-Tap Undo",
+      "narr": "Delete by mistake? Tap Undo to bring the task right back."
+    }
+  ]
+}

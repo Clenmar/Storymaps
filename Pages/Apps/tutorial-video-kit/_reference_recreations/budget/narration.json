@@ -1,0 +1,30 @@
+{
+  "app_id": "budget",
+  "scenes": [
+    {
+      "i": 1,
+      "title": "Sign In",
+      "narr": "Open Family Budget and sign in with your family name and password."
+    },
+    {
+      "i": 2,
+      "title": "See the Month",
+      "narr": "At a glance: income, expenses, and your running balance."
+    },
+    {
+      "i": 3,
+      "title": "Add an Entry",
+      "narr": "Log income or an expense with a description, amount, and date."
+    },
+    {
+      "i": 4,
+      "title": "Track Bills",
+      "narr": "Mark bills paid or unpaid so nothing slips through the cracks."
+    },
+    {
+      "i": 5,
+      "title": "Many Families",
+      "narr": "Admins can manage several budgets, each kept fully separate."
+    }
+  ]
+}

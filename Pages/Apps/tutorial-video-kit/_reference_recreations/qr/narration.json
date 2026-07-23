@@ -1,0 +1,25 @@
+{
+  "app_id": "qr",
+  "scenes": [
+    {
+      "i": 1,
+      "title": "Paste a URL",
+      "narr": "Open the QR generator and paste any website link."
+    },
+    {
+      "i": 2,
+      "title": "Live Preview",
+      "narr": "Your QR code appears instantly, updating as you type."
+    },
+    {
+      "i": 3,
+      "title": "Add a Logo",
+      "narr": "Drop your logo in the centre \u2014 it stays perfectly scannable."
+    },
+    {
+      "i": 4,
+      "title": "Download",
+      "narr": "Save it as a PNG. It works offline, right on your device."
+    }
+  ]
+}

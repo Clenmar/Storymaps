@@ -1,0 +1,25 @@
+{
+  "app_id": "strong",
+  "scenes": [
+    {
+      "i": 1,
+      "title": "Create Account",
+      "narr": "Open TWC Strong and create your private account."
+    },
+    {
+      "i": 2,
+      "title": "Log Your Sets",
+      "narr": "Pick an exercise and log every set \u2014 weight, reps, and one-rep-max."
+    },
+    {
+      "i": 3,
+      "title": "Build Routines",
+      "narr": "Save reusable routines and quick-start them any day."
+    },
+    {
+      "i": 4,
+      "title": "Track Progress",
+      "narr": "Watch your streak grow and your lifts climb over time."
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "_comment": "Single source of truth for the TWC app tutorial videos. Paths are relative to the Apps folder (the parent of this kit). Capture 'actions' drive each REAL app to a real screen (no fabricated backend data).",
+  "voice": {
+    "default": "en_US-ryan-high",
+    "female_alt": "en_US-amy-medium",
+    "note": "Ryan = warm male. For a female voice set VOICE=en_US-amy-medium (or en_US-hfc_female-medium, en_US-lessac-medium)."
+  },
+  "apps": {
+    "testimony": {
+      "folder": "Testimony_app", "output": "testimony-tutorial.mp4",
+      "file": "Testimony_app/worker/index.html",
+      "theme": {"page1":"#0A1628","page2":"#050A14","accent":"#DC143C","accent2":"#1E90FF"},
+      "scenes": [
+        {"title":"Sign In","narr":"Open Testimony Log and sign in with your name and access code.","actions":[]},
+        {"title":"Your Name","narr":"Enter a name or nickname, and the access code from church leadership.","actions":[{"type":"value","sel":"#ni","text":"Sister Joy"},{"type":"value","sel":"#ci","text":"grace"},{"type":"wait","ms":300}]},
+        {"title":"Ask the Biblical AI","narr":"Tap Ask AI to open the built-in Biblical assistant.","actions":[{"type":"eval","code":"openBibleChat()"},{"type":"wait","ms":700}]},
+        {"title":"Ask a Question","narr":"Ask about Scripture, theology, or Christian living.","actions":[{"type":"eval","code":"openBibleChat()"},{"type":"wait","ms":500},{"type":"value","sel":"#chatInput","text":"What does the Bible say about faith?"},{"type":"wait","ms":300}]}
+      ]
+    },
+    "qr": {
+      "folder": "QR code converter", "output": "qr-tutorial.mp4",
+      "file": "QR code converter/Website to QR Code.html",
+      "theme": {"page1":"#1c1846","page2":"#0a0818","accent":"#4f46e5","accent2":"#7c3aed"},
+      "scenes": [
+        {"title":"Enter a URL","narr":"Open the QR generator and paste any website link.","actions":[]},
+        {"title":"Live Preview","narr":"Your QR code appears instantly as you type.","actions":[{"type":"value","sel":"#urlInput","text":"https://twcministries.net"},{"type":"wait","ms":800}]},
+        {"title":"Download as PNG","narr":"Save it as a PNG image. It works completely offline.","actions":[{"type":"value","sel":"#urlInput","text":"https://twcministries.net"},{"type":"wait","ms":700},{"type":"scroll","sel":"#downloadBtn"},{"type":"wait","ms":300}]}
+      ]
+    },
+    "baby": {
+      "folder": "Baby Games", "output": "baby-games-tutorial.mp4",
+      "file": "Baby Games/baby-squish-game.html",
+      "theme": {"page1":"#3a1d5c","page2":"#140a24","accent":"#ff5aa8","accent2":"#7c5cff"},
+      "scenes": [
+        {"title":"Squish!","narr":"In Squish, little ones tap the colourful shapes to pop them.","file":"Baby Games/baby-squish-game.html","actions":[{"type":"wait","ms":1300}]},
+        {"title":"God Loves You","narr":"Bible Squish fills the screen with God's love.","file":"Baby Games/baby-bible-squish.html","actions":[{"type":"wait","ms":1300}]},
+        {"title":"Rainbow Drawing","narr":"In God's Rainbow Drawing, they scribble in bright colours.","file":"Baby Games/baby-draw.html","actions":[{"type":"wait","ms":1300}]}
+      ]
+    },
+    "ftasks": {
+      "folder": "Family_Tasks_Email", "output": "family-tasks-tutorial.mp4",
+      "file": "Family_Tasks_Email/worker/index.html",
+      "theme": {"page1":"#151233","page2":"#08060f","accent":"#7c5cbf","accent2":"#a78bfa"},
+      "scenes": [
+        {"title":"Unlock","narr":"Open Family Tasks and unlock with your family name and password.","actions":[]},
+        {"title":"Register a Family","narr":"New here? Register your family to start a shared task list.","actions":[{"type":"clickText","text":"Register New Family"},{"type":"wait","ms":600}]}
+      ]
+    },
+    "budget": {
+      "folder": "Family_Budget", "output": "budget-tutorial.mp4",
+      "file": "Family_Budget/index.html",
+      "theme": {"page1":"#171433","page2":"#08060f","accent":"#6b3db5","accent2":"#2dd4bf"},
+      "scenes": [
+        {"title":"Sign In","narr":"Open Family Budget and sign in with your family name and password.","actions":[]},
+        {"title":"Register a Family","narr":"Register a new family to start tracking income and expenses.","actions":[{"type":"clickText","text":"Register New Family"},{"type":"wait","ms":600}]}
+      ]
+    },
+    "strong": {
+      "folder": "Strong_app", "output": "strong-tutorial.mp4",
+      "file": "Strong_app/worker/index.html",
+      "theme": {"page1":"#231a12","page2":"#0a0710","accent":"#ff6b35","accent2":"#ff8a5b"},
+      "scenes": [
+        {"title":"Create Account","narr":"Open TWC Strong and create your private account.","actions":[]},
+        {"title":"How To","narr":"A built-in How-To explains logging sets, routines, and progress.","actions":[{"type":"clickText","text":"How To"},{"type":"wait","ms":600}]}
+      ]
+    },
+    "hymns": {
+      "folder": "Hymns_app", "output": "hymns-tutorial.mp4",
+      "file": "Hymns_app/index.html",
+      "theme": {"page1":"#0a1628","page2":"#05060f","accent":"#c9a84c","accent2":"#6ea8d8"},
+      "scenes": [
+        {"title":"Search Hymns","narr":"Open TWC Hymns and search by title, author, or first line.","actions":[]},
+        {"title":"Admin Access","narr":"Admins can unlock hymn management to add new songs.","actions":[{"type":"clickText","text":"Unlock Admin"},{"type":"wait","ms":600}]}
+      ]
+    },
+    "planner": {
+      "folder": "Family Planner", "output": "planner-tutorial.mp4",
+      "file": "Family Planner/Our Week.html",
+      "theme": {"page1":"#20233a","page2":"#0d0f1c","accent":"#3a4a86","accent2":"#b0872e"},
+      "scenes": [
+        {"title":"Our Week","narr":"Open Our Week — the shared Monday-to-Sunday family planner.","actions":[]},
+        {"title":"Add a Family","narr":"Create a family, each with its own password, to start planning.","actions":[{"type":"clickText","text":"Add a family"},{"type":"wait","ms":600}]}
+      ]
+    }
+  }
+}

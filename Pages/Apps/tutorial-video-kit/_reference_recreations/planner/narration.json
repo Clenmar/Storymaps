@@ -1,0 +1,30 @@
+{
+  "app_id": "planner",
+  "scenes": [
+    {
+      "i": 1,
+      "title": "Sign In",
+      "narr": "Open Our Week and sign in \u2014 each family has its own password."
+    },
+    {
+      "i": 2,
+      "title": "The Week",
+      "narr": "See Monday to Sunday at a glance on one shared board."
+    },
+    {
+      "i": 3,
+      "title": "Add an Item",
+      "narr": "Add plans with a colour flag and assign them to anyone."
+    },
+    {
+      "i": 4,
+      "title": "Add Notes",
+      "narr": "Tap any item to add notes \u2014 times, addresses, who brings what."
+    },
+    {
+      "i": 5,
+      "title": "Print It",
+      "narr": "Print the week for the fridge, or export to share it around."
+    }
+  ]
+}

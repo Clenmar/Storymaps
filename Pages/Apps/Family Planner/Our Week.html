@@ -165,8 +165,12 @@
   .chip.time { font-variant-numeric: tabular-nums; background: transparent; border: 1px solid var(--rule); color: var(--muted); }
   .chip.rep { background: transparent; border: 1px dashed var(--rule); color: var(--muted); }
   .chip.flag { color: #fff; }
+  .chip.urgent { background: #c0392b; color: #fff; font-weight: 800; letter-spacing: 0.3px; }
+  .chip.urgent.over { animation: urgpulse 1s ease-in-out infinite; }
+  @keyframes urgpulse { 0%,100% { box-shadow: 0 0 0 0 rgba(192,57,43,0.55); } 50% { box-shadow: 0 0 0 5px rgba(192,57,43,0); } }
   li.item { border-left: 3px solid transparent; padding-left: 3px; }
   li.item.flagged { border-left-color: var(--flagc, transparent); }
+  li.item.overdue { border-left-color: #c0392b; }
   .note-dot { flex: 0 0 auto; color: var(--rule); font-size: 13px; margin-top: 1px; }
   .note-dot.has { color: var(--gold); }
 
@@ -342,7 +346,6 @@
       <div class="who" id="whoLine"></div>
     </div>
     <div class="nav">
-      <select id="filterWho" title="Show only one person's items"><option value="">Everyone</option></select>
       <button class="plain" id="carryBtn" title="Copy unfinished items from last week">Bring over</button>
       <button class="plain" id="prevWeek">&#8592;</button>
       <button class="plain" id="thisWeek">This week</button>
@@ -352,6 +355,7 @@
   </div>
 
   <div class="flagbar" id="flagbar"></div>
+  <div class="flagbar" id="peoplebar" style="display:none"></div>
 
   <div class="weekprog">
     <div class="top"><span id="progLabel">Nothing planned yet</span><strong id="progPct">0%</strong></div>
@@ -390,9 +394,31 @@
           <input type="time" id="editTime">
         </div>
       </div>
-      <div class="field">
-        <label for="editDay">Day</label>
-        <select id="editDay"></select>
+      <div class="field two">
+        <div>
+          <label for="editDay">Day</label>
+          <select id="editDay"></select>
+        </div>
+        <div>
+          <label for="editRecur">Repeat</label>
+          <select id="editRecur">
+            <option value="">Does not repeat</option>
+            <option value="weekly">Every week</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="every3">Every 3 weeks</option>
+            <option value="every4">Every 4 weeks</option>
+            <option value="monthly">Every month</option>
+          </select>
+        </div>
+      </div>
+      <div class="field two">
+        <div>
+          <label for="copyDay">Copy to another day</label>
+          <select id="copyDay"></select>
+        </div>
+        <div style="display:flex;align-items:flex-end">
+          <button class="plain" id="copyBtn" style="width:100%">Copy</button>
+        </div>
       </div>
       <div class="field">
         <label>Flags</label>
@@ -402,9 +428,9 @@
         <label for="noteArea">Notes</label>
         <textarea id="noteArea" placeholder="Anything worth remembering: who, where, cost, links, steps..."></textarea>
       </div>
-      <label class="switch" for="editRepeat">
-        <input type="checkbox" id="editRepeat">
-        <span>Repeat this every week</span>
+      <label class="switch" for="editUrgent">
+        <input type="checkbox" id="editUrgent">
+        <span>URGENT!! &#128680; &mdash; emails the assignee once its time has passed</span>
       </label>
       <div class="hint" id="noteMeta"></div>
     </div>
@@ -441,10 +467,10 @@
     </div>
     <div class="sheet-body">
       <div class="field">
-        <label for="peopleList">Names, one per line</label>
-        <textarea id="peopleList" style="min-height:120px" placeholder="Mum&#10;Dad&#10;Grace"></textarea>
+        <label for="peopleList">One per line &mdash; add an email for urgent alerts</label>
+        <textarea id="peopleList" style="min-height:120px" placeholder="Mum &lt;mum@example.com&gt;&#10;Dad &lt;dad@example.com&gt;&#10;Grace"></textarea>
       </div>
-      <div class="hint">Everyone in this list can be assigned items, and each gets their own colour.</div>
+      <div class="hint">Everyone here can be assigned items and gets their own colour. An email address (in &lt;angle brackets&gt;) lets an URGENT task email that person once its time has passed.</div>
       <div class="msg" id="peopleMsg"></div>
     </div>
     <div class="sheet-foot">
@@ -525,8 +551,9 @@
   var week = mondayOf(new Date());
   var state = freshWeek();
   var members = [];
+  var memberEmails = {};                    // { name: email } for urgent notifications
   var categories = [];                     // [{name, colour}] — the family's flags
-  var filterWho = "", filterTags = [];     // filterTags: [] = show everything
+  var filterWho = [], filterTags = [];     // both [] = show everything (multi-select)
   var NO_FLAG = " none";              // pseudo-flag for items with no flag at all
   var active = null;                       // {day, id}
   var saveTimer = null, pollTimer = null, dirty = false, lastUpdatedAt = null;
@@ -574,11 +601,23 @@
   }
   // An item is on screen only if it passes both the person and the flag filter.
   function visible(it) {
-    if (filterWho && it.assignedTo !== filterWho) return false;
+    if (filterWho.length && filterWho.indexOf(it.assignedTo) < 0) return false;
     if (!filterTags.length) return true;
     var tags = it.tags || [];
     if (!tags.length) return filterTags.indexOf(NO_FLAG) >= 0;
     return tags.some(function (t) { return filterTags.indexOf(t) >= 0; });
+  }
+  function freqLabel(f) {
+    return f === 'weekly' ? 'weekly' : f === 'biweekly' ? 'every 2 wks' : f === 'every3' ? 'every 3 wks'
+      : f === 'every4' ? 'every 4 wks' : f === 'monthly' ? 'monthly' : '';
+  }
+  // Is an urgent item past its due moment? (time treated as local; end-of-day if no time)
+  function isOverdue(day, it) {
+    var idx = DAYS.indexOf(day); if (idx < 0) return false;
+    var d = addDays(week, idx);
+    if (it.time && /^\d{2}:\d{2}$/.test(it.time)) { var p = it.time.split(":"); d.setHours(+p[0], +p[1], 0, 0); }
+    else d.setHours(23, 59, 0, 0);
+    return Date.now() > d.getTime();
   }
   function personColour(name) {
     var h = 0;
@@ -719,13 +758,15 @@
     var hasNote = it.note && it.note.trim().length;
     var flags = it.tags || [];
     var tags = "";
+    var over = it.urgent && !it.done && isOverdue(day, it);
+    if (it.urgent && !it.done) tags += '<span class="chip urgent' + (over ? " over" : "") + '">URGENT!! &#128680;</span>';
     flags.forEach(function (f) { tags += '<span class="chip flag" style="background:' + catColour(f) + '">' + esc(f) + '</span>'; });
     if (it.time)       tags += '<span class="chip time">' + esc(fmtTime(it.time)) + '</span>';
     if (it.assignedTo) tags += '<span class="chip person" style="background:' + personColour(it.assignedTo) + '">' + esc(it.assignedTo) + '</span>';
-    if (it.repeating)  tags += '<span class="chip rep">weekly</span>';
+    if (it.repeating || it.freq) tags += '<span class="chip rep">&#8635; ' + (freqLabel(it.freq) || 'weekly') + '</span>';
     else if (it.addedBy) tags += '<span class="chip">' + esc(it.addedBy) + '</span>';
 
-    return '<li class="item' + (it.done ? " done" : "") + (flags.length ? " flagged" : "") + '" data-day="' + day + '" data-id="' + esc(it.id) + '"' +
+    return '<li class="item' + (it.done ? " done" : "") + (flags.length ? " flagged" : "") + (over ? " overdue" : "") + '" data-day="' + day + '" data-id="' + esc(it.id) + '"' +
       (flags.length ? ' style="--flagc:' + catColour(flags[0]) + '"' : '') + '>' +
       '<span class="grip" title="Drag to move">&#8942;&#8942;</span>' +
       '<span class="box' + (it.done ? " checked" : "") + '" role="checkbox" aria-checked="' + (it.done ? "true" : "false") + '" tabindex="0">' + CHECK + '</span>' +
@@ -736,6 +777,7 @@
 
   function render() {
     renderFlagbar();
+    renderPeopleBar();
     var board = $("board");
     board.innerHTML = "";
     var tName = isCurrentWeek() ? todayName() : null;
@@ -828,6 +870,36 @@
     });
   }
 
+  // Person filter chips — pick one OR several people (their items are OR'd,
+  // then AND'd with the flag filter).
+  function renderPeopleBar() {
+    var bar = $("peoplebar");
+    if (!members.length) { bar.style.display = "none"; bar.innerHTML = ""; return; }
+    bar.style.display = "";
+    var counts = {};
+    DAYS.forEach(function (d) { (state.days[d] || []).forEach(function (it) { if (it.assignedTo) counts[it.assignedTo] = (counts[it.assignedTo] || 0) + 1; }); });
+
+    var html = '<span class="lbl">Who</span>' +
+      '<button class="flagchip all' + (filterWho.length ? "" : " on") + '" data-who="">Everyone</button>';
+    members.forEach(function (m) {
+      var on = filterWho.indexOf(m) >= 0, c = personColour(m), n = counts[m] || 0;
+      html += '<button class="flagchip' + (on ? " on" : "") + (n ? "" : " zero") + '" data-who="' + esc(m) + '"' +
+        (on ? ' style="background:' + c + '"' : '') + '>' +
+        '<span class="dot"' + (on ? '' : ' style="background:' + c + '"') + '></span>' +
+        esc(m) + (n ? ' <span class="n">' + n + '</span>' : '') + '</button>';
+    });
+    bar.innerHTML = html;
+    Array.prototype.forEach.call(bar.querySelectorAll("[data-who]"), function (b) {
+      b.addEventListener("click", function () {
+        var w = b.getAttribute("data-who");
+        if (!w) filterWho = [];
+        else { var i = filterWho.indexOf(w); if (i >= 0) filterWho.splice(i, 1); else filterWho.push(w); }
+        setPref("filterWho", filterWho);
+        render();
+      });
+    });
+  }
+
   function addItem(day, title) {
     title = (title || "").trim();
     if (!title) return;
@@ -854,8 +926,8 @@
 
     state.days[day].push({
       id: newId(), title: title, done: false, note: "", time: time, tags: tags,
-      assignedTo: filterWho || "", addedBy: (auth && auth.who) || "",
-      repeating: false, createdAt: new Date().toISOString()
+      assignedTo: (filterWho.length === 1 ? filterWho[0] : ""), addedBy: (auth && auth.who) || "",
+      repeating: false, freq: "", urgent: false, urgentNotified: false, createdAt: new Date().toISOString()
     });
     queueSave(); render();
     var inp = document.querySelector('.add input[data-day="' + day + '"]');
@@ -985,14 +1057,12 @@
 
   // ── Notes sheet ────────────────────────────────────────────────────────
   function fillPeople() {
-    var opts = '<option value="">Anyone</option>' + members.map(function (m) {
+    $("editWho").innerHTML = '<option value="">Anyone</option>' + members.map(function (m) {
       return '<option value="' + esc(m) + '">' + esc(m) + '</option>';
     }).join("");
-    $("editWho").innerHTML = opts;
-    $("filterWho").innerHTML = '<option value="">Everyone</option>' + members.map(function (m) {
-      return '<option value="' + esc(m) + '"' + (m === filterWho ? " selected" : "") + '>' + esc(m) + '</option>';
-    }).join("");
-    $("editDay").innerHTML = DAYS.map(function (d) { return '<option value="' + d + '">' + d + '</option>'; }).join("");
+    var dayOpts = DAYS.map(function (d) { return '<option value="' + d + '">' + d + '</option>'; }).join("");
+    $("editDay").innerHTML = dayOpts;
+    $("copyDay").innerHTML = dayOpts;
   }
 
   function openNote(day, id) {
@@ -1004,8 +1074,10 @@
     $("editWho").value = it.assignedTo || "";
     $("editTime").value = it.time || "";
     $("editDay").value = day;
+    $("copyDay").value = day;
     $("noteArea").value = it.note || "";
-    $("editRepeat").checked = !!it.repeating;
+    $("editRecur").value = it.freq || (it.repeating ? "weekly" : "");
+    $("editUrgent").checked = !!it.urgent;
     renderTagPicker(it);
     $("noteMeta").textContent = it.addedBy ? "Added by " + it.addedBy : "";
     $("scrim").classList.add("open");
@@ -1061,13 +1133,33 @@
     $("sheetDay").textContent = to;
     queueSave(); render();
   });
-  $("editRepeat").addEventListener("change", function () {
-    var on = $("editRepeat").checked;
-    editField(function (it) { it.repeating = on; });
-    if (!active || offline) { render(); return; }
+  $("editRecur").addEventListener("change", function () {
+    var freq = $("editRecur").value;
+    editField(function (it) { it.freq = freq; it.repeating = !!freq; });
+    if (!active) return;
     var it = findItem(active.day, active.id);
-    updateTemplate(active.day, it, on);
+    if (!offline && it) updateTemplate(active.day, it, freq);
     render();
+  });
+  $("editUrgent").addEventListener("change", function () {
+    var on = $("editUrgent").checked;
+    editField(function (it) { it.urgent = on; if (!on) it.urgentNotified = false; });
+    var it = active && findItem(active.day, active.id);
+    if (it && it.freq && !offline) updateTemplate(active.day, it, it.freq); // mirror into the repeat template
+    render();
+    if (on) showToast("Marked urgent — the assignee will be emailed if its time passes", false);
+  });
+  $("copyBtn").addEventListener("click", function () {
+    if (!active) return;
+    var it = findItem(active.day, active.id); if (!it) return;
+    var to = $("copyDay").value;
+    state.days[to].push({
+      id: newId(), title: it.title, done: false, note: it.note || "", time: it.time || "",
+      tags: (it.tags || []).slice(), assignedTo: it.assignedTo || "", addedBy: (auth && auth.who) || "",
+      urgent: !!it.urgent, urgentNotified: false, repeating: false, freq: "", createdAt: new Date().toISOString()
+    });
+    queueSave(); render();
+    showToast('Copied "' + (it.title.length > 24 ? it.title.slice(0, 24) + "…" : it.title) + '" to ' + to, false);
   });
   $("doneSheet").addEventListener("click", function () { closeNote(); render(); });
   $("deleteItem").addEventListener("click", function () {
@@ -1107,19 +1199,24 @@
   });
 
   // ── Repeating items (template) ─────────────────────────────────────────
-  function updateTemplate(day, it, on) {
+  // freq: "" removes it; otherwise weekly / biweekly / every3 / every4 / monthly.
+  function updateTemplate(day, it, freq) {
     api("GET", "/api/template").then(function (r) {
       var tpl = r.days || {};
       DAYS.forEach(function (d) { if (!tpl[d]) tpl[d] = []; });
       var same = function (x) { return x.title.trim().toLowerCase() === it.title.trim().toLowerCase(); };
-      if (on) {
-        if (!tpl[day].some(same)) tpl[day].push({ id: newId(), title: it.title, note: it.note || "", assignedTo: it.assignedTo || "", time: it.time || "", tags: (it.tags || []).slice() });
-      } else {
-        tpl[day] = tpl[day].filter(function (x) { return !same(x); });
+      // remove any existing copy across all days first
+      DAYS.forEach(function (d) { tpl[d] = tpl[d].filter(function (x) { return !same(x); }); });
+      if (freq) {
+        tpl[day].push({
+          id: newId(), title: it.title, note: it.note || "", assignedTo: it.assignedTo || "",
+          time: it.time || "", tags: (it.tags || []).slice(), urgent: !!it.urgent,
+          freq: freq, anchor: iso(week), dom: addDays(week, DAYS.indexOf(day)).getDate()
+        });
       }
       return api("PUT", "/api/template", { days: tpl });
     }).then(function () {
-      showToast(on ? "Added to every week" : "No longer repeating", false);
+      showToast(freq ? ("Repeats " + freqLabel(freq)) : "No longer repeating", false);
     }).catch(function (e) { showToast(e.message, false); });
   }
 
@@ -1138,13 +1235,15 @@
         list.forEach(function (x) {
           html += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--rule)">' +
             '<span style="flex:1;font-size:13.5px">' + esc(x.title) +
+            ' <span class="chip rep">&#8635; ' + (freqLabel(x.freq) || 'weekly') + '</span>' +
+            (x.urgent ? ' <span class="chip urgent">URGENT</span>' : '') +
             (x.time ? ' <span class="chip time">' + esc(fmtTime(x.time)) + '</span>' : '') +
             (x.assignedTo ? ' <span class="chip person" style="background:' + personColour(x.assignedTo) + '">' + esc(x.assignedTo) + '</span>' : '') +
             '</span><button class="plain" data-rd="' + esc(d) + '" data-rt="' + esc(x.title) + '">Remove</button></div>';
         });
         html += '</div>';
       });
-      box.innerHTML = any ? html : '<div class="hint">Nothing repeats yet. Open any item and switch on “Repeat this every week”.</div>';
+      box.innerHTML = any ? html : '<div class="hint">Nothing repeats yet. Open any item and choose a “Repeat” cycle.</div>';
       Array.prototype.forEach.call(box.querySelectorAll("[data-rd]"), function (b) {
         b.addEventListener("click", function () {
           var d = b.getAttribute("data-rd"), t = b.getAttribute("data-rt");
@@ -1210,28 +1309,44 @@
   $("newFlagName").addEventListener("keydown", function (e) { if (e.key === "Enter") $("flagAdd").click(); });
 
   // ── People ─────────────────────────────────────────────────────────────
+  // Each line is "Name" or "Name <email>" — the email is used for URGENT alerts.
   $("peopleBtn").addEventListener("click", function () {
-    $("peopleList").value = members.join("\n");
+    $("peopleList").value = members.map(function (m) {
+      return memberEmails[m] ? (m + " <" + memberEmails[m] + ">") : m;
+    }).join("\n");
     $("peopleMsg").textContent = "";
     $("peopleScrim").classList.add("open");
   });
   $("peopleClose").addEventListener("click", function () { $("peopleScrim").classList.remove("open"); });
   $("peopleScrim").addEventListener("click", function (e) { if (e.target === $("peopleScrim")) $("peopleScrim").classList.remove("open"); });
+
+  function parsePeople(text) {
+    var names = [], emails = {};
+    text.split("\n").forEach(function (line) {
+      line = line.trim(); if (!line) return;
+      var m = line.match(/^(.*?)\s*[<(]\s*([^\s>()]+@[^\s>()]+)\s*[>)]?\s*$/) || line.match(/^(.*?)[,;]\s*([^\s]+@[^\s]+)$/);
+      var name, email = "";
+      if (m) { name = m[1].trim(); email = m[2].trim(); } else { name = line; }
+      if (!name) return;
+      names.push(name);
+      if (email) emails[name] = email;
+    });
+    return { names: names, emails: emails };
+  }
+
   $("peopleSave").addEventListener("click", function () {
-    var list = $("peopleList").value.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
-    if (offline) { members = list; fillPeople(); $("peopleScrim").classList.remove("open"); return; }
+    var parsed = parsePeople($("peopleList").value);
+    if (offline) { members = parsed.names; memberEmails = parsed.emails; fillPeople(); render(); $("peopleScrim").classList.remove("open"); return; }
     var m = $("peopleMsg"); m.className = "msg"; m.textContent = "Saving…";
-    api("PUT", "/api/members", { members: list }).then(function (r) {
-      members = r.members; fillPeople(); render();
+    api("PUT", "/api/members", { members: parsed.names }).then(function (r) {
+      members = r.members;
+      return api("PUT", "/api/emails", { emails: parsed.emails });
+    }).then(function (r) {
+      memberEmails = (r && r.emails) || {};
+      fillPeople(); render();
       m.className = "msg good"; m.textContent = "Saved.";
       setTimeout(function () { $("peopleScrim").classList.remove("open"); }, 600);
     }).catch(function (e) { m.className = "msg bad"; m.textContent = e.message; });
-  });
-
-  $("filterWho").addEventListener("change", function () {
-    filterWho = $("filterWho").value;
-    setPref("filterWho", filterWho);
-    render();
   });
 
   // ── Carry unfinished items over from last week ─────────────────────────
@@ -1345,11 +1460,13 @@
       { name: "People to call", colour: "#c0563c" }, { name: "Church", colour: "#8a6d3b" },
       { name: "Appointment", colour: "#3f5f8f" }, { name: "Shopping", colour: "#a0527a" }
     ];
-    filterWho = prefs().filterWho || "";
+    var pw = prefs().filterWho;
+    filterWho = Array.isArray(pw) ? pw : (pw ? [pw] : []);   // migrate old single value
     filterTags = prefs().filterTags || [];
     fillPeople();
     loadWeek();
     startPolling();
+    if (!offline) api("GET", "/api/emails").then(function (r) { memberEmails = r.emails || {}; }).catch(function () {});
   }
 
   function signOut() {

@@ -1,0 +1,6 @@
+_work/
+__pycache__/
+.voices/
+screenshots/
+node_modules/
+package-lock.json
