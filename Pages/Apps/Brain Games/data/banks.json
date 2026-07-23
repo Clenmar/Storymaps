@@ -9229,6 +9229,305 @@
           "the Chinese words in the ONE natural/canonical order"
         ]
       }
+    },
+    "bibleCharades": {
+      "game": "biblecharades",
+      "description": "Bible charades — emoji clues that 'act out' a Bible story, person or event; guess it from four options. Tagged by difficulty (0 easy · 1 medium · 2 hard).",
+      "dedupeKey": "answer",
+      "difficulty": {
+        "field": "diff",
+        "values": {
+          "0": "easy / famous",
+          "1": "medium",
+          "2": "hard"
+        },
+        "targetPerValue": 20
+      },
+      "itemSchema": {
+        "diff": "0|1|2",
+        "clue": "a short string of emoji that mime the answer",
+        "options": [
+          "4 answers; index 0 is correct — the app shuffles at display"
+        ],
+        "answer": 0
+      },
+      "items": [
+        {
+          "diff": 0,
+          "clue": "🚢🌧️🌈🕊️",
+          "options": [
+            "Noah's Ark",
+            "The Exodus",
+            "Jesus walks on water",
+            "The Great Catch"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "🐟😮🙏",
+          "options": [
+            "Jonah and the whale",
+            "Peter fishing",
+            "Feeding the 5000",
+            "The Great Catch"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "👶🧺🌊",
+          "options": [
+            "Baby Moses in the basket",
+            "Baby Jesus",
+            "Samuel as a boy",
+            "David as a shepherd"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "✝️⛰️",
+          "options": [
+            "The Crucifixion",
+            "Moses on Sinai",
+            "Sermon on the Mount",
+            "Elijah on Carmel"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "🍞🐟🍞🐟",
+          "options": [
+            "Feeding the 5000",
+            "The Last Supper",
+            "Manna from heaven",
+            "The wedding at Cana"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "⭐👶🐫🎁",
+          "options": [
+            "The Nativity / Wise Men",
+            "The Ascension",
+            "John baptising",
+            "The Transfiguration"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "🦁🕳️🙏",
+          "options": [
+            "Daniel in the lions' den",
+            "Samson and the lion",
+            "David and the bear",
+            "Jonah in the fish"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "💪🦁✂️",
+          "options": [
+            "Samson",
+            "Goliath",
+            "Gideon",
+            "Elijah"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "🌊🚶‍♂️➡️🏜️",
+          "options": [
+            "Crossing the Red Sea",
+            "Walking on water",
+            "Jordan crossing",
+            "The flood"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 0,
+          "clue": "🍎🐍🌳",
+          "options": [
+            "Adam and Eve",
+            "Noah's vineyard",
+            "Jonah's plant",
+            "The mustard tree"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🪨🎯👦🆚🏋️",
+          "options": [
+            "David and Goliath",
+            "Samson and the Philistines",
+            "Gideon's army",
+            "Joshua at Jericho"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🔥🌳🐑👣",
+          "options": [
+            "Moses and the burning bush",
+            "Elijah's fire",
+            "The pillar of fire",
+            "Shadrach in the furnace"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🍷💧🏺🎉",
+          "options": [
+            "Water into wine at Cana",
+            "The Last Supper",
+            "Melchizedek's bread",
+            "Passover"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "👑🧠👶✂️",
+          "options": [
+            "Solomon's wise judgment",
+            "David crowned king",
+            "Saul chosen",
+            "The two spies"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🎺🧱🔄🔄🔄",
+          "options": [
+            "The walls of Jericho",
+            "Tower of Babel",
+            "Nehemiah's wall",
+            "Temple building"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🌾👩‍🌾💍",
+          "options": [
+            "Ruth and Boaz",
+            "Esther and the king",
+            "Rebekah at the well",
+            "Rachel and Jacob"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🪜👼😴",
+          "options": [
+            "Jacob's ladder dream",
+            "Joseph's dreams",
+            "Peter's vision",
+            "Daniel's visions"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 1,
+          "clue": "🔥☁️🏜️🚶‍♂️",
+          "options": [
+            "Pillar of cloud and fire",
+            "Elijah's chariot",
+            "Mount Sinai",
+            "The tabernacle"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "✍️🧱🖐️👑",
+          "options": [
+            "Writing on the wall (Belshazzar)",
+            "The Ten Commandments",
+            "Ezekiel's scroll",
+            "Isaiah's vision"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "🐴🛣️💡🙈",
+          "options": [
+            "Saul's conversion on the road",
+            "Philip and the eunuch",
+            "Jonah to Nineveh",
+            "Peter released from prison"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "🦴🦴🌬️🚶",
+          "options": [
+            "Valley of dry bones (Ezekiel)",
+            "Lazarus raised",
+            "Elisha's bones",
+            "The resurrection"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "🔥🐎☁️⬆️",
+          "options": [
+            "Elijah taken up in a whirlwind",
+            "The Ascension",
+            "Enoch taken",
+            "Moses' death"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "⚖️🔥🐂🌊🆚",
+          "options": [
+            "Elijah versus the prophets of Baal",
+            "Gideon's fleece",
+            "Aaron's calf",
+            "The plagues"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "🚪🩸🐑🌙",
+          "options": [
+            "The Passover",
+            "The Last Supper",
+            "The scapegoat",
+            "Abraham's sacrifice"
+          ],
+          "answer": 0
+        },
+        {
+          "diff": 2,
+          "clue": "🌊⛵😴🌬️🙌",
+          "options": [
+            "Jesus calms the storm",
+            "Walking on water",
+            "The great catch",
+            "Paul's shipwreck"
+          ],
+          "answer": 0
+        }
+      ]
     }
   }
 }

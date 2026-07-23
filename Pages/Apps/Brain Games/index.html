@@ -99,6 +99,11 @@
   .g-bibletrivia { background: linear-gradient(140deg, #a16207, #eab308); }
   .g-bibleverse  { background: linear-gradient(140deg, #854d0e, #d97706); }
   .g-biblebooks  { background: linear-gradient(140deg, #7c2d12, #f59e0b); }
+  .g-biblecharades { background: linear-gradient(140deg, #9a3412, #f59e0b); }
+  .g-oddone   { background: linear-gradient(140deg, #ea580c, #f59e0b); }
+  .g-flanker  { background: linear-gradient(140deg, #d97706, #fbbf24); }
+  .g-samediff { background: linear-gradient(140deg, #059669, #34d399); }
+  .g-arrowdash{ background: linear-gradient(140deg, #16a34a, #4ade80); }
   /* chinese category — red */
   .g-zhmeaning  { background: linear-gradient(140deg, #c1121f, #ef4444); }
   .g-zhpinyin   { background: linear-gradient(140deg, #b91c1c, #f97316); }
@@ -238,6 +243,27 @@
   .ynbtn:active { transform: scale(.94); }
   .ynbtn.yes { background: linear-gradient(140deg, #10b981, #22c55e); }
   .ynbtn.no { background: linear-gradient(140deg, #ef4444, #f97316); }
+
+  /* bible charades */
+  .charade { font-size: clamp(40px, 12vw, 76px); text-align: center; line-height: 1.25; letter-spacing: 4px; padding: 8px 6px; max-width: 560px; }
+  /* same-or-different */
+  .sdpair { display: flex; gap: clamp(20px, 8vw, 60px); transition: transform .15s ease, filter .15s ease; }
+  .sdpair .sd { font-size: clamp(56px, 18vw, 120px); }
+  /* arrow dash */
+  .bigarrow { font-size: clamp(80px, 26vw, 170px); font-weight: 800; line-height: 1; transition: transform .12s ease; color: var(--violet-d); }
+  .dpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: min(300px, 82vw); margin-top: 4px; }
+  .dbtn { aspect-ratio: 1; border-radius: 16px; font-size: 34px; font-weight: 800; background: #f2edff; color: var(--violet-d); box-shadow: 0 4px 10px rgba(90,40,160,.1); }
+  .dbtn:active { transform: scale(.92); background: #e3d9ff; }
+  /* odd one out */
+  .oddgrid { display: grid; gap: clamp(6px, 2vw, 12px); width: min(400px, 88vw); }
+  .oddcell { aspect-ratio: 1; border-radius: 12px; background: #f4f0ff; font-size: clamp(20px, 6vw, 40px); display: flex; align-items: center; justify-content: center; transition: transform .1s ease, background .15s ease; }
+  .oddcell:active { transform: scale(.9); }
+  .oddcell.hit { background: linear-gradient(135deg, var(--green), #22c55e); }
+  .oddcell.miss { background: linear-gradient(135deg, var(--red), #f97316); animation: shake .3s; }
+  /* flanker */
+  .flankrow { display: flex; gap: clamp(6px, 3vw, 22px); font-size: clamp(40px, 13vw, 88px); font-weight: 800; align-items: center; }
+  .flankrow .fk { color: var(--muted); }
+  .flankrow .fk.mid { color: var(--violet-d); transform: scale(1.15); transition: color .15s ease; }
 
   /* stroop */
   .stroopword { font-size: clamp(46px, 13vw, 90px); font-weight: 800; letter-spacing: 1px; }
@@ -540,7 +566,7 @@
     chinese:  { name: "Chinese", tag: "Practise your 中文", colour: "#c1121f", grad: "#c1121f,#ef4444",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/><path d="M8 8h8M12 8v6M9 11h6"/></svg>' }
   };
-  var CAT_ORDER = ["memory", "math", "focus", "speed", "language", "writing", "reading", "bible", "chinese"];
+  var CAT_ORDER = ["bible", "memory", "math", "focus", "speed", "language", "writing", "reading", "chinese"];
   var DIFFS = [{ name: "Easy", mult: 1, cls: "dif0" }, { name: "Medium", mult: 2, cls: "dif1" }, { name: "Hard", mult: 3, cls: "dif2" }];
 
   var GAMES = {
@@ -570,10 +596,22 @@
     schulte: { name: "Number Hunt", cat: "focus", cls: "g-schulte", colour: "#f97316", unit: "found",
       desc: "Find 1, 2, 3… in order across the grid, against the clock.",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' },
+    oddone: { name: "Odd One Out", cat: "focus", cls: "g-oddone", colour: "#ea580c", unit: "correct",
+      desc: "Spot the one that's different in the grid, fast.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.4"/><circle cx="12" cy="6" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="6" cy="12" r="2.4"/><rect x="9.6" y="9.6" width="4.8" height="4.8" rx="1"/><circle cx="18" cy="12" r="2.4"/></svg>' },
+    flanker: { name: "Middle Arrow", cat: "focus", cls: "g-flanker", colour: "#d97706", unit: "correct",
+      desc: "Follow the centre arrow, ignore the ones beside it.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9l-3 3 3 3M20 9l-3 3 3 3"/><path d="M14 8l3 4-3 4" stroke-width="2.4"/></svg>' },
 
     reaction: { name: "Quick Tap", cat: "speed", cls: "g-reaction", colour: "#10b981", unit: "hits",
       desc: "Tap the green dots, dodge the red. How fast are you?",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V6a2 2 0 0 1 4 0v5"/><path d="M13 11V8a2 2 0 0 1 4 0v6a6 6 0 0 1-6 6h-1a5 5 0 0 1-4-2l-3-4s-.8-1.3.5-2 2.5 1 2.5 1l1 1.5"/></svg>' },
+    samediff: { name: "Same or Different", cat: "speed", cls: "g-samediff", colour: "#059669", unit: "correct",
+      desc: "Two symbols flash — same or not? Decide fast.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="8" r="3"/><circle cx="17" cy="8" r="3"/><path d="M5 18h14"/></svg>' },
+    arrowdash: { name: "Arrow Dash", cat: "speed", cls: "g-arrowdash", colour: "#16a34a", unit: "correct",
+      desc: "Tap the direction the arrow points — as quick as you can.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>' },
 
     anagram: { name: "Word Scramble", cat: "language", cls: "g-anagram", colour: "#ec4899", unit: "words",
       desc: "Unscramble the letters into a word before time runs out.",
@@ -617,6 +655,9 @@
     biblebooks: { name: "Books in Order", cat: "bible", cls: "g-biblebooks", colour: "#7c2d12", unit: "points", diff: true,
       desc: "Put the books of the Bible into their correct order.",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h5v14H4zM10 5h4v14h-4z"/><path d="M15.5 6l3.5.9-3 13-3.4-.9z"/></svg>' },
+    biblecharades: { name: "Bible Charades", cat: "bible", cls: "g-biblecharades", colour: "#9a3412", unit: "points", diff: true,
+      desc: "Guess the Bible story from the emoji clues.",
+      icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11a3 3 0 1 1 3 3v2"/><circle cx="12" cy="20" r="0.6" fill="#fff"/><path d="M3 12a9 9 0 1 1 18 0 9 9 0 0 1-18 0z"/></svg>' },
 
     zhmeaning: { name: "Meaning", cat: "chinese", cls: "g-zhmeaning", colour: "#c1121f", unit: "points", diff: true,
       desc: "See the character, choose its meaning.",
@@ -634,9 +675,11 @@
       desc: "Arrange the words into a correct sentence.",
       icon: '<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="6" height="5" rx="1"/><rect x="11" y="6" width="10" height="5" rx="1"/><rect x="3" y="14" width="10" height="5" rx="1"/><rect x="15" y="14" width="6" height="5" rx="1"/></svg>' }
   };
-  var GAME_IDS = ["matrix", "simon", "cards", "span", "arith", "equate", "stroop", "schulte", "reaction", "anagram",
+  var GAME_IDS = ["matrix", "simon", "cards", "span", "arith", "equate",
+    "stroop", "schulte", "oddone", "flanker",
+    "reaction", "samediff", "arrowdash", "anagram",
     "brevity", "punct", "typo", "express", "invert", "speedread", "comprehend", "scan", "theme",
-    "bibletrivia", "bibleverse", "biblebooks",
+    "bibletrivia", "bibleverse", "biblebooks", "biblecharades",
     "zhmeaning", "zhpinyin", "zhchar", "zhlisten", "zhsentence"];
 
   var auth = null;                 // {password, family, isAdmin}
@@ -1412,7 +1455,7 @@
   // ════════════════════════════════════════════════════════════════════════
   var banksLoaded = false, banksLoading = false;
   var NEEDS_BANK = { brevity:1, typo:1, punct:1, express:1, invert:1, comprehend:1, scan:1, theme:1, speedread:1,
-    bibletrivia:1, bibleverse:1, biblebooks:1, zhmeaning:1, zhpinyin:1, zhchar:1, zhlisten:1, zhsentence:1 };
+    bibletrivia:1, bibleverse:1, biblebooks:1, biblecharades:1, zhmeaning:1, zhpinyin:1, zhchar:1, zhlisten:1, zhsentence:1 };
 
   function loadBanks() {
     if (banksLoaded || banksLoading) return Promise.resolve(banksLoaded);
@@ -1423,6 +1466,7 @@
       BANK_EXPRESS = B.express.items; BANK_INVERT = B.invert.items; BANK_COMPREHEND = B.comprehend.items;
       BANK_SCAN = B.scan.items; BANK_THEME = B.theme.items; BANK_SPEEDREAD = B.speedread.items;
       BANK_BIBLE_TRIVIA = B.bibleTrivia.items; BANK_BIBLE_VERSE = B.bibleVerse.items; BIBLE_BOOKS = B.bibleBooks.items;
+      BANK_BIBLE_CHARADES = (B.bibleCharades && B.bibleCharades.items) || [];
       VOCAB = B.vocab.items; ZH_SENTENCES = B.zhSentences.items;
       banksLoaded = true; banksLoading = false;
       if ($("home").classList.contains("on")) renderHome();
@@ -1662,6 +1706,7 @@
   var BANK_BIBLE_TRIVIA = [];
 
   var BANK_BIBLE_VERSE = [];
+  var BANK_BIBLE_CHARADES = [];
 
   var BIBLE_BOOKS = [];
 
@@ -1905,10 +1950,205 @@
     newItem();
   }
 
+  // ── Bible Charades (difficulty-scored, emoji clues) ────────────────────
+  function runBibleCharades() {
+    var st = stageReset();
+    var S = SESSION, lvl = bibleDiff, mult = DIFFS[lvl].mult;
+    var prompt = el("div", "prompt", "Guess the Bible story · " + DIFFS[lvl].name); st.appendChild(prompt);
+    var clue = el("div", "charade"); st.appendChild(clue);
+    var opts = el("div", "mopts"); st.appendChild(opts);
+    setStats([["Points", 0, "sc"], ["Time", "70", "tm"], ["Best", getBest("biblecharades"), "bt"]]);
+
+    var pool = BANK_BIBLE_CHARADES.filter(function (x) { return x.diff === lvl; });
+    if (pool.length < 4) pool = BANK_BIBLE_CHARADES.slice();
+    var order = pool.slice().sort(rand), qi = 0, score = 0, ended = false;
+    var timer = makeTimer(st, 70, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      if (qi >= order.length) { order.sort(rand); qi = 0; }
+      var item = order[qi++];
+      clue.textContent = item.clue;
+      var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(rand);
+      opts.innerHTML = "";
+      shuffled.forEach(function (x) {
+        var b = el("button", "mopt", esc(x.o));
+        b.addEventListener("click", function () {
+          if (ended) return;
+          if (x.ok) {
+            score += mult; stat("sc", score); tone(700, 90); b.classList.add("right");
+            Array.prototype.forEach.call(opts.children, function (c) { c.disabled = true; });
+            setTimeout(function () { if (!ended && S === SESSION) newQ(); }, 340);
+          } else { b.classList.add("wrong"); buzz(); timer.penalise(2500); }
+        });
+        opts.appendChild(b);
+      });
+    }
+    function finish() {
+      if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti);
+      setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#127917;" }); }, 250);
+    }
+    newQ();
+  }
+
+  // ── Same or Different (Speed) ──────────────────────────────────────────
+  function runSameDiff() {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", "Are they the same?"); st.appendChild(prompt);
+    var pair = el("div", "sdpair"); st.appendChild(pair);
+    var yn = el("div", "yn");
+    var yes = el("button", "ynbtn yes", "Same"), no = el("button", "ynbtn no", "Different");
+    yes.style.fontSize = no.style.fontSize = "20px";
+    yn.appendChild(yes); yn.appendChild(no); st.appendChild(yn);
+    setStats([["Score", 0, "sc"], ["Time", "40", "tm"], ["Best", getBest("samediff"), "bt"]]);
+
+    var SYM = "🍎🚀⭐🎸🐢🌻🎈🔔🍕🐝🍊🐟🐳🌈🎯🧩🪁🦋".split(/(?=[\uD800-\uDBFF])/).filter(Boolean);
+    var same = true, score = 0, ended = false;
+    var timer = makeTimer(st, 40, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      var a = SYM[rnd(SYM.length)];
+      same = Math.random() < 0.5;
+      var b = a;
+      if (!same) { do { b = SYM[rnd(SYM.length)]; } while (b === a); }
+      pair.innerHTML = '<span class="sd">' + a + '</span><span class="sd">' + b + '</span>';
+    }
+    function answer(said) {
+      if (ended) return;
+      if (said === same) { score++; stat("sc", score); tone(680, 80); flash(true); }
+      else { buzz(); flash(false); timer.penalise(1500); }
+      newQ();
+    }
+    function flash(good) { pair.style.transform = good ? "scale(1.05)" : "translateX(0)"; pair.style.filter = good ? "" : "grayscale(1)"; setTimeout(function () { pair.style.transform = ""; pair.style.filter = ""; }, 160); }
+    yes.addEventListener("click", function () { answer(true); });
+    no.addEventListener("click", function () { answer(false); });
+    function finish() { if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti); setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#9889;" }); }, 250); }
+    newQ();
+  }
+
+  // ── Arrow Dash (Speed) ─────────────────────────────────────────────────
+  function runArrowDash() {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", "Tap the way it points!"); st.appendChild(prompt);
+    var arrow = el("div", "bigarrow", "→"); st.appendChild(arrow);
+    var pad = el("div", "dpad"); st.appendChild(pad);
+    setStats([["Score", 0, "sc"], ["Time", "35", "tm"], ["Best", getBest("arrowdash"), "bt"]]);
+
+    var DIRS = [["up", "↑"], ["down", "↓"], ["left", "←"], ["right", "→"]];
+    var cur = "right", score = 0, ended = false;
+    var timer = makeTimer(st, 35, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    pad.innerHTML = "";
+    // layout: up on top, left/right middle, down bottom via grid
+    var grid = { up: [1, 0], left: [0, 1], right: [2, 1], down: [1, 2] };
+    DIRS.forEach(function (dd) {
+      var b = el("button", "dbtn", dd[1]);
+      b.style.gridColumn = (grid[dd[0]][0] + 1); b.style.gridRow = (grid[dd[0]][1] + 1);
+      b.addEventListener("click", function () { answer(dd[0]); });
+      pad.appendChild(b);
+    });
+
+    function newQ() { var d = DIRS[rnd(4)]; cur = d[0]; arrow.textContent = d[1]; }
+    function answer(dir) {
+      if (ended) return;
+      if (dir === cur) { score++; stat("sc", score); tone(720, 70); arrow.style.transform = "scale(1.2)"; setTimeout(function () { arrow.style.transform = ""; }, 120); newQ(); }
+      else { buzz(); timer.penalise(1200); }
+    }
+    function finish() { if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti); setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#10145;" }); }, 250); }
+    newQ();
+  }
+
+  // ── Odd One Out (Focus) ────────────────────────────────────────────────
+  function runOddOne() {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", "Tap the one that's different"); st.appendChild(prompt);
+    var grid = el("div", "oddgrid"); st.appendChild(grid);
+    setStats([["Score", 0, "sc"], ["Time", "45", "tm"], ["Best", getBest("oddone"), "bt"]]);
+
+    var SETS = ["🍎🍏", "🐶🐺", "🌝🌚", "🔵🔷", "😀😄", "⭐🌟", "🐤🐥", "🌸🌺", "🚗🚙", "🎈🎀", "❤️🧡", "🔺🔻"];
+    var score = 0, ended = false, round = 0;
+    var timer = makeTimer(st, 45, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      round++;
+      var n = Math.min(6, 3 + Math.floor(round / 3));   // grid grows: n×n
+      var pairStr = SETS[rnd(SETS.length)];
+      var pair = pairStr.split(/(?=[\uD800-\uDBFF])/).filter(Boolean);
+      var common = pair[0], odd = pair[1];
+      var total = n * n, oddIdx = rnd(total);
+      grid.style.gridTemplateColumns = "repeat(" + n + ",1fr)";
+      grid.innerHTML = "";
+      for (var i = 0; i < total; i++) {
+        var c = el("button", "oddcell", i === oddIdx ? odd : common);
+        (function (isOdd, cell) {
+          cell.addEventListener("click", function () {
+            if (ended) return;
+            if (isOdd) { score++; stat("sc", score); tone(680, 80); cell.classList.add("hit"); setTimeout(function () { if (!ended && S === SESSION) newQ(); }, 200); }
+            else { buzz(); timer.penalise(1500); cell.classList.add("miss"); setTimeout(function () { cell.classList.remove("miss"); }, 300); }
+          });
+        })(i === oddIdx, c);
+        grid.appendChild(c);
+      }
+    }
+    function finish() { if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti); setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#128064;" }); }, 250); }
+    newQ();
+  }
+
+  // ── Middle Arrow / Flanker (Focus) ─────────────────────────────────────
+  function runFlanker() {
+    var st = stageReset();
+    var S = SESSION;
+    var prompt = el("div", "prompt", "Follow the <strong>middle</strong> arrow only"); st.appendChild(prompt);
+    var row = el("div", "flankrow"); st.appendChild(row);
+    var yn = el("div", "yn");
+    var left = el("button", "ynbtn no", "←"), right = el("button", "ynbtn yes", "→");
+    yn.appendChild(left); yn.appendChild(right); st.appendChild(yn);
+    setStats([["Score", 0, "sc"], ["Time", "45", "tm"], ["Best", getBest("flanker"), "bt"]]);
+
+    var cur = "right", score = 0, ended = false;
+    var timer = makeTimer(st, 45, finish);
+    var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
+    stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
+
+    function newQ() {
+      var mid = Math.random() < 0.5 ? "left" : "right";
+      var flank = Math.random() < 0.5 ? mid : (mid === "left" ? "right" : "left"); // congruent or not
+      cur = mid;
+      var fa = flank === "left" ? "←" : "→", ma = mid === "left" ? "←" : "→";
+      row.innerHTML = '<span class="fk">' + fa + '</span><span class="fk">' + fa + '</span><span class="fk mid">' + ma + '</span><span class="fk">' + fa + '</span><span class="fk">' + fa + '</span>';
+    }
+    function answer(dir) {
+      if (ended) return;
+      if (dir === cur) { score++; stat("sc", score); tone(700, 70); flash(true); }
+      else { buzz(); flash(false); timer.penalise(1500); }
+      newQ();
+    }
+    function flash(good) { var m = row.querySelector(".mid"); if (m) { m.style.color = good ? "var(--green)" : "var(--red)"; setTimeout(function () { m.style.color = ""; }, 150); } }
+    left.addEventListener("click", function () { answer("left"); });
+    right.addEventListener("click", function () { answer("right"); });
+    window.addEventListener("keydown", keyHandler);
+    function keyHandler(e) { if (ended) return; if (e.key === "ArrowLeft") answer("left"); else if (e.key === "ArrowRight") answer("right"); }
+    stoppers.push(function () { window.removeEventListener("keydown", keyHandler); });
+    function finish() { if (ended || S !== SESSION) return; ended = true; timer.stop(); clearInterval(ti); window.removeEventListener("keydown", keyHandler); setTimeout(function () { if (S === SESSION) endGame(score, { title: "Time!", em: "&#127919;" }); }, 250); }
+    newQ();
+  }
+
   var GAME_RUNNERS = {
     matrix: runMatrix, simon: runSimon, cards: runCards, span: runSpan,
     arith: runArith, equate: runEquate, stroop: runStroop, schulte: runSchulte,
     reaction: runReaction, anagram: runAnagram,
+    oddone: runOddOne, flanker: runFlanker, samediff: runSameDiff, arrowdash: runArrowDash,
+    biblecharades: runBibleCharades,
     brevity: function () { runTapWord("brevity", 60, BANK_BREVITY, "remove"); },
     typo: function () { runTapWord("typo", 60, BANK_TYPO, "mark"); },
     punct: function () { runMCQ("punct", 60, BANK_PUNCT); },

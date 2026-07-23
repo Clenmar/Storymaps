@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Point To...</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  html,body { width:100%; height:100%; overflow:hidden; font-family:'Fredoka One','Comic Sans MS',cursive; touch-action:none; }
+  #game { width:100vw; height:100vh; position:relative; display:flex; flex-direction:column; align-items:center;
+          background:radial-gradient(ellipse at 25% 20%,#ffd6a0 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,#c8b5ff 0%,transparent 55%),linear-gradient(160deg,#ff9ec7,#59b8ff); }
+  #prompt { margin-top:5vh; font-size:clamp(1.5rem,6vw,3rem); color:#fff; text-shadow:0 4px 14px rgba(0,0,0,.35); text-align:center; padding:0 70px; min-height:2.4em; }
+  #stage { flex:1; width:min(80vw,52vh); position:relative; margin:1vh auto 12vh; }
+  .part { position:absolute; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .part.hit { animation:glow .6s; }
+  @keyframes glow { 0%{box-shadow:0 0 0 0 rgba(255,255,100,.9)} 100%{box-shadow:0 0 0 40px rgba(255,255,100,0)} }
+  .wig { animation:wig .4s; }
+  @keyframes wig { 0%,100%{transform:translate(-50%,-50%) rotate(0)} 25%{transform:translate(-50%,-50%) rotate(-8deg)} 75%{transform:translate(-50%,-50%) rotate(8deg)} }
+  /* the friendly face is drawn with divs so parts are tappable */
+  #head { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:70%; aspect-ratio:1; border-radius:50%;
+          background:radial-gradient(circle at 40% 35%,#ffe0b8,#f6c48a); box-shadow:0 16px 40px rgba(0,0,0,.25); }
+  .feat { position:absolute; transform:translate(-50%,-50%); }
+  .btn { position:absolute; z-index:100; background:rgba(255,255,255,.22); border:2px solid rgba(255,255,255,.4); color:#fff;
+         border-radius:50px; padding:8px 16px; font-family:inherit; font-size:1rem; cursor:pointer; backdrop-filter:blur(6px); text-decoration:none; }
+  #fs-btn{bottom:18px;right:18px} #sound-btn{top:14px;right:14px;padding:8px 12px;font-size:1.3rem} #back-btn{top:14px;left:14px}
+  .confetti { position:absolute; font-size:2rem; pointer-events:none; z-index:60; animation:fall 1.1s ease-out forwards; }
+  @keyframes fall { 0%{opacity:1;transform:translateY(0) rotate(0)} 100%{opacity:0;transform:translateY(55vh) rotate(280deg)} }
+</style>
+</head>
+<body>
+<div id="game">
+  <a id="back-btn" class="btn" href="../index.html">←</a>
+  <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
+  <div id="prompt">Tap to start! 👆</div>
+  <div id="stage"><div id="head"></div></div>
+  <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
+</div>
+<script>
+// Parts positioned in % of the #stage box. r = size in % of stage width.
+var PARTS = [
+  { id:"eyes",  label:"eyes",  say:"the eyes",  emo:"👀", x:50, y:40, r:34 },
+  { id:"nose",  label:"nose",  say:"the nose",  emo:"👃", x:50, y:52, r:16 },
+  { id:"mouth", label:"mouth", say:"the mouth", emo:"👄", x:50, y:63, r:24 },
+  { id:"earL",  label:"ear",   say:"an ear",    emo:"👂", x:16, y:47, r:16 },
+  { id:"earR",  label:"ear",   say:"an ear",    emo:"👂", x:84, y:47, r:16 },
+  { id:"hair",  label:"hair",  say:"the hair",  emo:"💇", x:50, y:15, r:26 },
+  { id:"hand",  label:"hand",  say:"a hand",    emo:"✋", x:12, y:88, r:20 },
+  { id:"foot",  label:"foot",  say:"a foot",    emo:"🦶", x:88, y:88, r:20 }
+];
+var soundOn=true, target=null, started=false, actx=null;
+function ctx(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+function chime(){ if(!soundOn) return; try{ var c=ctx(); [523,659,784,1047].forEach(function(f,i){ var o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
+  o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,c.currentTime+i*.09); g.gain.exponentialRampToValueAtTime(.3,c.currentTime+i*.09+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+i*.09+.35); o.start(c.currentTime+i*.09); o.stop(c.currentTime+i*.09+.4); }); }catch(e){} }
+function boing(){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
+  o.type='sine'; o.frequency.setValueAtTime(300,c.currentTime); o.frequency.exponentialRampToValueAtTime(160,c.currentTime+.25);
+  g.gain.setValueAtTime(.3,c.currentTime); g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.3); o.start(); o.stop(c.currentTime+.3);}catch(e){} }
+var voice=null;
+function pickVoice(){ try{ var vs=speechSynthesis.getVoices();
+  voice=vs.filter(function(v){return /^en/i.test(v.lang)&&/female|samantha|zira|karen|google us/i.test(v.name);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||vs[0]; }catch(e){} }
+try{ speechSynthesis.onvoiceschanged=pickVoice; pickVoice(); }catch(e){}
+function say(t,cb){ if(!soundOn){ if(cb)setTimeout(cb,500); return; } try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=.9; u.pitch=1.3; if(voice)u.voice=voice; if(cb)u.onend=cb; speechSynthesis.speak(u); if(cb)setTimeout(cb,2500);}catch(e){ if(cb)setTimeout(cb,600);} }
+
+var stage=document.getElementById('stage');
+function buildFace(){
+  stage.querySelectorAll('.part').forEach(function(n){ n.remove(); });
+  PARTS.forEach(function(p){
+    var d=document.createElement('div'); d.className='part'; d.dataset.id=p.id;
+    var size=p.r; // percent of stage width
+    d.style.cssText='left:'+p.x+'%;top:'+p.y+'%;width:'+size+'%;height:'+size+'%;font-size:'+(size*0.7)+'%;';
+    d.style.transform='translate(-50%,-50%)';
+    var span=document.createElement('div'); span.className='feat'; span.textContent=p.emo;
+    span.style.cssText='left:50%;top:50%;font-size:'+(size*0.6)+'cqw;';
+    d.appendChild(span);
+    d.addEventListener('click', function(){ pick(p, d); });
+    stage.appendChild(d);
+  });
+  stage.style.containerType='inline-size';
+}
+function round(){
+  target = PARTS[Math.floor(Math.random()*PARTS.length)];
+  document.getElementById('prompt').innerHTML = "Where is the <b>"+target.label+"</b>? 👉";
+  setTimeout(function(){ say("Can you find " + target.say + "?"); }, 250);
+}
+function pick(p, node){
+  var ok = (p.label === target.label);
+  if(ok){
+    node.classList.add('hit'); chime(); confetti();
+    document.getElementById('prompt').innerHTML = "Yay! That's the <b>"+target.label+"</b>! 🎉";
+    setTimeout(function(){ node.classList.remove('hit'); }, 600);
+    say("Yes! That's " + target.say + "!", function(){ round(); });
+    setTimeout(round, 2600);
+  } else {
+    node.classList.add('wig'); boing(); setTimeout(function(){ node.classList.remove('wig'); }, 400);
+    say("Try again. Where is " + target.say + "?");
+  }
+}
+function confetti(){ var g=document.getElementById('game'), ce="🎉🎈⭐🌟✨".split('');
+  for(var i=0;i<14;i++){ var el=document.createElement('div'); el.className='confetti'; el.textContent=ce[Math.floor(Math.random()*ce.length)];
+    el.style.left=(Math.random()*100)+'vw'; el.style.top='-8vh'; el.style.animationDelay=(Math.random()*.3)+'s'; g.appendChild(el);
+    el.addEventListener('animationend', function(){ this.remove(); }); } }
+function toggleSound(){ soundOn=!soundOn; document.getElementById('sound-btn').textContent=soundOn?'🔊':'🔇'; if(!soundOn){try{speechSynthesis.cancel();}catch(e){}} }
+function goFullscreen(){ var el=document.documentElement,r=el.requestFullscreen||el.webkitRequestFullscreen; if(r)r.call(el);
+  setTimeout(function(){ var b=document.getElementById('fs-btn'); b.style.opacity='0'; b.style.pointerEvents='none'; },1000); }
+document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement){ var b=document.getElementById('fs-btn'); b.style.opacity='1'; b.style.pointerEvents='auto'; } });
+document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+document.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive:false });
+buildFace();
+document.getElementById('game').addEventListener('click', function(){
+  if(started) return; started=true; try{ctx().resume();}catch(e){}
+  round();
+});
+</script>
+</body>
+</html>

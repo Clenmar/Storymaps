@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Animal Sounds</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+  html,body { width:100%; height:100%; overflow:hidden; font-family:'Fredoka One','Comic Sans MS',cursive; touch-action:none; }
+  #game { width:100vw; height:100vh; position:relative; display:flex; flex-direction:column;
+          background:radial-gradient(ellipse at 20% 20%,#b6f5a0 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,#ffd98a 0%,transparent 55%),linear-gradient(160deg,#4fd0e0,#5c8cff); }
+  #title { text-align:center; color:#fff; font-size:clamp(1.3rem,5vw,2.4rem); text-shadow:0 3px 12px rgba(0,0,0,.3); padding:14px 60px 4px; }
+  #grid { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(8px,2.5vw,20px); padding:clamp(10px,3vw,26px); align-content:center; }
+  .animal { border-radius:26px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; flex-direction:column;
+            box-shadow:0 10px 26px rgba(0,0,0,.2); cursor:pointer; aspect-ratio:1; transition:transform .12s cubic-bezier(.34,1.56,.64,1); }
+  .animal:active { transform:scale(.92); }
+  .animal.bounce { animation:bounce .5s cubic-bezier(.34,1.56,.64,1); }
+  @keyframes bounce { 0%{transform:scale(1)} 45%{transform:scale(1.18) rotate(-4deg)} 100%{transform:scale(1)} }
+  .animal .emo { font-size:clamp(2.4rem,11vw,5rem); line-height:1; }
+  .animal .nm  { font-size:clamp(.7rem,3vw,1.2rem); color:#3a6b2f; margin-top:2px; }
+  #say { position:absolute; left:50%; bottom:9vh; transform:translateX(-50%); color:#fff; font-size:clamp(1.4rem,6vw,3rem);
+         text-shadow:0 4px 16px rgba(0,0,0,.4); opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; }
+  .btn { position:absolute; z-index:100; background:rgba(255,255,255,.22); border:2px solid rgba(255,255,255,.4); color:#fff;
+         border-radius:50px; padding:8px 16px; font-family:inherit; font-size:1rem; cursor:pointer; backdrop-filter:blur(6px); text-decoration:none; }
+  #fs-btn{bottom:18px;right:18px} #sound-btn{top:14px;right:14px;padding:8px 12px;font-size:1.3rem} #back-btn{top:14px;left:14px}
+</style>
+</head>
+<body>
+<div id="game">
+  <a id="back-btn" class="btn" href="../index.html">←</a>
+  <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
+  <div id="title">Tap an animal! 🐾</div>
+  <div id="grid"></div>
+  <div id="say"></div>
+  <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
+</div>
+<script>
+var ANIMALS = [
+  {e:"🐶",n:"Dog",s:"woof woof",f:300},{e:"🐱",n:"Cat",s:"meow",f:600},{e:"🐮",n:"Cow",s:"mooo",f:150},
+  {e:"🐷",n:"Pig",s:"oink oink",f:260},{e:"🐑",n:"Sheep",s:"baaa",f:340},{e:"🐴",n:"Horse",s:"neigh",f:400},
+  {e:"🐸",n:"Frog",s:"ribbit",f:220},{e:"🦆",n:"Duck",s:"quack quack",f:520},{e:"🐔",n:"Hen",s:"cluck cluck",f:480},
+  {e:"🦁",n:"Lion",s:"roar",f:110},{e:"🐘",n:"Elephant",s:"trumpets",f:130},{e:"🐝",n:"Bee",s:"buzz",f:700},
+  {e:"🐵",n:"Monkey",s:"ooh ooh aah",f:560},{e:"🦉",n:"Owl",s:"hoo hoo",f:380},{e:"🐺",n:"Wolf",s:"howooo",f:200}
+];
+var soundOn=true, actx=null;
+function ctx(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+function tone(freq){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
+  o.type='triangle'; o.frequency.setValueAtTime(freq,c.currentTime); o.frequency.linearRampToValueAtTime(freq*1.3,c.currentTime+.15);
+  o.frequency.linearRampToValueAtTime(freq*.8,c.currentTime+.35); g.gain.setValueAtTime(.3,c.currentTime);
+  g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.4); o.start(); o.stop(c.currentTime+.42); }catch(e){} }
+var voice=null;
+function pickVoice(){ try{ var vs=speechSynthesis.getVoices();
+  voice=vs.filter(function(v){return /^en/i.test(v.lang)&&/female|samantha|zira|karen|google us/i.test(v.name);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||vs[0]; }catch(e){} }
+try{ speechSynthesis.onvoiceschanged=pickVoice; pickVoice(); }catch(e){}
+function say(t){ if(!soundOn) return; try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=.9; u.pitch=1.25; if(voice)u.voice=voice; speechSynthesis.speak(u); }catch(e){} }
+
+var grid=document.getElementById('grid');
+ANIMALS.forEach(function(a){
+  var d=document.createElement('div'); d.className='animal';
+  d.innerHTML='<div class="emo">'+a.e+'</div><div class="nm">'+a.n+'</div>';
+  d.addEventListener('click', function(){
+    d.classList.remove('bounce'); void d.offsetWidth; d.classList.add('bounce');
+    tone(a.f);
+    var s=document.getElementById('say'); s.textContent=a.e+' '+a.s+'!'; s.style.opacity='1';
+    clearTimeout(s._t); s._t=setTimeout(function(){ s.style.opacity='0'; },1600);
+    say('The ' + a.n + ' says ' + a.s);
+  });
+  grid.appendChild(d);
+});
+function toggleSound(){ soundOn=!soundOn; document.getElementById('sound-btn').textContent=soundOn?'🔊':'🔇'; if(!soundOn){try{speechSynthesis.cancel();}catch(e){}} }
+function goFullscreen(){ var el=document.documentElement,r=el.requestFullscreen||el.webkitRequestFullscreen; if(r)r.call(el);
+  setTimeout(function(){ var b=document.getElementById('fs-btn'); b.style.opacity='0'; b.style.pointerEvents='none'; },1000); }
+document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement){ var b=document.getElementById('fs-btn'); b.style.opacity='1'; b.style.pointerEvents='auto'; } });
+document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+document.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive:false });
+document.addEventListener('touchstart', function(){ try{ctx().resume();}catch(e){} }, { once:true });
+</script>
+</body>
+</html>
