@@ -32,11 +32,13 @@
 <div id="game">
   <a id="back-btn" class="btn" href="../index.html">←</a>
   <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
+  <div id="voice-btn" class="btn" onclick="BabyVoice.openPicker()" style="bottom:20px;left:50%;transform:translateX(-50%);padding:7px 14px;font-size:.9rem">🗣️ Voice</div>
   <div id="title">Tap an animal! 🐾</div>
   <div id="grid"></div>
   <div id="say"></div>
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
+<script src="voice.js"></script>
 <script>
 var ANIMALS = [
   {e:"🐶",n:"Dog",s:"woof woof",f:300},{e:"🐱",n:"Cat",s:"meow",f:600},{e:"🐮",n:"Cow",s:"mooo",f:150},
@@ -51,11 +53,7 @@ function tone(freq){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(
   o.type='triangle'; o.frequency.setValueAtTime(freq,c.currentTime); o.frequency.linearRampToValueAtTime(freq*1.3,c.currentTime+.15);
   o.frequency.linearRampToValueAtTime(freq*.8,c.currentTime+.35); g.gain.setValueAtTime(.3,c.currentTime);
   g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.4); o.start(); o.stop(c.currentTime+.42); }catch(e){} }
-var voice=null;
-function pickVoice(){ try{ var vs=speechSynthesis.getVoices();
-  voice=vs.filter(function(v){return /^en/i.test(v.lang)&&/female|samantha|zira|karen|google us/i.test(v.name);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||vs[0]; }catch(e){} }
-try{ speechSynthesis.onvoiceschanged=pickVoice; pickVoice(); }catch(e){}
-function say(t){ if(!soundOn) return; try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=.9; u.pitch=1.25; if(voice)u.voice=voice; speechSynthesis.speak(u); }catch(e){} }
+function say(t){ if(!soundOn) return; BabyVoice.say(t); }
 
 var grid=document.getElementById('grid');
 ANIMALS.forEach(function(a){

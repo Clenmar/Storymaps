@@ -32,12 +32,14 @@
 <div id="game">
   <a id="back-btn" class="btn" href="../index.html">←</a>
   <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
+  <div id="voice-btn" class="btn" onclick="BabyVoice.openPicker()" style="bottom:20px;left:50%;transform:translateX(-50%);padding:7px 14px;font-size:.9rem">🗣️ Voice</div>
   <div id="card"><div id="pic">👋</div></div>
   <div id="word">tap me!</div>
   <div id="hint">Tap the picture to hear the word</div>
   <button id="next-btn" class="btn" onclick="next()">Next ➡️</button>
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
+<script src="voice.js"></script>
 <script>
 var WORDS = [
   {p:"🍎",w:"apple"},{p:"🍌",w:"banana"},{p:"🐶",w:"dog"},{p:"🐱",w:"cat"},{p:"🚗",w:"car"},
@@ -52,11 +54,7 @@ function ctx(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioConte
 function chime(){ if(!soundOn) return; try{ var c=ctx(); [660,880].forEach(function(f,i){ var o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
   o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(.0001,c.currentTime+i*.1); g.gain.exponentialRampToValueAtTime(.3,c.currentTime+i*.1+.02);
   g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+i*.1+.3); o.start(c.currentTime+i*.1); o.stop(c.currentTime+i*.1+.35); }); }catch(e){} }
-var voice=null;
-function pickVoice(){ try{ var vs=speechSynthesis.getVoices();
-  voice=vs.filter(function(v){return /^en/i.test(v.lang)&&/female|samantha|zira|karen|google us/i.test(v.name);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||vs[0]; }catch(e){} }
-try{ speechSynthesis.onvoiceschanged=pickVoice; pickVoice(); }catch(e){}
-function say(t){ if(!soundOn) return; try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=.85; u.pitch=1.3; if(voice)u.voice=voice; speechSynthesis.speak(u); }catch(e){} }
+function say(t){ if(!soundOn) return; BabyVoice.say(t); }
 function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 
 function show(){

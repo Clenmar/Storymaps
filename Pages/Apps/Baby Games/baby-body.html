@@ -34,10 +34,12 @@
 <div id="game">
   <a id="back-btn" class="btn" href="../index.html">←</a>
   <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
+  <div id="voice-btn" class="btn" onclick="BabyVoice.openPicker()" style="bottom:20px;left:50%;transform:translateX(-50%);padding:7px 14px;font-size:.9rem">🗣️ Voice</div>
   <div id="prompt">Tap to start! 👆</div>
   <div id="stage"><div id="head"></div></div>
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
+<script src="voice.js"></script>
 <script>
 // Parts positioned in % of the #stage box. r = size in % of stage width.
 var PARTS = [
@@ -58,11 +60,7 @@ function chime(){ if(!soundOn) return; try{ var c=ctx(); [523,659,784,1047].forE
 function boing(){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
   o.type='sine'; o.frequency.setValueAtTime(300,c.currentTime); o.frequency.exponentialRampToValueAtTime(160,c.currentTime+.25);
   g.gain.setValueAtTime(.3,c.currentTime); g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.3); o.start(); o.stop(c.currentTime+.3);}catch(e){} }
-var voice=null;
-function pickVoice(){ try{ var vs=speechSynthesis.getVoices();
-  voice=vs.filter(function(v){return /^en/i.test(v.lang)&&/female|samantha|zira|karen|google us/i.test(v.name);})[0]||vs.filter(function(v){return /^en/i.test(v.lang);})[0]||vs[0]; }catch(e){} }
-try{ speechSynthesis.onvoiceschanged=pickVoice; pickVoice(); }catch(e){}
-function say(t,cb){ if(!soundOn){ if(cb)setTimeout(cb,500); return; } try{ speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); u.lang='en-US'; u.rate=.9; u.pitch=1.3; if(voice)u.voice=voice; if(cb)u.onend=cb; speechSynthesis.speak(u); if(cb)setTimeout(cb,2500);}catch(e){ if(cb)setTimeout(cb,600);} }
+function say(t,cb){ if(!soundOn){ if(cb)setTimeout(cb,500); return; } BabyVoice.say(t,cb); }
 
 var stage=document.getElementById('stage');
 function buildFace(){
