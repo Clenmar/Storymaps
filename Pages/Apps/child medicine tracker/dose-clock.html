@@ -582,6 +582,18 @@ details.fold .fold-body{padding:0 18px 18px}
       </div>
 
       <div class="row" style="margin-top:16px">
+        <div class="field" style="flex:1 1 190px">
+          <label for="lWhen">When
+            <span class="hint">Now, unless you are catching up on something earlier.</span>
+          </label>
+          <input id="lWhen" type="datetime-local" />
+        </div>
+        <div class="field" style="flex:0 0 auto;align-self:flex-end">
+          <button class="btn ghost small" id="btnLNow" type="button">Now</button>
+        </div>
+      </div>
+
+      <div class="row">
         <div class="field" style="flex:1 1 130px">
           <label for="lPerson">Who is this for</label>
           <input id="lPerson" list="personList" placeholder="Micah" autocomplete="off" />
@@ -888,6 +900,7 @@ details.fold .fold-body{padding:0 18px 18px}
         <ul class="steps" style="padding-left:20px">
           <li><b style="color:var(--ink)">Add each medicine once</b> with the amount from the label and how often it repeats. Medicine Tracker builds every dose time.</li>
           <li><b style="color:var(--ink)">Tap Given</b> when the medicine is actually in. It records the time and who gave it, so the other parent can see.</li>
+          <li><b style="color:var(--ink)">Given earlier?</b> Tap <b>🕐</b> next to any dose (or on the Now card) and set the real time — quick chips for "30 minutes ago", or the exact clock time, and who gave it. The same 🕐 on a dose already recorded lets you correct the time. The Baby log has a <b>When</b> box for catching up on a nappy or a reading from earlier.</li>
           <li><b style="color:var(--ink)">The timeline</b> shows every medicine on its own row. Drag it sideways, pinch to zoom, tap a dose to mark it given, skip it or undo.</li>
           <li><b style="color:var(--ink)">Safety checks</b> warn you if a dose is early, if the 24 hour limit is reached, or if two medicines share the same active ingredient.</li>
           <li><b style="color:var(--ink)">Fever line</b> — log temperatures and the timeline draws them over the doses, so you can see whether the medicine is helping.</li>
@@ -940,7 +953,7 @@ var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
 // Bump this whenever the file changes. It is printed on the sign-in card and in
 // Settings, so it is easy to tell whether a phone is running the current build
 // or a copy Safari kept in its cache.
-var APP_VERSION = "3.1 · 25 Jul 2026";
+var APP_VERSION = "3.3 · 25 Jul 2026";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -1401,6 +1414,7 @@ function renderHero(){
       '</select></div>'+
     '<div class="btn-row">'+
       '<button class="btn" data-act="give" data-med="'+med.id+'">✓ Given now</button>'+
+      '<button class="btn ghost small" data-act="giveWhen" data-med="'+med.id+'">🕐 Given earlier…</button>'+
       '<button class="btn ghost small" data-act="snooze" data-med="'+med.id+'">Snooze 15 min</button>'+
       '<button class="btn ghost small" data-act="skip" data-med="'+med.id+'">Skip</button>'+
     '</div>';
@@ -1455,7 +1469,7 @@ function renderStats(){
       if (!d.given && !d.skipped && d.planned < today.getTime()+DAY && d.planned >= now) dueLeft++;
     });
   });
-  var temps = state.logs.filter(function(l){ return logType(l)==="temp" && l.temp != null; });
+  var temps = liveLogs().filter(function(l){ return logType(l)==="temp" && l.temp != null; });
   var lastTemp = temps.length ? temps[temps.length-1] : null;
   var adh = adherence();
   var cards = [
@@ -1522,9 +1536,13 @@ function renderMeds(){
       items += '<li class="'+(d.given?"given ":"")+(isNext?"next ":"")+(over&&!d.given?"overdue ":"")+(isNight(when)?"night":"")+'">'+
         '<span class="dose-time">'+fmtTime(when)+'<span class="dose-day">'+fmtDay(when)+'</span></span>'+
         '<span class="dose-state">'+stateTxt+'</span>'+
-        (d.given||d.skipped
-          ? '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+i+'">Undo</button>'
-          : '<button class="btn tiny ghost" data-act="giveat" data-med="'+med.id+'" data-i="'+i+'">Given</button>')+
+        (d.given
+          ? '<button class="btn tiny ghost" data-act="giveWhen" data-med="'+med.id+'" data-i="'+i+'" title="Change the time">🕐</button>'+
+            '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+i+'">Undo</button>'
+          : d.skipped
+            ? '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+i+'">Undo</button>'
+            : '<button class="btn tiny ghost" data-act="giveat" data-med="'+med.id+'" data-i="'+i+'">Given</button>'+
+              '<button class="btn tiny ghost" data-act="giveWhen" data-med="'+med.id+'" data-i="'+i+'" title="Given at another time">🕐</button>')+
         '</li>';
     }
     var more = med.doses.length > (end-start)
@@ -1572,8 +1590,11 @@ function logType(l){
   if (l.weight != null) return "weight";
   return "note";
 }
+function liveLogs(){
+  return state.logs.filter(function(l){ return l && !l.deleted; });
+}
 function logsFor(person){
-  return state.logs.filter(function(l){
+  return liveLogs().filter(function(l){
     if (person && person !== "all"){
       var lp = l.person || "";
       if (lp && lp !== person) return false;
@@ -1606,7 +1627,7 @@ function showWeight(l){
 }
 
 function renderLogs(){
-  var all = state.logs.slice().sort(function(a,b){ return b.at-a.at; });
+  var all = liveLogs().slice().sort(function(a,b){ return b.at-a.at; });
   var limit = state.ui.logExpanded ? 40 : 8;
   el("btnMoreLog").hidden = all.length <= 8;
   el("btnMoreLog").textContent = state.ui.logExpanded ? "Show fewer" : "Show all "+Math.min(all.length,40)+" entries";
@@ -1625,7 +1646,7 @@ function renderLogs(){
   dl.innerHTML = people().map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
 
   var today = new Date(); today.setHours(0,0,0,0);
-  var c = countDiapers(state.logs, today.getTime(), today.getTime()+DAY);
+  var c = countDiapers(liveLogs(), today.getTime(), today.getTime()+DAY);
   el("logCount").textContent = (c.wet+c.dirty) ? ("today 💧"+c.wet+" 💩"+c.dirty) : "today";
   renderRhythm();
 }
@@ -1763,26 +1784,28 @@ function whoIsGiving(){
   return v || carerNames()[0] || "";
 }
 
-function markGiven(medId, index, atMs){
+function markGiven(medId, index, atMs, opts){
+  opts = opts || {};
   var med = findMed(medId); if (!med) return;
   if (index == null){ var nd = nextDose(med); if (!nd){ toast("No doses left for "+med.name); return; } index = nd.index; }
   var when = atMs || Date.now();
+  var editing = !!opts.editing;               // just correcting the time of a dose already recorded
 
   // 1. too soon after the previous dose of the same medicine
   var prev = null;
   for (var i=index-1;i>=0;i--){ if (med.doses[i].given){ prev = med.doses[i].given; break; } }
-  if (prev && (when - prev) < med.intervalH*HOUR - 5*MIN){
+  if (!editing && prev && (when - prev) < med.intervalH*HOUR - 5*MIN){
     var wait = med.intervalH*HOUR - (when - prev);
     if (!window.confirm("The last dose of "+med.name+" was "+durTxt(when-prev)+" ago. There is still "+durTxt(wait)+
         " to wait before the next one is due. Give it anyway?")) return;
   }
   // 2. daily limit
-  if (med.maxPerDay && givenSince(med, when-DAY) >= med.maxPerDay){
+  if (!editing && med.maxPerDay && givenSince(med, when-DAY) >= med.maxPerDay){
     if (!window.confirm("That would be "+(givenSince(med,when-DAY)+1)+" doses of "+med.name+
         " in 24 hours, and the label limit you entered is "+med.maxPerDay+". Give it anyway?")) return;
   }
   // 3. same active ingredient in another medicine
-  var ing = (med.ingredient||"").trim().toLowerCase();
+  var ing = editing ? "" : (med.ingredient||"").trim().toLowerCase();
   if (ing){
     var clash = null;
     activeMeds().forEach(function(o){
@@ -1796,9 +1819,11 @@ function markGiven(medId, index, atMs){
   }
 
   med.doses[index].given = when;
-  med.doses[index].givenBy = whoIsGiving();
+  med.doses[index].givenBy = opts.by || whoIsGiving();
   med.doses[index].skipped = false;
-  if (med.supplyDoses != null) med.supplyDoses = Math.max(0, med.supplyDoses-1);
+  med.doses[index].decidedAt = Date.now();     // newest decision wins when merging
+  med.doses[index].clearedAt = null;
+  if (!editing && med.supplyDoses != null) med.supplyDoses = Math.max(0, med.supplyDoses-1);
   if (med.mode === "shift"){
     for (var j=index+1;j<med.doses.length;j++){
       med.doses[j].planned = when + (j-index)*med.intervalH*HOUR;
@@ -1807,7 +1832,106 @@ function markGiven(medId, index, atMs){
   }
   med.updatedAt = Date.now();
   save(); renderAll(); scheduleLocalAlert(); checkDueEmails();
-  toast("Marked given at "+fmtTime(when)+(med.doses[index].givenBy?" by "+med.doses[index].givenBy:""));
+  var ago = Date.now() - when;
+  toast((editing ? "Time changed to " : "Marked given at ")+fmtTime(when)+
+    (ago > 3*MIN ? " ("+durTxt(ago)+" ago)" : "")+
+    (med.doses[index].givenBy?" by "+med.doses[index].givenBy:""));
+}
+
+/* ── "it was given earlier" sheet ───────────────────────────────────────
+   A dose is often remembered ten minutes late, or handed over by someone else
+   entirely. This lets a parent set the real time — quick chips for the common
+   cases, or an exact clock time — and fix a time already recorded. */
+function openGivenSheet(medId, index){
+  var med = findMed(medId); if (!med) return;
+  if (index == null){ var nd = nextDose(med); if (!nd){ toast("No doses left for "+med.name); return; } index = nd.index; }
+  var d = med.doses[index]; if (!d) return;
+  var editing = !!d.given;
+  closeSheet();
+
+  var names = carerNames();
+  var me = d.givenBy || state.ui.me || names[0];
+  var start = new Date(d.given || Date.now());
+
+  var back = document.createElement("div");
+  back.className = "sheet-back"; back.id = "calSheet";
+  back.innerHTML = '<div class="sheet" role="dialog" aria-label="When was it given">'+
+    '<button class="close" data-gv-close="1" aria-label="Close">×</button>'+
+    '<h4>'+(editing ? "Change the time" : "When was it given?")+'</h4>'+
+    '<p class="meta">'+esc(med.name)+(med.person?' · '+esc(med.person):'')+' · dose '+(index+1)+' of '+med.doses.length+
+      ' · planned '+fmtTime(d.planned)+' '+fmtDay(d.planned)+'</p>'+
+    '<div class="chips" style="margin-bottom:12px">'+
+      '<button class="chip" data-gv-ago="0">Just now</button>'+
+      '<button class="chip" data-gv-ago="15">15 min ago</button>'+
+      '<button class="chip" data-gv-ago="30">30 min ago</button>'+
+      '<button class="chip" data-gv-ago="45">45 min ago</button>'+
+      '<button class="chip" data-gv-ago="60">1 hour ago</button>'+
+      '<button class="chip" data-gv-ago="120">2 hours ago</button>'+
+      '<button class="chip" data-gv-plan="1">At the planned time</button>'+
+    '</div>'+
+    '<div class="field"><label for="gvWhen">Exact time</label>'+
+      '<input id="gvWhen" type="datetime-local" value="'+localInput(start)+'" /></div>'+
+    '<div class="field"><label for="gvWho">Given by</label><select id="gvWho">'+
+      names.map(function(n){ return '<option'+(n===me?" selected":"")+'>'+esc(n)+'</option>'; }).join("")+
+      '<option value="__other">Someone else…</option></select></div>'+
+    '<div id="gvWarn"></div>'+
+    '<button class="btn wide" id="gvSave">'+(editing ? "Save the new time" : "Record this dose")+'</button>'+
+    (editing ? '<button class="btn ghost wide" id="gvUndo" style="margin-top:8px">Not given after all</button>' : '')+
+  '</div>';
+  document.body.appendChild(back);
+
+  function chosenMs(){
+    var v = el("gvWhen").value;
+    var ms = v ? new Date(v).getTime() : Date.now();
+    if (isNaN(ms)) ms = Date.now();
+    return ms;
+  }
+  function warn(){
+    var ms = chosenMs(), box = el("gvWarn"), msg = "";
+    if (ms > Date.now() + 60000) msg = '<div class="note warn">That time is in the future. Doses are recorded after they are given.</div>';
+    else if (Date.now() - ms > 2*DAY) msg = '<div class="note warn">That is more than two days ago — check the date.</div>';
+    else if (ms) msg = '<div class="note">Recording '+fmtTime(ms)+' '+fmtDay(ms)+
+      (Date.now()-ms > 3*MIN ? ' — '+durTxt(Date.now()-ms)+' ago' : '')+'.</div>';
+    box.innerHTML = msg;
+  }
+  warn();
+  el("gvWhen").addEventListener("change", warn);
+  el("gvWhen").addEventListener("input", warn);
+
+  back.addEventListener("click", function(e){
+    if (e.target === back || e.target.getAttribute("data-gv-close")){ closeSheet(); return; }
+    var ago = e.target.closest ? e.target.closest("[data-gv-ago]") : null;
+    if (ago){
+      var mins = parseInt(ago.getAttribute("data-gv-ago"),10) || 0;
+      el("gvWhen").value = localInput(new Date(Date.now() - mins*MIN));
+      Array.prototype.forEach.call(back.querySelectorAll(".chip"), function(c){ c.setAttribute("aria-pressed", String(c===ago)); });
+      warn();
+      return;
+    }
+    if (e.target.closest("[data-gv-plan]")){
+      el("gvWhen").value = localInput(new Date(d.planned));
+      warn();
+      return;
+    }
+    if (e.target.closest("#gvUndo")){
+      undoDose(medId, index);
+      closeSheet();
+      toast("Marked as not given");
+      return;
+    }
+    if (e.target.closest("#gvSave")){
+      var ms = chosenMs();
+      if (ms > Date.now() + 60000){ toast("That time has not happened yet"); return; }
+      var sel = el("gvWho"), by = sel.value;
+      if (by === "__other"){
+        var v = window.prompt("Who gave this dose?", "");
+        by = v && v.trim() ? v.trim() : "";
+      }
+      if (by) state.ui.me = by;
+      closeSheet();
+      markGiven(medId, index, ms, { by:by, editing:editing });
+    }
+  });
 }
 
 function snooze(medId, mins){
@@ -1830,6 +1954,8 @@ function skipDose(medId, index){
   var med = findMed(medId); if (!med) return;
   if (index == null){ var nd = nextDose(med); if (!nd) return; index = nd.index; }
   med.doses[index].skipped = true;
+  med.doses[index].decidedAt = Date.now();
+  med.doses[index].clearedAt = null;
   med.updatedAt = Date.now();
   save(); renderAll(); toast("Dose skipped");
 }
@@ -1838,6 +1964,8 @@ function undoDose(medId, index){
   var d = med.doses[index];
   if (d.given && med.supplyDoses != null) med.supplyDoses = med.supplyDoses+1;
   d.given = null; d.givenBy = null; d.skipped = false; d.remindedAt = null; d.overdueAt = null;
+  d.clearedAt = Date.now();                    // an undo must beat the copy on the server
+  d.decidedAt = null;
   med.updatedAt = Date.now();
   save(); renderAll();
 }
@@ -1862,12 +1990,9 @@ document.addEventListener("click", function(ev){
   var i = b.getAttribute("data-i");
   if (act==="give") markGiven(medId, null);
   else if (act==="giveat") markGiven(medId, parseInt(i,10));
-  else if (act==="gaveEarlier"){
-    var mins = window.prompt("How many minutes ago was it given?", "20");
-    if (mins===null) return;
-    var n = parseFloat(mins); if (isNaN(n) || n<0) return;
-    markGiven(medId, i==null?null:parseInt(i,10), Date.now()-n*MIN);
+  else if (act==="giveWhen" || act==="gaveEarlier"){
     closePop();
+    openGivenSheet(medId, i==null?null:parseInt(i,10));
   }
   else if (act==="undo"){ undoDose(medId, parseInt(i,10)); closePop(); }
   else if (act==="skip"){ skipDose(medId, i==null?null:parseInt(i,10)); closePop(); }
@@ -1884,8 +2009,14 @@ document.addEventListener("click", function(ev){
   else if (act==="dismissTip"){ state.ui.dismissEmailTip = true; save({push:false}); renderBanners(); }
   else if (act==="delLog"){
     var id = b.getAttribute("data-id");
-    state.logs = state.logs.filter(function(l){ return l.id!==id; });
-    save(); renderLogs(); renderChart(); renderStats();
+    // Mark it deleted rather than dropping it: the record is merged with the
+    // server copy, and an entry that simply vanished used to be handed straight
+    // back on the next merge.
+    state.logs.forEach(function(l){
+      if (l.id === id){ l.deleted = true; l.deletedAt = Date.now(); }
+    });
+    save(); renderLogs(); renderChart(); renderGlance(); renderStats();
+    toast("Entry deleted");
   }
   else if (act==="closePop") closePop();
 });
@@ -2049,9 +2180,23 @@ function logPerson(){
   var ps = people();
   return ps.length === 1 ? ps[0] : "";
 }
+// The time in the When box, if it is sensible; otherwise now.
+function logWhen(){
+  var box = el("lWhen");
+  if (!box || !box.value) return Date.now();
+  var ms = new Date(box.value).getTime();
+  if (isNaN(ms)) return Date.now();
+  if (ms > Date.now() + 60000) return Date.now();          // never the future
+  if (Date.now() - ms > 7*DAY) return Date.now();          // a typo in the date
+  return ms;
+}
+function resetLogWhen(){
+  var box = el("lWhen");
+  if (box) box.value = localInput(new Date());
+}
 function addLog(entry){
   entry.id = uid();
-  if (entry.at == null) entry.at = Date.now();
+  if (entry.at == null) entry.at = logWhen();
   entry.by = state.ui.me || "";
   state.logs.push(entry);
   save();
@@ -2063,12 +2208,15 @@ function addLog(entry){
 document.addEventListener("click", function(ev){
   var b = ev.target.closest ? ev.target.closest("[data-quick]") : null; if (!b) return;
   var kind = b.getAttribute("data-quick");
-  addLog({ type:kind, person:logPerson(), note:el("lNote").value.trim() });
+  var at = logWhen();
+  addLog({ type:kind, at:at, person:logPerson(), note:el("lNote").value.trim() });
   el("lNote").value = "";
+  resetLogWhen();
   b.classList.remove("done"); void b.offsetWidth; b.classList.add("done");
   var t0 = new Date(); t0.setHours(0,0,0,0);
   var c = countDiapers(logsFor(state.ui.person), t0.getTime(), t0.getTime()+DAY);
-  toast(LOG_WORD[kind]+" logged · today 💧"+c.wet+" 💩"+c.dirty);
+  var late = Date.now() - at > 3*MIN;
+  toast(LOG_WORD[kind]+" logged"+(late ? " at "+fmtTime(at)+" "+fmtDay(at) : "")+" · today 💧"+c.wet+" 💩"+c.dirty);
 });
 
 el("btnLogAdd").addEventListener("click", function(){
@@ -2093,18 +2241,22 @@ el("btnLogAdd").addEventListener("click", function(){
   }
 
   // Temperature and weight are separate readings, so they get separate entries.
-  if (temp != null) addLog({ type:"temp", person:person, temp:temp, unit:unit, note:note });
-  if (weight != null) addLog({ type:"weight", person:person, weight:weight, wunit:wunit, note:temp!=null?"":note });
-  if (temp == null && weight == null) addLog({ type:"note", person:person, note:note });
+  var at = logWhen();
+  if (temp != null) addLog({ type:"temp", at:at, person:person, temp:temp, unit:unit, note:note });
+  if (weight != null) addLog({ type:"weight", at:at, person:person, weight:weight, wunit:wunit, note:temp!=null?"":note });
+  if (temp == null && weight == null) addLog({ type:"note", at:at, person:person, note:note });
 
   state.ui.unit = unit; state.ui.wunit = wunit;
   save({push:false});
   el("lTemp").value=""; el("lWeight").value=""; el("lNote").value="";
+  resetLogWhen();
 
   var hot = temp!=null && ((unit==="F"&&temp>=104)||(unit==="C"&&temp>=40));
-  toast(hot ? "Saved — a temperature that high needs a call to your doctor or nurse line" : "Reading saved");
+  toast(hot ? "Saved — a temperature that high needs a call to your doctor or nurse line"
+            : "Reading saved"+(Date.now()-at > 3*MIN ? " at "+fmtTime(at)+" "+fmtDay(at) : ""));
 });
 
+el("btnLNow").addEventListener("click", resetLogWhen);
 el("btnMoreLog").addEventListener("click", function(){
   state.ui.logExpanded = !state.ui.logExpanded;
   save({push:false}); renderLogs();
@@ -2149,7 +2301,7 @@ function renderChart(){
   var x = function(ms){ return padL + ((ms - vStart)/span)*plotW; };
 
   var unit = state.ui.unit || "C";
-  var temps = state.logs.filter(function(l){
+  var temps = liveLogs().filter(function(l){
     if (logType(l) !== "temp" || l.temp == null) return false;
     if (state.ui.person !== "all" && (l.person||"") && l.person !== state.ui.person) return false;
     return true;
@@ -2526,11 +2678,14 @@ function openPop(marker, clientX, clientY, hostId){
     '<div class="meta">'+status+'</div>'+
     '<div class="meta" style="margin-top:4px">Give '+esc(med.dose||"per label")+'</div>'+
     '<div class="btn-row">'+
-      (d.given||d.skipped
-        ? '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+marker.index+'">Undo</button>'
-        : '<button class="btn tiny" data-act="giveat" data-med="'+med.id+'" data-i="'+marker.index+'">✓ Given now</button>'+
-          '<button class="btn tiny ghost" data-act="gaveEarlier" data-med="'+med.id+'" data-i="'+marker.index+'">Given earlier…</button>'+
-          '<button class="btn tiny ghost" data-act="skip" data-med="'+med.id+'" data-i="'+marker.index+'">Skip</button>')+
+      (d.given
+        ? '<button class="btn tiny ghost" data-act="giveWhen" data-med="'+med.id+'" data-i="'+marker.index+'">🕐 Change time</button>'+
+          '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+marker.index+'">Undo</button>'
+        : d.skipped
+          ? '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+marker.index+'">Undo</button>'
+          : '<button class="btn tiny" data-act="giveat" data-med="'+med.id+'" data-i="'+marker.index+'">✓ Given now</button>'+
+            '<button class="btn tiny ghost" data-act="giveWhen" data-med="'+med.id+'" data-i="'+marker.index+'">🕐 Earlier…</button>'+
+            '<button class="btn tiny ghost" data-act="skip" data-med="'+med.id+'" data-i="'+marker.index+'">Skip</button>')+
     '</div>';
   host.appendChild(box);
   var w = 250;
@@ -2629,7 +2784,7 @@ function scheduleText(){
     });
     lines.push("");
   });
-  var temps = state.logs.filter(function(l){ return logType(l)==="temp"; }).slice(-10);
+  var temps = liveLogs().filter(function(l){ return logType(l)==="temp"; }).slice(-10);
   if (temps.length){
     lines.push("TEMPERATURES");
     temps.forEach(function(l){
@@ -2639,15 +2794,15 @@ function scheduleText(){
     lines.push("");
   }
   var t0 = new Date(); t0.setHours(0,0,0,0);
-  var dc = countDiapers(state.logs, t0.getTime(), t0.getTime()+DAY);
-  var yc = countDiapers(state.logs, t0.getTime()-DAY, t0.getTime());
+  var dc = countDiapers(liveLogs(), t0.getTime(), t0.getTime()+DAY);
+  var yc = countDiapers(liveLogs(), t0.getTime()-DAY, t0.getTime());
   if (dc.wet+dc.dirty+yc.wet+yc.dirty > 0){
     lines.push("NAPPIES");
     lines.push("  today: "+dc.wet+" wet, "+dc.dirty+" dirty"+(dc.last?" (last "+fmtTime(dc.last)+")":""));
     lines.push("  yesterday: "+yc.wet+" wet, "+yc.dirty+" dirty");
     lines.push("");
   }
-  var ws = weightLogs(state.logs);
+  var ws = weightLogs(liveLogs());
   if (ws.length){
     lines.push("WEIGHT");
     ws.slice(-6).forEach(function(l){
@@ -2667,10 +2822,10 @@ el("btnCopyAll").addEventListener("click", function(){
   } else window.prompt("Copy the schedule", txt);
 });
 function printSheet(){
-  var temps = state.logs.filter(function(l){ return logType(l)==="temp"; }).slice(-8);
+  var temps = liveLogs().filter(function(l){ return logType(l)==="temp"; }).slice(-8);
   var t0 = new Date(); t0.setHours(0,0,0,0);
-  var dc = countDiapers(state.logs, t0.getTime(), t0.getTime()+DAY);
-  var ws = weightLogs(state.logs);
+  var dc = countDiapers(liveLogs(), t0.getTime(), t0.getTime()+DAY);
+  var ws = weightLogs(liveLogs());
   var lastW = ws[ws.length-1];
   el("printHeader").innerHTML =
     '<h2 style="font-size:22px">Medicine handover sheet'+(state.sync.name?' — '+esc(state.sync.name):'')+'</h2>'+
@@ -3157,7 +3312,7 @@ function openApp(){
   checkDueEmails();
 }
 function hasData(){
-  return (state.meds && state.meds.length) || (state.logs && state.logs.length);
+  return (state.meds && state.meds.length) || liveLogs().length > 0;
 }
 
 function gateSignIn(){
@@ -3214,7 +3369,7 @@ function showPanel(id){
   });
   // charts need a real width, so draw them once their panel is visible
   if (id === "chart") renderChart();
-  if (id === "log") renderRhythm();
+  if (id === "log"){ renderRhythm(); resetLogWhen(); }
   if (id === "now") renderGlance();
   try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(e){ try { window.scrollTo(0,0); } catch(e2){} }
 }
@@ -3262,6 +3417,7 @@ function renderAll(){
 
 renderPresets();
 seedStart();
+resetLogWhen();
 setSpan((state.ui.viewHours||24)*HOUR);
 renderBell();
 renderSyncPanel();
