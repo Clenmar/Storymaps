@@ -6,6 +6,11 @@
 <title>Medicine Tracker | Medicines, nappies, temperature &amp; weight</title>
 <meta name="description" content="Track several medicines for the whole family, see every dose on one friendly timeline, and get an email when the next dose is due." />
 <meta name="theme-color" content="#FFFCF6" />
+<!-- A phone must never keep an old copy of this file: a stale build once showed
+     one family's medicines after signing into another. -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+<meta http-equiv="Pragma" content="no-cache" />
+<meta http-equiv="Expires" content="0" />
 <link rel="icon" type="image/x-icon" href="https://www.twcministries.net/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -397,6 +402,10 @@ details.fold .fold-body{padding:0 18px 18px}
     <div class="gate-foot">
       Your family's record is kept in the church's private repository, never on this phone.<br>
       Medicine Tracker only keeps time. It never works out how much medicine to give.
+      <div style="margin-top:10px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap">
+        <span id="gateVer"></span>
+        <button class="btn ghost tiny" id="btnFresh" type="button">Load the newest version</button>
+      </div>
     </div>
   </div>
 </div>
@@ -587,19 +596,19 @@ details.fold .fold-body{padding:0 18px 18px}
       <div class="row">
         <div class="field" style="flex:1 1 110px">
           <label for="lTemp">Temperature</label>
-          <input id="lTemp" type="number" step="0.1" inputmode="decimal" placeholder="101.4" />
+          <input id="lTemp" type="number" step="0.1" inputmode="decimal" placeholder="38.2" />
         </div>
         <div class="field" style="flex:0 0 92px">
           <label for="lUnit">Unit</label>
-          <select id="lUnit"><option value="F" selected>°F</option><option value="C">°C</option></select>
+          <select id="lUnit"><option value="C" selected>°C</option><option value="F">°F</option></select>
         </div>
         <div class="field" style="flex:1 1 110px">
           <label for="lWeight">Weight</label>
-          <input id="lWeight" type="number" step="0.01" inputmode="decimal" placeholder="14.6" />
+          <input id="lWeight" type="number" step="0.01" inputmode="decimal" placeholder="6.6" />
         </div>
         <div class="field" style="flex:0 0 92px">
           <label for="lWUnit">Unit</label>
-          <select id="lWUnit"><option value="lb" selected>lb</option><option value="kg">kg</option></select>
+          <select id="lWUnit"><option value="kg" selected>kg</option><option value="lb">lb</option></select>
         </div>
       </div>
       <button class="btn sky wide" id="btnLogAdd">Save reading</button>
@@ -787,8 +796,8 @@ details.fold .fold-body{padding:0 18px 18px}
             </div>
           </div>
         </div>
-        <details class="fold" style="margin-top:16px;box-shadow:none;border-style:dashed">
-          <summary style="font-size:15px">Advanced — server address</summary>
+        <details class="fold" id="foldApi" style="margin-top:16px;box-shadow:none;border-style:dashed" hidden>
+          <summary style="font-size:15px">Advanced — server address <span style="font-weight:600;color:var(--soft);font-size:12px">(admin only)</span></summary>
           <div class="fold-body">
             <div class="field">
               <label for="fApi">Worker address
@@ -900,6 +909,10 @@ details.fold .fold-body{padding:0 18px 18px}
       giving both. If your child is under three months old, is getting worse, will not drink, or you are unsure about
       anything, call your doctor or a nurse line. In an emergency call 911.</p>
       <div class="safety">Never give a dose based on a reminder alone. Check the label, the amount and the child every time.</div>
+      <p style="margin:0 0 12px;font-size:12.5px;color:var(--faint);font-weight:700">
+        Medicine Tracker <span id="verStamp"></span> ·
+        <a href="#" id="lnkFresh">load the newest version</a>
+      </p>
       <p style="margin-bottom:0"><b>Where your information lives.</b> Nothing about your child is stored on this phone.
       Medicines, doses, nappies, temperatures and weights live only in the church's own <b>private</b> repository, reached
       with your family code, so both parents' phones always show the same record and a lost phone gives nothing away.
@@ -923,6 +936,11 @@ details.fold .fold-body{padding:0 18px 18px}
 // emails on its own. Deploy with:  cd 00_All_Workers\twc-dose-clock && npx wrangler deploy
 // Clear the box in Advanced to keep a phone entirely offline.
 var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
+
+// Bump this whenever the file changes. It is printed on the sign-in card and in
+// Settings, so it is easy to tell whether a phone is running the current build
+// or a copy Safari kept in its cache.
+var APP_VERSION = "3.1 · 25 Jul 2026";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -959,8 +977,8 @@ var store = {
    thing this device remembers is which family is signed in and small display
    preferences — so signing into a different family can never show, or upload,
    another family's child. */
-var DEVICE_KEY = "doseclock.device.v1";
-var DEAD_KEYS = ["doseclock.v2", "doseclock.v1"];   // old on-device copies, removed on sight
+var DEVICE_KEY = "doseclock.device.v2";
+var DEAD_KEYS = ["doseclock.v2", "doseclock.v1", "doseclock.device.v1"];   // old on-device copies, removed on sight
 
 function blankData(){
   return {
@@ -972,13 +990,14 @@ function blankState(){
   var d = blankData();
   d.sync = { apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 };
   d.ui = { person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"",
-           unit:"F", wunit:"lb", rhythmDays:7, logExpanded:false, tab:"now" };
+           unit:"C", wunit:"kg", rhythmDays:7, logExpanded:false, tab:"now" };
   return d;
 }
 var state = blankState();
 
 // Wipe every trace of the previous family before another one is loaded.
 function resetData(){
+  state.dataRoom = "";
   var d = blankData();
   state.meds = d.meds; state.logs = d.logs; state.caregivers = d.caregivers;
   state.deletedMedIds = d.deletedMedIds; state.settings = d.settings;
@@ -1166,6 +1185,7 @@ function adoptServer(d){
   state.sync.rev = d.rev || 0;
   state.sync.isAdmin = !!d.isAdmin;
   state.sync.lastAt = Date.now();
+  state.dataRoom = state.sync.code;   // stamp: this log belongs to this family only
   dirty = false;
   saveDevice();                     // preferences only — the log stays off the phone
 }
@@ -1194,6 +1214,12 @@ function schedulePush(){
 var saveFailed = false, retryTimer = null;
 function pushNow(){
   if (!canSync() || !connected || !dirty) return Promise.resolve();
+  // Hard stop: never write a log into a family it did not come from.
+  if (state.dataRoom !== state.sync.code){
+    dirty = false;
+    console.warn("[MedicineTracker] refused to save: the log in memory belongs to a different family");
+    return Promise.resolve();
+  }
   syncChip("busy","Saving…");
   return api("/api/state", { method:"PUT", body:payload() }).then(function(d){
     adoptServer(d);
@@ -2122,7 +2148,7 @@ function renderChart(){
   var vStart = centre - span/2, vEnd = centre + span/2;
   var x = function(ms){ return padL + ((ms - vStart)/span)*plotW; };
 
-  var unit = state.ui.unit || "F";
+  var unit = state.ui.unit || "C";
   var temps = state.logs.filter(function(l){
     if (logType(l) !== "temp" || l.temp == null) return false;
     if (state.ui.person !== "all" && (l.person||"") && l.person !== state.ui.person) return false;
@@ -2267,7 +2293,7 @@ function renderGlance(){
   var padL = 10, plotW = W - padL*2;
   var x = function(ms){ return padL + ((ms - vStart)/span)*plotW; };
 
-  var unit = state.ui.unit || "F";
+  var unit = state.ui.unit || "C";
   var temps = logs.filter(function(l){ return logType(l)==="temp" && l.temp != null && l.at >= vStart && l.at <= vEnd; })
                   .sort(function(a,b){ return a.at-b.at; });
   var naps  = logs.filter(function(l){ return isDiaper(logType(l)) && l.at >= vStart && l.at <= vEnd; });
@@ -2936,7 +2962,11 @@ function renderSyncPanel(){
   el("fLead").value = String(state.settings.leadMinutes==null?5:state.settings.leadMinutes);
   el("fOverdue").value = state.settings.overdueNudge ? String(state.settings.overdueMinutes||30) : "0";
   el("fEmailOn").checked = state.settings.emailFromDevice !== false;
+  el("lUnit").value = state.ui.unit || "C";
+  el("lWUnit").value = state.ui.wunit || "kg";
   el("adminBox").hidden = !state.sync.isAdmin;
+  el("foldApi").hidden = !state.sync.isAdmin;          // parents never need the server address
+  if (!state.sync.isAdmin) el("foldApi").open = false;
 
   var rows = state.caregivers.length ? state.caregivers : [{ id:uid(), name:"", email:"", notify:true }];
   el("careList").innerHTML = rows.map(function(c,i){
@@ -3090,20 +3120,38 @@ el("btnAddRoom").addEventListener("click", function(){
    ═══════════════════════════════════════════════════════════════════════════ */
 var appOpen = false;
 
+var gateNode = null, gateAnchor = null;
 function showGate(msg, kind){
   appOpen = false;
   el("app").hidden = true;
-  el("gate").hidden = false;
+  if (gateNode && !gateNode.parentNode && gateAnchor && gateAnchor.parentNode){
+    gateAnchor.parentNode.insertBefore(gateNode, gateAnchor);   // put the wall back
+  }
+  var g = el("gate");
+  if (g) g.hidden = false;
   el("outChip").hidden = true;
-  el("gateMsg").innerHTML = msg ? '<div class="note '+(kind||"bad")+'">'+esc(msg)+'</div>' : "";
+  var m = el("gateMsg");
+  if (m) m.innerHTML = msg ? '<div class="note '+(kind||"bad")+'">'+esc(msg)+'</div>' : "";
   setTimeout(function(){ try { el("gateCode").focus(); } catch(e){} }, 120);
 }
 function openApp(){
   appOpen = true;
-  el("gate").hidden = true;
+  // Detach the sign-in card rather than only hiding it: no stylesheet, cached or
+  // otherwise, can leave it stranded at the top of a signed-in app.
+  var g = el("gate");
+  if (g){
+    var codeBox = el("gateCode");
+    if (codeBox) codeBox.value = "";
+    g.hidden = true;
+    gateNode = g;
+    if (!gateAnchor){
+      gateAnchor = document.createComment("gate");
+      g.parentNode.insertBefore(gateAnchor, g);
+    }
+    if (g.parentNode) g.parentNode.removeChild(g);
+  }
   el("app").hidden = false;
   el("outChip").hidden = false;
-  el("gateCode").value = "";
   renderAll();
   scheduleLocalAlert();
   checkDueEmails();
@@ -3135,6 +3183,22 @@ function gateSignIn(){
 }
 el("gateBtn").addEventListener("click", gateSignIn);
 el("gateCode").addEventListener("keydown", function(e){ if (e.key === "Enter") gateSignIn(); });
+
+function hardRefresh(){
+  try {
+    var u = location.href.split("#")[0].split("?")[0];
+    location.replace(u + "?v=" + Date.now());     // a URL Safari has never cached
+  } catch(e){ location.reload(); }
+}
+(function stampVersion(){
+  var a = el("gateVer"), b = el("verStamp");
+  if (a) a.textContent = "v" + APP_VERSION;
+  if (b) b.textContent = "v" + APP_VERSION;
+  var f = el("btnFresh");
+  if (f) f.addEventListener("click", hardRefresh);
+  var l = el("lnkFresh");
+  if (l) l.addEventListener("click", function(e){ e.preventDefault(); hardRefresh(); });
+})();
 
 /* ═══════════════════════════════════════════════════════════════════════════
    17. Tabs — five small screens instead of one long scroll
