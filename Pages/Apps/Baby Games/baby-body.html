@@ -43,6 +43,7 @@
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
 // Parts positioned in % of the #stage box. r = size in % of stage width.
@@ -67,6 +68,7 @@ function boing(){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(),g
 function say(t,cb){ if(!soundOn){ if(cb)setTimeout(cb,500); return; } BabyVoice.say(t,cb); }
 
 var stage=document.getElementById('stage');
+BabyPhotos.warm(["eyes","nose","mouth","ear","hair","hand","foot"]);
 function buildFace(){
   stage.querySelectorAll('.part').forEach(function(n){ n.remove(); });
   PARTS.forEach(function(p){
@@ -74,15 +76,33 @@ function buildFace(){
     var size=p.r; // percent of stage width
     d.style.cssText='left:'+p.x+'%;top:'+p.y+'%;width:'+size+'%;height:'+size+'%;font-size:'+(size*0.7)+'%;';
     d.style.transform='translate(-50%,-50%)';
-    var span=document.createElement('div'); span.className='feat'; span.textContent=p.emo;
-    span.style.cssText='left:50%;top:50%;font-size:'+(size*0.6)+'cqw;';
+    var span=document.createElement('div'); span.className='feat';
+    span.style.cssText='left:50%;top:50%;font-size:'+(size*0.6)+'cqw;width:86%;height:86%;border-radius:50%;overflow:hidden;';
+    BabyPhotos.fill(span, p.id==='earL'||p.id==='earR' ? 'ear' : p.id, p.emo, {round:true, alt:p.label});
     d.appendChild(span);
     d.addEventListener('click', function(){ pick(p, d); });
     stage.appendChild(d);
   });
   stage.style.containerType='inline-size';
 }
+/* One question at a time: the voice callback and the safety timer used to both
+   fire, which flicked through two or three questions in a blink. */
+var advLock = false;
+function scheduleNext(text, minMs){
+  if (advLock) return;
+  advLock = true;
+  var fired = false;
+  function go(){ if (fired) return; fired = true; advLock = false; round(); }
+  if (text){
+    say(text, function(){ setTimeout(go, minMs || 500); });
+    setTimeout(go, 4500);                 // safety net if the voice never reports back
+  } else {
+    setTimeout(go, minMs || 1200);        // nothing to say — just pause and move on
+  }
+}
+
 function round(){
+  advLock = false;
   target = PARTS[Math.floor(Math.random()*PARTS.length)];
   document.getElementById('prompt').innerHTML = "Where is the <b>"+target.label+"</b>? 👉";
   setTimeout(function(){ say("Can you find " + target.say + "?"); }, 250);
@@ -93,8 +113,7 @@ function pick(p, node){
     node.classList.add('hit'); chime(); confetti();
     document.getElementById('prompt').innerHTML = "Yay! That's the <b>"+target.label+"</b>! 🎉";
     setTimeout(function(){ node.classList.remove('hit'); }, 600);
-    say("Yes! That's " + target.say + "!", function(){ round(); });
-    setTimeout(round, 2600);
+    scheduleNext("Yes! That's " + target.say + "!", 900);
   } else {
     node.classList.add('wig'); boing(); setTimeout(function(){ node.classList.remove('wig'); }, 400);
     say("Try again. Where is " + target.say + "?");

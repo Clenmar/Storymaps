@@ -164,33 +164,34 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
 (function(){
   "use strict";
   var GAMES = [
-    { f:"baby-squish-game.html", n:"Squish!",  e:"🫧", g:"linear-gradient(135deg,#6EE7F9,#3B82F6)", btn:"linear-gradient(135deg,#38BDF8,#2563EB)",
+    { f:"baby-squish-game.html", n:"Squish!", ph:"bubbles",  e:"🫧", g:"linear-gradient(135deg,#6EE7F9,#3B82F6)", btn:"linear-gradient(135deg,#38BDF8,#2563EB)",
       d:"Tap anywhere and colourful bubbles pop with a happy sound. The very first game to try.",
       tags:["tap","calm"], chip:"Ages 0–2" },
-    { f:"baby-bible-squish.html", n:"God Loves You!", e:"✨", g:"linear-gradient(135deg,#FDE68A,#F59E0B)", btn:"linear-gradient(135deg,#FBBF24,#EA580C)",
+    { f:"baby-bible-squish.html", n:"God Loves You!", ph:"rainbow", e:"✨", g:"linear-gradient(135deg,#FDE68A,#F59E0B)", btn:"linear-gradient(135deg,#FBBF24,#EA580C)",
       d:"Squish stars to hear little Bible truths, then switch to letters or numbers as they grow.",
       tags:["tap","bible","learn"], chip:"Letters & numbers" },
-    { f:"baby-draw.html", n:"God's Rainbow", e:"🎨", g:"linear-gradient(135deg,#FBCFE8,#A78BFA)", btn:"linear-gradient(135deg,#EC4899,#8B5CF6)",
+    { f:"baby-draw.html", n:"God's Rainbow", ph:"painting", e:"🎨", g:"linear-gradient(135deg,#FBCFE8,#A78BFA)", btn:"linear-gradient(135deg,#EC4899,#8B5CF6)",
       d:"Finger painting in rainbow colours with gentle worship songs playing along.",
       tags:["calm","bible"], chip:"Drawing" },
-    { f:"baby-animals.html", n:"Animal Sounds", e:"🐮", g:"linear-gradient(135deg,#BBF7D0,#34D399)", btn:"linear-gradient(135deg,#34D399,#059669)",
+    { f:"baby-animals.html", n:"Animal Sounds", ph:"cow", e:"🐮", g:"linear-gradient(135deg,#BBF7D0,#34D399)", btn:"linear-gradient(135deg,#34D399,#059669)",
       d:"Fifteen animals to tap. Each one says its name and the sound it makes.",
       tags:["learn","tap"], chip:"First sounds" },
-    { f:"baby-colors.html", n:"Colors!", e:"🌈", g:"linear-gradient(135deg,#FDBA74,#F472B6)", btn:"linear-gradient(135deg,#FB923C,#DB2777)",
+    { f:"baby-colors.html", n:"Colors!", ph:"rose", e:"🌈", g:"linear-gradient(135deg,#FDBA74,#F472B6)", btn:"linear-gradient(135deg,#FB923C,#DB2777)",
       d:"Big blocks of colour that say their names out loud when they are tapped.",
       tags:["learn","tap"], chip:"Colours" },
-    { f:"baby-words.html", n:"First Words", e:"📖", g:"linear-gradient(135deg,#A5B4FC,#6366F1)", btn:"linear-gradient(135deg,#818CF8,#4F46E5)",
+    { f:"baby-words.html", n:"First Words", ph:"book", e:"📖", g:"linear-gradient(135deg,#A5B4FC,#6366F1)", btn:"linear-gradient(135deg,#818CF8,#4F46E5)",
       d:"One clear picture and one clear word at a time, at your child's own pace.",
       tags:["learn"], chip:"Talking" },
-    { f:"baby-body.html", n:"Point To…", e:"👃", g:"linear-gradient(135deg,#FCA5A5,#F87171)", btn:"linear-gradient(135deg,#F87171,#DC2626)",
+    { f:"baby-body.html", n:"Point To…", ph:"toddler", e:"👃", g:"linear-gradient(135deg,#FCA5A5,#F87171)", btn:"linear-gradient(135deg,#F87171,#DC2626)",
       d:"Where is your nose? A gentle game of naming ears, eyes, toes and tummy.",
       tags:["learn"], chip:"Body parts" },
-    { f:"baby-family.html", n:"Where's Mommy?", e:"👨‍👩‍👧", g:"linear-gradient(135deg,#FDE68A,#FCA5A5)", btn:"linear-gradient(135deg,#FBBF24,#F87171)",
+    { f:"baby-family.html", n:"Where's Mommy?", ph:"family", e:"👨‍👩‍👧", g:"linear-gradient(135deg,#FDE68A,#FCA5A5)", btn:"linear-gradient(135deg,#FBBF24,#F87171)",
       d:"Mommy, Daddy, Grandma and baby — tap a face to hear who it is.",
       tags:["learn","calm"], chip:"Family" }
   ];
@@ -199,15 +200,21 @@ a{text-decoration:none;color:inherit}
   function draw(tag){
     grid.innerHTML = GAMES.filter(function(g){ return tag==="all" || g.tags.indexOf(tag)>-1; }).map(function(g){
       return '<a class="gm" href="'+g.f+'">'+
-        '<span class="tile" style="background:'+g.g+'">'+g.e+'</span>'+
+        '<span class="tile" data-photo="'+(g.ph||'')+'" data-emo="'+g.e+'" style="background:'+g.g+'">'+g.e+'</span>'+
         '<span class="gm-name">'+g.n+'</span>'+
         '<span class="gm-desc">'+g.d+'</span>'+
         '<span class="row"><span class="chip">'+g.chip+'</span></span>'+
         '<span class="play" style="background:'+g.btn+'">Play ▸</span>'+
       '</a>';
     }).join("");
+    // real photographs on the cards, emoji until they land
+    Array.prototype.forEach.call(grid.querySelectorAll('[data-photo]'), function(t){
+      var term = t.getAttribute('data-photo');
+      if (term) BabyPhotos.fill(t, term, t.getAttribute('data-emo'), {alt:term});
+    });
   }
   draw("all");
+  BabyPhotos.warm(GAMES.map(function(g){ return g.ph; }).filter(Boolean));
 
   var tabs = document.getElementById("tabs");
   tabs.addEventListener("click", function(e){

@@ -1500,6 +1500,77 @@
     theme: "What is the central idea?"
   };
 
+
+  // ════════════════════════════════════════════════════════════════════════
+  //  FRESH DECKS — remember what has already been asked, across sessions
+  //  A plain shuffle re-asks favourites every session. This keeps a per-bank
+  //  "served" list in localStorage: unseen items always come first, and once a
+  //  bank is exhausted the longest-ago item comes back round. So a player
+  //  works through the whole bank before ever seeing a question twice.
+  // ════════════════════════════════════════════════════════════════════════
+  var SEEN_KEY = "twcbg.seen.v1";
+  var SEEN = (function () { try { return JSON.parse(localStorage.getItem(SEEN_KEY) || "{}"); } catch (e) { return {}; } })();
+  var seenTimer = null;
+  function seenFlush() {
+    clearTimeout(seenTimer);
+    seenTimer = setTimeout(function () {
+      try { localStorage.setItem(SEEN_KEY, JSON.stringify(SEEN)); } catch (e) {}
+    }, 400);
+  }
+  function itemId(it) {
+    var raw = typeof it === "string" ? it : JSON.stringify(it);
+    var h = 5381;
+    for (var i = 0; i < raw.length; i++) h = ((h * 33) ^ raw.charCodeAt(i)) >>> 0;
+    return h.toString(36);
+  }
+  // key: bank name (plus difficulty) · pool: this level's items ·
+  // spill: items from neighbouring levels, used only once the level is used up
+  function makeDeck(key, pool, spill) {
+    var served = SEEN[key] || [];
+    var extra = (spill || []).filter(function (x) { return pool.indexOf(x) < 0; });
+    var ids = pool.map(itemId);
+    var pos = {};                        // id → how long ago it was served
+    served.forEach(function (id, i) { pos[id] = i; });
+    var unseen = [], seen = [];
+    pool.forEach(function (it, i) {
+      if (pos[ids[i]] === undefined) unseen.push({ it: it, id: ids[i] });
+      else seen.push({ it: it, id: ids[i], age: pos[ids[i]] });
+    });
+    var spillUnseen = [], spillSeen = [];
+    extra.forEach(function (it) {
+      var id = itemId(it);
+      if (pos[id] === undefined) spillUnseen.push({ it: it, id: id });
+      else spillSeen.push({ it: it, id: id, age: pos[id] });
+    });
+    function shuffle(a) {
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t;
+      }
+      return a;
+    }
+    shuffle(unseen); shuffle(spillUnseen);
+    seen.sort(function (a, b) { return a.age - b.age; });          // oldest first
+    spillSeen.sort(function (a, b) { return a.age - b.age; });
+    // this level first, then the neighbours, then whatever was longest ago
+    var queue = unseen.concat(spillUnseen, seen, spillSeen), qi = 0;
+    return {
+      total: queue.length,
+      fresh: unseen.length,
+      next: function () {
+        if (!queue.length) return null;
+        if (qi >= queue.length) qi = 0;
+        var entry = queue[qi++];
+        var list = SEEN[key] || (SEEN[key] = []);
+        var at = list.indexOf(entry.id);
+        if (at > -1) list.splice(at, 1);
+        list.push(entry.id);
+        if (list.length > 400) list.splice(0, list.length - 400);
+        seenFlush();
+        return entry.it;
+      }
+    };
+  }
+
   // ── clean a token for matching (keep inner apostrophes) ─────────────────
   function cleanTok(s) { return s.replace(/^[^\w']+|[^\w']+$/g, "").toLowerCase(); }
 
@@ -1514,14 +1585,14 @@
     var opts = el("div", "mopts"); st.appendChild(opts);
     setStats([["Score", 0, "sc"], ["Time", String(seconds), "tm"], ["Best", getBest(id), "bt"]]);
 
-    var order = bank.slice().sort(function () { return Math.random() - 0.5; }), qi = 0, score = 0, ended = false;
+    var deck = makeDeck(id, bank), score = 0, ended = false;
     var timer = makeTimer(st, seconds, finish);
     var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
     stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
 
     function newQ() {
-      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
-      var item = order[qi++];
+      var item = deck.next();
+      if (!item) { finish(); return; }
       qbox.innerHTML = item.prompt;
       var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(function () { return Math.random() - 0.5; });
       opts.innerHTML = "";
@@ -1556,14 +1627,14 @@
     var line = el("div", "sentence"); st.appendChild(line);
     setStats([["Score", 0, "sc"], ["Time", String(seconds), "tm"], ["Best", getBest(id), "bt"]]);
 
-    var order = bank.slice().sort(function () { return Math.random() - 0.5; }), qi = 0, score = 0, ended = false;
+    var deck = makeDeck(id, bank), score = 0, ended = false;
     var timer = makeTimer(st, seconds, finish);
     var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
     stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
 
     function newItem() {
-      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
-      var item = order[qi++];
+      var item = deck.next();
+      if (!item) { finish(); return; }
       var words = item.text.split(" ");
       var targetIdx = -1, want = cleanTok(item.drop);
       words.forEach(function (wd, i) { if (targetIdx < 0 && cleanTok(wd) === want) targetIdx = i; });
@@ -1600,14 +1671,14 @@
     var pool = el("div", "chunks"); st.appendChild(pool);
     setStats([["Score", 0, "sc"], ["Time", "75", "tm"], ["Best", getBest("invert"), "bt"]]);
 
-    var order = BANK_INVERT.slice().sort(function () { return Math.random() - 0.5; }), qi = 0, score = 0, ended = false, nextIdx = 0;
+    var deck = makeDeck("invert", BANK_INVERT), score = 0, ended = false, nextIdx = 0;
     var timer = makeTimer(st, 75, finish);
     var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
     stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
 
     function newItem() {
-      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
-      var item = order[qi++];
+      var item = deck.next();
+      if (!item) { finish(); return; }
       nextIdx = 0;
       build.innerHTML = '<span style="color:var(--muted);font-weight:600">Build it here…</span>';
       var idxs = item.chunks.map(function (c, i) { return i; });
@@ -1650,7 +1721,7 @@
     var opts = el("div", "mopts"); opts.style.display = "none"; st.appendChild(opts);
     setStats([["Round", 0, "rd"], ["Speed", "slow", "sp"], ["Best", getBest("speedread"), "bt"]]);
 
-    var order = BANK_SPEEDREAD.slice().sort(function () { return Math.random() - 0.5; }), qi = 0;
+    var deck = makeDeck("speedread", BANK_SPEEDREAD);
     var round = 0, speed = 380, ended = false;
     stoppers.push(function () { ended = true; });
 
@@ -1658,8 +1729,8 @@
 
     async function play() {
       if (ended || S !== SESSION) return;
-      if (qi >= order.length) { order.sort(function () { return Math.random() - 0.5; }); qi = 0; }
-      var item = order[qi++];
+      var item = deck.next();
+      if (!item) { finish(); return; }
       opts.style.display = "none";
       prompt.innerHTML = "Read the words as they flash…";
       stat("sp", speedWord());
@@ -1723,14 +1794,15 @@
 
     var pool = bank.filter(function (x) { return x.diff === lvl; });
     if (pool.length < 4) pool = bank.slice();
-    var order = pool.slice().sort(rand), qi = 0, score = 0, ended = false;
+    var near = bank.filter(function (x) { return Math.abs((x.diff || 0) - lvl) === 1; });
+    var deck = makeDeck(id + ":" + lvl, pool, near), score = 0, ended = false;
     var timer = makeTimer(st, seconds, finish);
     var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
     stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
 
     function newQ() {
-      if (qi >= order.length) { order.sort(rand); qi = 0; }
-      var item = order[qi++];
+      var item = deck.next();
+      if (!item) { finish(); return; }
       qbox.innerHTML = item.prompt || esc(item.q);
       var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(rand);
       opts.innerHTML = "";
@@ -1830,6 +1902,8 @@
     var band = [[1, 2], [3, 4], [5, 6]][lvl];
     var pool = VOCAB.filter(function (v) { return v.hsk >= band[0] && v.hsk <= band[1]; });
     if (pool.length < 6) pool = VOCAB.slice();
+    var nearV = VOCAB.filter(function (v) { return v.hsk === band[0] - 1 || v.hsk === band[1] + 1; });
+    var deck = makeDeck("zhvocab:" + mode + ":" + lvl, pool, nearV);
     var field = mode === "pinyin" ? "py" : mode === "char" ? "hz" : "en";
     var instr = mode === "pinyin" ? "Choose the pinyin" : mode === "char" ? "Choose the character" :
       mode === "listen" ? "Listen, then choose the meaning" : "Choose the meaning";
@@ -1852,7 +1926,7 @@
     function reviewList() { return Object.keys(review).map(function (k) { return review[k]; }); }
 
     function present() {
-      target = pool[rnd(pool.length)];
+      target = deck.next() || pool[rnd(pool.length)];
       extra.innerHTML = "";
       if (mode === "char") { qbox.textContent = target.en; }
       else if (mode === "listen") {
@@ -1909,14 +1983,15 @@
 
     var items = ZH_SENTENCES.filter(function (s) { return s.lvl === lvl; });
     if (items.length < 2) items = ZH_SENTENCES.slice();
-    var order = items.slice().sort(rand), qi = 0, score = 0, ended = false, nextIdx = 0, seq = [], curEn = "", review = [];
+    var nearZ = ZH_SENTENCES.filter(function (x) { return Math.abs((x.lvl || 0) - lvl) === 1; });
+    var deck = makeDeck("zhsentence:" + lvl, items, nearZ), score = 0, ended = false, nextIdx = 0, seq = [], curEn = "", review = [];
     var timer = makeTimer(st, 75, finish);
     var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
     stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) {} });
 
     function newItem() {
-      if (qi >= order.length) { order.sort(rand); qi = 0; }
-      var item = order[qi++]; seq = item.words; nextIdx = 0; curEn = item.en;
+      var item = deck.next();
+      if (!item) { finish(); return; } seq = item.words; nextIdx = 0; curEn = item.en;
       hint.innerHTML = '<span style="font-size:16px;color:var(--muted);font-weight:700">' + esc(item.en) + '</span>';
       build.innerHTML = '<span style="color:var(--muted);font-weight:600">…</span>';
       var idxs = seq.map(function (_, i) { return i; });
@@ -1961,14 +2036,15 @@
 
     var pool = BANK_BIBLE_CHARADES.filter(function (x) { return x.diff === lvl; });
     if (pool.length < 4) pool = BANK_BIBLE_CHARADES.slice();
-    var order = pool.slice().sort(rand), qi = 0, score = 0, ended = false;
+    var nearC = BANK_BIBLE_CHARADES.filter(function (x) { return Math.abs((x.diff || 0) - lvl) === 1; });
+    var deck = makeDeck("biblecharades:" + lvl, pool, nearC), score = 0, ended = false;
     var timer = makeTimer(st, 70, finish);
     var ti = setInterval(function () { stat("tm", timer.secondsLeft()); }, 250);
     stoppers.push(function () { ended = true; timer.stop(); clearInterval(ti); });
 
     function newQ() {
-      if (qi >= order.length) { order.sort(rand); qi = 0; }
-      var item = order[qi++];
+      var item = deck.next();
+      if (!item) { finish(); return; }
       clue.textContent = item.clue;
       var shuffled = item.options.map(function (o, i) { return { o: o, ok: i === item.answer }; }).sort(rand);
       opts.innerHTML = "";

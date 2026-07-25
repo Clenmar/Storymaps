@@ -22,7 +22,8 @@
   .animal:active { transform:scale(.92); }
   .animal.bounce { animation:bounce .5s cubic-bezier(.34,1.56,.64,1); }
   @keyframes bounce { 0%{transform:scale(1)} 45%{transform:scale(1.18) rotate(-4deg)} 100%{transform:scale(1)} }
-  .animal .emo { font-size:clamp(2.4rem,11vw,5rem); line-height:1; }
+  .animal .emo { font-size:clamp(2.4rem,11vw,5rem); line-height:1; width:74%; aspect-ratio:1; border-radius:20px;
+                 overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,.14); background:#EEF6FF; }
   .animal .nm  { font-size:clamp(.7rem,3vw,1.2rem); color:#3a6b2f; margin-top:2px; }
   #say { position:absolute; left:50%; bottom:9vh; transform:translateX(-50%); color:#fff; font-size:clamp(1.4rem,6vw,3rem);
          text-shadow:0 4px 16px rgba(0,0,0,.4); opacity:0; transition:opacity .25s; pointer-events:none; text-align:center; }
@@ -42,6 +43,7 @@
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
 var ANIMALS = [
@@ -60,9 +62,11 @@ function tone(freq){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(
 function say(t){ if(!soundOn) return; BabyVoice.say(t); }
 
 var grid=document.getElementById('grid');
+BabyPhotos.warm(ANIMALS.map(function(a){ return a.n.toLowerCase(); }));
 ANIMALS.forEach(function(a){
   var d=document.createElement('div'); d.className='animal';
-  d.innerHTML='<div class="emo">'+a.e+'</div><div class="nm">'+a.n+'</div>';
+  d.innerHTML='<div class="emo"></div><div class="nm">'+a.n+'</div>';
+  BabyPhotos.fill(d.querySelector('.emo'), a.n.toLowerCase(), a.e, {alt:a.n});
   d.addEventListener('click', function(){
     d.classList.remove('bounce'); void d.offsetWidth; d.classList.add('bounce');
     tone(a.f);

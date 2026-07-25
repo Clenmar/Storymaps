@@ -41,13 +41,21 @@
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
 var COLORS = [
-  {name:"red",    bg:"#ff4757"},{name:"orange",bg:"#ff9f2e"},{name:"yellow",bg:"#ffd93a"},
-  {name:"green",  bg:"#3ddc84"},{name:"blue",  bg:"#3aa0ff"},{name:"purple",bg:"#a86bff"},
-  {name:"pink",   bg:"#ff6fc7"},{name:"brown", bg:"#b5793a"},{name:"white", bg:"#f4f4f8"}
+  {name:"red",    bg:"#ff4757", thing:"strawberry", emo:"🍓"},
+  {name:"orange", bg:"#ff9f2e", thing:"orange",     emo:"🍊"},
+  {name:"yellow", bg:"#ffd93a", thing:"banana",     emo:"🍌"},
+  {name:"green",  bg:"#3ddc84", thing:"grass",      emo:"🌿"},
+  {name:"blue",   bg:"#3aa0ff", thing:"sky",        emo:"🌤️"},
+  {name:"purple", bg:"#a86bff", thing:"eggplant",   emo:"🍆"},
+  {name:"pink",   bg:"#ff6fc7", thing:"rose",       emo:"🌷"},
+  {name:"brown",  bg:"#b5793a", thing:"chocolate",  emo:"🍫"},
+  {name:"white",  bg:"#f4f4f8", thing:"snow",       emo:"❄️"}
 ];
+var lastTarget = null;
 var soundOn=true, target=null, started=false, actx=null;
 function ctx(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); return actx; }
 function chime(){ if(!soundOn) return; try{ var c=ctx(); [523,659,784,1047].forEach(function(f,i){ var o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
@@ -59,9 +67,29 @@ function boing(){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(),g
 function say(t,cb){ if(!soundOn){ if(cb)setTimeout(cb,500); return; } BabyVoice.say(t,cb); }
 function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 
+/* One question at a time: the voice callback and the safety timer used to both
+   fire, which flicked through two or three questions in a blink. */
+var advLock = false;
+function scheduleNext(text, minMs){
+  if (advLock) return;
+  advLock = true;
+  var fired = false;
+  function go(){ if (fired) return; fired = true; advLock = false; round(); }
+  if (text){
+    say(text, function(){ setTimeout(go, minMs || 500); });
+    setTimeout(go, 4500);                 // safety net if the voice never reports back
+  } else {
+    setTimeout(go, minMs || 1200);        // nothing to say — just pause and move on
+  }
+}
+
+BabyPhotos.warm(COLORS.map(function(c){ return c.thing; }));
 function round(){
+  advLock = false;
   var choices = shuffle(COLORS).slice(0,3);
-  target = choices[Math.floor(Math.random()*choices.length)];
+  var wanted = choices.filter(function(c){ return !lastTarget || c.name !== lastTarget; });
+  target = (wanted.length ? wanted : choices)[Math.floor(Math.random()*(wanted.length||choices.length))];
+  lastTarget = target.name;
   var box=document.getElementById('choices'); box.innerHTML='';
   shuffle(choices).forEach(function(col){
     var b=document.createElement('div'); b.className='blob'; b.style.background=col.bg;
@@ -74,9 +102,13 @@ function round(){
 function pick(col, node){
   if(col.name===target.name){
     node.classList.add('win'); chime(); confetti();
-    document.getElementById('prompt').innerHTML = "Yes! <b style='color:"+target.bg+"'>"+target.name+"</b>! 🎉";
-    say("Yes! " + target.name + "!", function(){ round(); });
-    setTimeout(round, 2500);
+    var pr = document.getElementById('prompt');
+    pr.innerHTML = "Yes! <b style='color:"+target.bg+"'>"+target.name+"</b>! <span id='reward'></span>";
+    var rw = document.getElementById('reward');
+    rw.style.cssText = 'display:inline-block;width:1.5em;height:1.5em;border-radius:12px;overflow:hidden;vertical-align:-.35em';
+    BabyPhotos.fill(rw, target.thing, target.emo, {alt:target.thing});
+    say("Yes! " + target.name + ", like a " + target.thing);
+    scheduleNext("", 1500);
   } else {
     node.classList.add('wiggle'); boing(); setTimeout(function(){ node.classList.remove('wiggle'); }, 400);
     say("Try again. Tap the " + target.name + " one.");

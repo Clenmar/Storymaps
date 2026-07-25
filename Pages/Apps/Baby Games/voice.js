@@ -13,7 +13,7 @@
  * library imports it by bare name):
  *   <script type="importmap">
  *   {"imports":{"onnxruntime-web":"https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm"}}
- *   </script>
+ *   <\/script>
  */
 (function () {
   "use strict";
@@ -73,7 +73,13 @@
   }
   try { speechSynthesis.onvoiceschanged = refreshSystem; refreshSystem(); } catch (e) {}
 
+  function once(fn) {
+    var done = false;
+    return function () { if (done || !fn) return; done = true; try { fn(); } catch (e) {} };
+  }
+
   function speakSystem(text, cb) {
+    cb = cb ? once(cb) : null;
     if (typeof speechSynthesis === "undefined") { if (cb) setTimeout(cb, 500); return; }
     try {
       if (!chosen) refreshSystem();
@@ -95,6 +101,7 @@
   try { document.addEventListener("touchend", unlock, true); document.addEventListener("click", unlock, true); } catch (e) {}
 
   function playBlob(blob, cb) {
+    cb = cb ? once(cb) : null;
     var c = ensureCtx();
     if (!c) {                              // last-resort: HTMLAudio
       try { var a = new Audio(URL.createObjectURL(blob)); if (cb) { a.addEventListener("ended", cb, { once: true }); setTimeout(cb, 6000); } var pr = a.play(); if (pr && pr.catch) pr.catch(function () { if (cb) cb(); }); } catch (e) { if (cb) cb(); }
@@ -161,6 +168,7 @@
   }
 
   function say(text, cb) {
+    cb = cb ? once(cb) : null;              // one call per phrase, always
     if (mode === "natural" && piperId) { speakNatural(text, cb); return; }
     speakSystem(text, cb);
   }

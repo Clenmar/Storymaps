@@ -6,8 +6,8 @@
  * mounted at the TOP, inside the safe area.
  *
  * Drop this into any game with:
- *     <script src="voice.js"></script>
- *     <script src="kit.js"></script>
+ *     <script src="voice.js"><\/script>
+ *     <script src="kit.js"><\/script>
  *
  * It will:
  *   • hide the old #voice-btn / #fs-btn / #back-btn / #sound-btn if present,
@@ -171,6 +171,17 @@
 
   document.addEventListener("fullscreenchange", paint);
   document.addEventListener("webkitfullscreenchange", paint);
+
+  /* ── if photos.js did not load, emoji still work ─────────────────────── */
+  if (!window.BabyPhotos) {
+    window.BabyPhotos = {
+      fill: function (n, t, e) { if (n) n.textContent = e || ""; },
+      warm: function () {},
+      resolve: function () { return { then: function (f) { f(null); return this; }, catch: function () { return this; } }; },
+      upload: function (t, cb) { if (cb) cb(false); },
+      own: { get: function () { return null; }, set: function () {}, clear: function () {}, list: function () { return {}; } }
+    };
+  }
 
   /* ── boot ────────────────────────────────────────────────────────────── */
   applyTheme();

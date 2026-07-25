@@ -12,6 +12,7 @@ Apps landing page links straight to it, and each game's ← button comes back he
 |---|---|
 | `index.html` | Sub-landing page: game cards, filter chips, grown-up notes |
 | `kit.js` | **Shared top bar** — back, sound, voice, full screen, day/night. Loaded by every page |
+| `photos.js` | **Real photographs** instead of emoji, with emoji as the fallback |
 | `voice.js` | Shared speech: system voices plus optional Piper neural voices |
 | `baby-squish-game.html` | Tap anywhere, bubbles pop |
 | `baby-bible-squish.html` | Bible squish, with letters and numbers modes |
@@ -29,6 +30,7 @@ Add these two lines to any new game and it gets everything:
 
 ```html
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 ```
 
@@ -74,6 +76,32 @@ Piper needs the onnxruntime import map in `<head>`; every game already has it:
 { "imports": { "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm" } }
 </script>
 ```
+
+## Photographs, not emoji
+
+`photos.js` turns a subject into a real photograph. Three sources, in order:
+
+1. **a photo the parent chose** — `BabyPhotos.upload("Mommy", cb)` opens the phone's
+   picker, square-crops to 480 px and keeps it in `localStorage`. Nothing is
+   uploaded anywhere. *Where's Mommy?* has a 📷 **Photos** button so the game can
+   show the child's actual family;
+2. **a URL cached** from an earlier visit (re-checked every 3 months);
+3. **Wikipedia's lead image** for the subject — genuine Wikimedia Commons
+   photography, fetched through the CORS-friendly API and cached. `TITLES` in
+   `photos.js` maps a subject to the right article (`cow → Cattle`,
+   `balloon → Toy balloon`, `nose → Human nose`…).
+
+If every source fails — no signal, blocked, no article — the original emoji stays
+on screen, so a game never shows an empty box.
+
+```js
+BabyPhotos.warm(["dog","cat"]);            // pre-fetch a whole grid in one request
+BabyPhotos.fill(node, "dog", "🐶");        // paint a node, emoji until the photo lands
+BabyPhotos.fill(node, "Mommy", "👩", {round:true});
+```
+
+Photos are used in Animal Sounds, First Words, Point To…, Where's Mommy?, the
+colour reward in Colors!, and the cards on this landing page.
 
 ## Keeping little fingers in the game
 

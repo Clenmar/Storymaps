@@ -43,6 +43,7 @@
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
 var WORDS = [
@@ -63,7 +64,7 @@ function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floo
 
 function show(){
   var item = order[idx];
-  document.getElementById('pic').textContent = item.p;
+  BabyPhotos.fill(document.getElementById('pic'), item.w, item.p, {alt:item.w});
   document.getElementById('word').textContent = item.w;
   var card = document.getElementById('card'); card.classList.remove('pop'); void card.offsetWidth; card.classList.add('pop');
   say(item.w);
@@ -84,6 +85,8 @@ document.addEventListener('fullscreenchange', function(){ if(!document.fullscree
 document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 document.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive:false });
 order = shuffle(WORDS);
+BabyPhotos.warm(WORDS.slice(0,20).map(function(x){ return x.w; }));
+setTimeout(function(){ BabyPhotos.warm(WORDS.slice(20).map(function(x){ return x.w; })); }, 1500);
 document.addEventListener('touchstart', function(){ try{ctx().resume();}catch(e){} }, { once:true });
 </script>
 </body>

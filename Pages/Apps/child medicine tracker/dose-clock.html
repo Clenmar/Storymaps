@@ -317,10 +317,52 @@ details.fold .fold-body{padding:0 18px 18px}
   .hero h2{font-size:23px}
   .med-actions{margin-left:0;width:100%}
 }
+/* ── sign-in gate ────────────────────────────────────────── */
+.gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.gate-card{
+  background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:26px 22px;
+  box-shadow:var(--shadow-lift);max-width:420px;width:100%;text-align:center
+}
+.gate-card .brand-badge{width:64px;height:64px;border-radius:20px;margin:0 auto 14px}
+.gate-card .brand-badge svg{width:36px;height:36px}
+.gate-card h1{font-family:var(--display);font-size:27px;margin-bottom:4px}
+.gate-card p{color:var(--soft);font-size:14.5px;font-weight:600;margin:0 0 18px}
+.gate-card .field{text-align:left}
+.gate-card input{text-align:center;font-size:17px;letter-spacing:.02em}
+.gate-note{font-size:13px;color:var(--soft);font-weight:600;margin-top:16px;line-height:1.5}
+.gate-msg{margin-top:12px}
+.gate-foot{margin-top:18px;padding-top:14px;border-top:1px solid var(--line-2);font-size:12.5px;color:var(--faint);font-weight:600}
+
+/* ── tabs ────────────────────────────────────────────────── */
+.tabbar{
+  position:sticky;top:0;z-index:40;display:flex;gap:6px;padding:10px 0 8px;margin:0 -4px 4px;
+  background:linear-gradient(var(--cream) 65%,rgba(255,252,246,0));overflow-x:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none
+}
+.tabbar::-webkit-scrollbar{display:none}
+.tabbtn{
+  flex:1 0 auto;border:1.5px solid var(--line);background:var(--paper);color:var(--soft);border-radius:14px;
+  padding:10px 13px;font-family:var(--display);font-weight:700;font-size:14.5px;display:flex;align-items:center;
+  gap:7px;justify-content:center;white-space:nowrap;box-shadow:0 2px 8px rgba(42,51,72,.05)
+}
+.tabbtn .ic{font-size:16px}
+.tabbtn[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.tabbtn .badge{
+  background:var(--rose);color:#fff;border-radius:999px;font-size:11px;font-weight:800;padding:1px 6px;min-width:18px
+}
+.tabbtn[aria-selected="true"] .badge{background:var(--sun);color:#4A2A05}
+.panel{display:none}
+.panel.on{display:block;animation:panelIn .22s ease}
+@keyframes panelIn{from{opacity:.35;transform:translateY(4px)}to{opacity:1;transform:none}}
+.panel>section:first-child{margin-top:12px}
+.who-chip{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--soft)}
+.who-chip select{width:auto;padding:7px 10px;font-size:13px;border-radius:10px}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{
   body{background:#fff;padding:0}
-  body::before,.topbar,.hero,.chart-card,.chart-tools,.chart-legend,.chart-key,#addSection,
+  .panel{display:block!important}
+  .tabbar,.gate,body::before,.topbar,.hero,.chart-card,.chart-tools,.chart-legend,.chart-key,#addSection,
   #syncSection,.btn,.btn-row,.link-btn,.filters,.no-print,.toast{display:none!important}
   .card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}
   .print-only{display:block!important}
@@ -329,7 +371,33 @@ details.fold .fold-body{padding:0 18px 18px}
 </style>
 </head>
 <body>
-<div class="wrap">
+
+<!-- ── sign-in gate ─────────────────────────────────────── -->
+<div class="gate" id="gate">
+  <div class="gate-card">
+    <span class="brand-badge" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.5 1.5"/><path d="M9 2.5h6"/><path d="M12 2.5V5"/></svg>
+    </span>
+    <h1>Medicine Tracker</h1>
+    <p>Medicines, nappies, temperature and weight — shared between both parents.</p>
+    <div class="field">
+      <label for="gateCode">Family code</label>
+      <input id="gateCode" type="password" placeholder="Family code" autocomplete="current-password"
+             enterkeyhint="go" autocapitalize="none" />
+    </div>
+    <button class="btn wide" id="gateBtn">Sign in</button>
+    <div class="gate-msg" id="gateMsg"></div>
+    <p class="gate-note">
+      Each family has its own code and its own private log — nobody sees another family's child.
+      Need a code? Ask Clenmar at TWC and one will be made for you.
+    </p>
+    <div class="gate-foot">
+      Dose Clock only keeps time. It never works out how much medicine to give.
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="app" hidden>
 
   <header class="topbar">
     <div class="brand">
@@ -341,10 +409,23 @@ details.fold .fold-body{padding:0 18px 18px}
         <span class="brand-sub">Medicines, nappies, temperature &amp; weight</span>
       </span>
     </div>
-    <button class="chip-btn" id="syncChip" title="Sync and email settings"><span class="dot"></span><span id="syncChipTxt">On this device</span></button>
+    <span class="who-chip" id="whoChip" hidden>on duty
+      <select id="whoNow" aria-label="Who is on duty"></select>
+    </span>
+    <button class="chip-btn" id="syncChip" title="Account, sync and email settings"><span class="dot"></span><span id="syncChipTxt">Sign in</span></button>
     <button class="chip-btn" id="bellChip" title="Turn on pop-up reminders">🔔 <span id="bellTxt">Alerts off</span></button>
   </header>
 
+  <nav class="tabbar" id="tabbar" role="tablist" aria-label="Sections">
+    <button class="tabbtn" role="tab" data-panel="now"  aria-selected="true"><span class="ic">⏰</span>Now</button>
+    <button class="tabbtn" role="tab" data-panel="meds" aria-selected="false"><span class="ic">💊</span>Medicines <span class="badge" id="tabMedCount" hidden>0</span></button>
+    <button class="tabbtn" role="tab" data-panel="log"  aria-selected="false"><span class="ic">🍼</span>Baby log</button>
+    <button class="tabbtn" role="tab" data-panel="chart" aria-selected="false"><span class="ic">📈</span>Timeline</button>
+    <button class="tabbtn" role="tab" data-panel="set"  aria-selected="false"><span class="ic">⚙️</span>Settings</button>
+  </nav>
+
+  <!-- ══ NOW ══ -->
+  <div class="panel on" data-panel="now">
   <div id="banners"></div>
 
   <!-- ── next dose ───────────────────────────────────────── -->
@@ -369,6 +450,23 @@ details.fold .fold-body{padding:0 18px 18px}
     <div class="stats" id="stats"></div>
   </section>
 
+    <section id="quickSection">
+      <div class="sec-head"><h3>Quick log</h3><span class="count" id="quickCount">today</span></div>
+      <div class="card">
+        <div class="quick">
+          <button class="qk wet"   data-quick="wet">💧<span>Wet</span></button>
+          <button class="qk dirty" data-quick="dirty">💩<span>Dirty</span></button>
+          <button class="qk both"  data-quick="both">💧💩<span>Both</span></button>
+        </div>
+        <p style="margin:12px 0 0;font-size:13px;color:var(--soft);font-weight:700">
+          Temperature, weight and notes are on the <b>Baby log</b> tab.
+        </p>
+      </div>
+    </section>
+  </div><!-- /now -->
+
+  <!-- ══ TIMELINE ══ -->
+  <div class="panel" data-panel="chart">
   <!-- ── timeline ────────────────────────────────────────── -->
   <section id="chartSection" hidden>
     <div class="sec-head">
@@ -405,6 +503,10 @@ details.fold .fold-body{padding:0 18px 18px}
     </div>
   </section>
 
+  </div><!-- /chart -->
+
+  <!-- ══ MEDICINES ══ -->
+  <div class="panel" data-panel="meds">
   <!-- ── medicines ───────────────────────────────────────── -->
   <section id="medsSection">
     <div class="sec-head">
@@ -427,6 +529,10 @@ details.fold .fold-body{padding:0 18px 18px}
   </section>
 
   <!-- ── fever / symptom log ─────────────────────────────── -->
+  </div><!-- /meds (form appended below) -->
+
+  <!-- ══ BABY LOG ══ -->
+  <div class="panel" data-panel="log">
   <section id="logSection">
     <div class="sec-head"><h3>Baby log</h3><span class="count" id="logCount">today</span></div>
 
@@ -494,6 +600,10 @@ details.fold .fold-body{padding:0 18px 18px}
     </div>
   </section>
 
+  </div><!-- /log -->
+
+  <!-- ══ MEDICINES (add / edit) ══ -->
+  <div class="panel" data-panel="meds">
   <!-- ── add / edit medicine ─────────────────────────────── -->
   <section id="addSection">
     <div class="sec-head"><h3 id="formTitle">Add a medicine</h3><span class="spacer"></span>
@@ -604,6 +714,10 @@ details.fold .fold-body{padding:0 18px 18px}
     </div>
   </section>
 
+  </div><!-- /meds part two -->
+
+  <!-- ══ SETTINGS ══ -->
+  <div class="panel" data-panel="set">
   <!-- ── accounts, sync & email ──────────────────────────── -->
   <section id="syncSection">
     <div class="sec-head"><h3>Account &amp; reminders</h3></div>
@@ -764,6 +878,7 @@ details.fold .fold-body{padding:0 18px 18px}
       phone is lost, sign out or ask the admin to change the family code.</p>
     </div>
   </footer>
+  </div><!-- /set -->
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -792,7 +907,7 @@ var COLOURS = { sky:"#3C8FEF", mint:"#22B08C", peach:"#FF8A5B", grape:"#8A6BF2",
 var COLOUR_KEYS = ["sky","mint","peach","grape","rose","sun"];
 var PRESETS = [
   { label:"Tylenol / paracetamol", name:"Tylenol infant drops", ingredient:"acetaminophen", every:6, max:4, colour:"sky" },
-  { label:"Motrin / ibuprofen",    name:"Motrin infant drops",  ingredient:"ibuprofen",     every:8, max:3, colour:"peach" },
+  { label:"Advil / ibuprofen",     name:"Advil infant drops",   ingredient:"ibuprofen",     every:8, max:3, colour:"peach" },
   { label:"Antibiotic 2x a day",   name:"Amoxicillin",          ingredient:"amoxicillin",   every:12, max:2, colour:"mint", days:10, notes:"Finish the whole course even if they feel better." },
   { label:"Antibiotic 3x a day",   name:"Antibiotic",           ingredient:"",              every:8, max:3, colour:"grape", days:7, notes:"Finish the whole course." },
   { label:"Vitamin once a day",    name:"Vitamin D drops",      ingredient:"vitamin D",     every:24, max:1, colour:"sun", days:30 }
@@ -817,7 +932,7 @@ function blankState(){
     settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30, emailFromDevice:true },
     sync:{ apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 },
     ui:{ person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"",
-         unit:"F", wunit:"lb", rhythmDays:7, logExpanded:false }
+         unit:"F", wunit:"lb", rhythmDays:7, logExpanded:false, tab:"now" }
   };
 }
 var state = blankState();
@@ -1091,7 +1206,8 @@ function logout(){
   state.sync.code=""; state.sync.name=""; state.sync.isAdmin=false; state.sync.rev=0;
   connected=false; save({push:false});
   syncChip("", "Sign in");
-  renderSyncPanel(); renderAll();
+  renderSyncPanel();
+  showGate("Signed out on this phone.", "warn");
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1686,7 +1802,7 @@ document.addEventListener("click", function(ev){
   else if (act==="ics"){ var m1=findMed(medId); if (m1) openCalSheet([m1]); }
   else if (act==="expand"){ var m2=findMed(medId); if (m2){ m2.expanded=!m2.expanded; renderMeds(); } }
   else if (act==="person"){ state.ui.person = b.getAttribute("data-p"); save({push:false}); renderAll(); }
-  else if (act==="jumpAdd"){ scrollTo("addSection"); el("fName").focus(); }
+  else if (act==="jumpAdd"){ showPanel("meds"); setTimeout(function(){ scrollTo("addSection"); el("fName").focus(); }, 80); }
   else if (act==="dismissTip"){ state.ui.dismissEmailTip = true; save({push:false}); renderBanners(); }
   else if (act==="delLog"){
     var id = b.getAttribute("data-id");
@@ -1726,6 +1842,7 @@ function seedStart(){
 
 function startEdit(medId){
   var med = findMed(medId); if (!med) return;
+  showPanel("meds");
   state.ui.editing = medId;
   el("formTitle").textContent = "Edit " + med.name;
   el("btnCancelEdit").hidden = false;
@@ -1830,6 +1947,7 @@ function saveMed(){
   renderAll();
   scheduleLocalAlert();
   if (dupes.length) toast("Careful — two medicines contain "+dupes[0]);
+  showPanel("meds");
   scrollTo("medsSection");
   return true;
 }
@@ -1840,7 +1958,7 @@ el("fEvery").addEventListener("change", function(){
 el("btnSave").addEventListener("click", saveMed);
 el("btnCancelEdit").addEventListener("click", cancelEdit);
 el("btnAddJump").addEventListener("click", function(){
-  scrollTo("addSection"); el("fName").focus();
+  showPanel("meds"); setTimeout(function(){ scrollTo("addSection"); el("fName").focus(); }, 80);
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1864,8 +1982,8 @@ function addLog(entry){
 }
 
 /* one tap per nappy — the most common thing you do all day */
-el("quickRow").addEventListener("click", function(ev){
-  var b = ev.target.closest("[data-quick]"); if (!b) return;
+document.addEventListener("click", function(ev){
+  var b = ev.target.closest ? ev.target.closest("[data-quick]") : null; if (!b) return;
   var kind = b.getAttribute("data-quick");
   addLog({ type:kind, person:logPerson(), note:el("lNote").value.trim() });
   el("lNote").value = "";
@@ -2729,8 +2847,9 @@ el("btnTestEmail").addEventListener("click", function(){
   });
 });
 el("syncChip").addEventListener("click", function(){
+  showPanel("set");                                   // the folds live on the Settings tab
   var f = el(connected ? "foldSync" : "foldAccount"); f.open = true;
-  scrollTo(f);
+  setTimeout(function(){ scrollTo(f); }, 60);
   if (!connected) setTimeout(function(){ try { el("fCode").focus(); } catch(e){} }, 300);
 });
 
@@ -2762,11 +2881,117 @@ el("btnAddRoom").addEventListener("click", function(){
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
-   16. Boot
+   16. Sign-in gate — nobody sees a child's log without a family code
+   ═══════════════════════════════════════════════════════════════════════════ */
+var appOpen = false;
+
+function showGate(msg, kind){
+  appOpen = false;
+  el("app").hidden = true;
+  el("gate").hidden = false;
+  el("gateMsg").innerHTML = msg ? '<div class="note '+(kind||"bad")+'">'+esc(msg)+'</div>' : "";
+  setTimeout(function(){ try { el("gateCode").focus(); } catch(e){} }, 120);
+}
+function openApp(){
+  appOpen = true;
+  el("gate").hidden = true;
+  el("app").hidden = false;
+  renderAll();
+  scheduleLocalAlert();
+  checkDueEmails();
+}
+function hasLocalData(){
+  return (state.meds && state.meds.length) || (state.logs && state.logs.length);
+}
+
+function gateSignIn(){
+  var code = el("gateCode").value.trim();
+  if (!code){ el("gateMsg").innerHTML = '<div class="note warn">Enter your family code.</div>'; return; }
+  if (!apiBase()){
+    el("gateMsg").innerHTML = '<div class="note bad">No server address is set, so codes cannot be checked. Ask Clenmar to finish setting the app up.</div>';
+    return;
+  }
+  el("gateMsg").innerHTML = '<div class="note">Checking…</div>';
+  el("gateBtn").disabled = true;
+  login(code).then(function(){
+    el("gateBtn").disabled = false;
+    el("gateCode").value = "";
+    syncChip("ok", state.sync.name || "Signed in");
+    renderSyncPanel(); openApp(); loadRooms();
+    toast("Signed in as "+(state.sync.name||"family"));
+  }).catch(function(e){
+    el("gateBtn").disabled = false;
+    connected = false;
+    var offlineOk = hasLocalData() && state.sync.code === code;
+    if (offlineOk){
+      syncChip("bad","Offline");
+      renderSyncPanel(); openApp();
+      toast("Server unreachable — showing the copy saved on this phone");
+      return;
+    }
+    el("gateMsg").innerHTML = '<div class="note bad">'+esc(e.message || "That code did not work")+'</div>';
+  });
+}
+el("gateBtn").addEventListener("click", gateSignIn);
+el("gateCode").addEventListener("keydown", function(e){ if (e.key === "Enter") gateSignIn(); });
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   17. Tabs — five small screens instead of one long scroll
+   ═══════════════════════════════════════════════════════════════════════════ */
+function showPanel(id){
+  state.ui.tab = id;
+  save({push:false});
+  Array.prototype.forEach.call(document.querySelectorAll(".tabbtn"), function(b){
+    b.setAttribute("aria-selected", String(b.getAttribute("data-panel") === id));
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".panel"), function(p){
+    p.classList.toggle("on", p.getAttribute("data-panel") === id);
+  });
+  // charts need a real width, so draw them once their panel is visible
+  if (id === "chart") renderChart();
+  if (id === "log") renderRhythm();
+  try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(e){ try { window.scrollTo(0,0); } catch(e2){} }
+}
+el("tabbar").addEventListener("click", function(e){
+  var b = e.target.closest(".tabbtn"); if (!b) return;
+  showPanel(b.getAttribute("data-panel"));
+});
+
+function renderTabs(){
+  var n = activeMeds().filter(function(m){ return !m.paused && !courseDone(m); }).length;
+  var badge = el("tabMedCount");
+  badge.hidden = n === 0;
+  badge.textContent = n;
+  var t0 = new Date(); t0.setHours(0,0,0,0);
+  var c = countDiapers(logsFor(state.ui.person), t0.getTime(), t0.getTime()+DAY);
+  var q = el("quickCount");
+  if (q) q.textContent = (c.wet+c.dirty) ? ("today 💧"+c.wet+" 💩"+c.dirty) : "today";
+}
+
+function renderWhoChip(){
+  var chip = el("whoChip"), sel = el("whoNow");
+  var names = carerNames();
+  chip.hidden = false;
+  var me = state.ui.me || names[0];
+  sel.innerHTML = names.map(function(n){
+    return '<option'+(n===me?' selected':'')+'>'+esc(n)+'</option>';
+  }).join("") + '<option value="__other">Someone else…</option>';
+}
+el("whoNow").addEventListener("change", function(){
+  var sel = el("whoNow");
+  if (sel.value === "__other"){
+    var v = window.prompt("Who is on duty?", "");
+    if (v && v.trim()) state.ui.me = v.trim();
+  } else state.ui.me = sel.value;
+  save({push:false}); renderWhoChip(); renderHero();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   18. Boot
    ═══════════════════════════════════════════════════════════════════════════ */
 function renderAll(){
   renderBanners(); renderHero(); renderStats(); renderFilters();
-  renderMeds(); renderLogs(); renderChart();
+  renderMeds(); renderLogs(); renderChart(); renderTabs(); renderWhoChip();
 }
 
 renderPresets();
@@ -2775,18 +3000,24 @@ setSpan((state.ui.viewHours||24)*HOUR);
 renderBell();
 renderSyncPanel();
 renderAll();
-scheduleLocalAlert();
-checkDueEmails();
+showPanel(state.ui.tab || "now");
 
 if (canSync()){
+  // already signed in on this device — verify quietly, but let them in either way
   syncChip("busy","Signing in…");
-  pull(true).then(function(){ renderSyncPanel(); renderAll(); loadRooms(); });
+  pull(true).then(function(){
+    renderSyncPanel();
+    if (connected){ openApp(); loadRooms(); }
+    else if (hasLocalData()){ openApp(); toast("Offline — showing the copy saved on this phone"); }
+    else showGate("Could not reach the server. Try again in a moment.", "warn");
+  });
 } else {
-  syncChip("", canSync() ? "Sign in" : "On this device");
+  syncChip("", "Sign in");
+  showGate();
 }
 
 setInterval(tick, 1000);
-setInterval(function(){ renderBanners(); renderMeds(); renderChart(); renderStats(); }, 60000);
+setInterval(function(){ if (!appOpen) return; renderBanners(); renderMeds(); renderChart(); renderStats(); renderTabs(); }, 60000);
 setInterval(checkDueEmails, 30000);
 setInterval(function(){ if (canSync()) pull(true); }, 45000);
 document.addEventListener("visibilitychange", function(){

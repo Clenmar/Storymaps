@@ -22,8 +22,28 @@
           display:flex; align-items:center; justify-content:center; flex-direction:column; box-shadow:0 16px 40px rgba(0,0,0,.25);
           cursor:pointer; transition:transform .12s cubic-bezier(.34,1.56,.64,1); }
   .card:active { transform:scale(.94); }
-  .card .face { font-size:clamp(4rem,15vw,8rem); line-height:1; }
+  .card .face { font-size:clamp(4rem,15vw,8rem); line-height:1; width:74%; aspect-ratio:1; border-radius:50%;
+                overflow:hidden; box-shadow:0 6px 18px rgba(0,0,0,.18); background:#F1ECFF; }
   .card .who  { font-size:clamp(1rem,4vw,1.6rem); color:#5a3fb0; margin-top:6px; }
+  #photo-btn { position:absolute; z-index:99; top:calc(env(safe-area-inset-top,0px) + 58px); left:12px;
+    background:rgba(255,255,255,.9); color:#5a3fb0; border:0; border-radius:999px; padding:9px 14px;
+    font-family:inherit; font-size:.85rem; font-weight:700; box-shadow:0 4px 14px rgba(60,40,110,.2); cursor:pointer; }
+  #photo-sheet { position:fixed; inset:0; z-index:99998; background:rgba(30,20,60,.62); display:none;
+    align-items:flex-end; justify-content:center; padding:0 12px 12px; }
+  #photo-sheet.on { display:flex; }
+  #photo-sheet .inner { background:#fff; width:100%; max-width:420px; border-radius:22px; padding:18px;
+    max-height:86vh; overflow:auto; font-family:system-ui,-apple-system,sans-serif; }
+  #photo-sheet h3 { font-family:inherit; color:#3a1d6e; font-size:1.15rem; margin-bottom:4px; }
+  #photo-sheet p { color:#777; font-size:.82rem; font-weight:600; margin-bottom:12px; line-height:1.45; }
+  #photo-sheet .prow { display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid #f0ecfa; }
+  #photo-sheet .thumb { width:46px; height:46px; border-radius:50%; overflow:hidden; background:#f3ecff;
+    display:flex; align-items:center; justify-content:center; font-size:24px; flex:0 0 auto; }
+  #photo-sheet .nm { flex:1; font-weight:800; color:#3a1d6e; font-size:.95rem; }
+  #photo-sheet button.act { border:0; border-radius:10px; padding:9px 12px; font-weight:800; font-size:.8rem;
+    background:#f3ecff; color:#5a3fb0; cursor:pointer; }
+  #photo-sheet button.del { background:#ffeaee; color:#c02646; }
+  #photo-sheet button.done { width:100%; margin-top:14px; border:0; border-radius:12px; padding:13px;
+    background:linear-gradient(90deg,#7c3aed,#ec4899); color:#fff; font-weight:800; font-size:1rem; cursor:pointer; }
   .card.wiggle { animation:wiggle .4s; }
   .card.win { animation:win .6s cubic-bezier(.34,1.56,.64,1); }
   @keyframes wiggle { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-7deg)} 75%{transform:rotate(7deg)} }
@@ -39,6 +59,7 @@
 </head>
 <body>
 <div id="game">
+  <button id="photo-btn" onclick="openPhotoSheet()" title="Use your own family photos">📷 Photos</button>
   <a id="back-btn" class="btn" href="../index.html">←</a>
   <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
   <div id="voice-btn" class="btn" onclick="BabyVoice.openPicker()" style="bottom:20px;left:50%;transform:translateX(-50%);padding:7px 14px;font-size:.9rem">🗣️ Voice</div>
@@ -46,7 +67,17 @@
   <div id="choices"></div>
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
+
+<div id="photo-sheet"><div class="inner">
+  <h3>Your own family photos</h3>
+  <p>Add a real photo for each person and the game uses it instead of the stock picture — much more fun for a
+     toddler learning faces. Photos are stored on this phone only and never uploaded.</p>
+  <div id="photo-rows"></div>
+  <button class="done" onclick="closePhotoSheet()">Done</button>
+</div></div>
+
 <script src="voice.js"></script>
+<script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
 // Family members a toddler can learn to recognise by name.
@@ -80,7 +111,54 @@ function say(text,cb){ if(!soundOn){ if(cb) setTimeout(cb,500); return; } BabyVo
 
 function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
 
+/* One question at a time: the voice callback and the safety timer used to both
+   fire, which flicked through two or three questions in a blink. */
+var advLock = false;
+function scheduleNext(text, minMs){
+  if (advLock) return;
+  advLock = true;
+  var fired = false;
+  function go(){ if (fired) return; fired = true; advLock = false; round(); }
+  if (text){
+    say(text, function(){ setTimeout(go, minMs || 500); });
+    setTimeout(go, 4500);                 // safety net if the voice never reports back
+  } else {
+    setTimeout(go, minMs || 1200);        // nothing to say — just pause and move on
+  }
+}
+
+function openPhotoSheet(){
+  var rows = document.getElementById('photo-rows');
+  rows.innerHTML = '';
+  PEOPLE.forEach(function(p){
+    var row = document.createElement('div'); row.className = 'prow';
+    var thumb = document.createElement('div'); thumb.className = 'thumb';
+    BabyPhotos.fill(thumb, p.who, p.face, {round:true, alt:p.who});
+    var nm = document.createElement('div'); nm.className = 'nm'; nm.textContent = p.who;
+    var pick = document.createElement('button'); pick.className = 'act';
+    pick.textContent = BabyPhotos.own.get(p.who) ? 'Change' : 'Choose photo';
+    pick.addEventListener('click', function(){
+      BabyPhotos.upload(p.who, function(ok){ if (ok){ openPhotoSheet(); round(); } });
+    });
+    row.appendChild(thumb); row.appendChild(nm); row.appendChild(pick);
+    if (BabyPhotos.own.get(p.who)){
+      var del = document.createElement('button'); del.className = 'act del'; del.textContent = 'Remove';
+      del.addEventListener('click', function(){ BabyPhotos.own.clear(p.who); openPhotoSheet(); round(); });
+      row.appendChild(del);
+    }
+    rows.appendChild(row);
+  });
+  document.getElementById('photo-sheet').classList.add('on');
+}
+function closePhotoSheet(){ document.getElementById('photo-sheet').classList.remove('on'); }
+document.getElementById('photo-sheet').addEventListener('click', function(e){
+  if (e.target === this) closePhotoSheet();
+});
+
+BabyPhotos.warm(PEOPLE.map(function(p){ return p.who; }));
+
 function round(){
+  advLock = false;
   var pool = shuffle(PEOPLE);
   var count = Math.min(3, PEOPLE.length);
   var choices = pool.slice(0, count);
@@ -90,7 +168,8 @@ function round(){
   shuffle(choices).forEach(function(p){
     var c = document.createElement('div');
     c.className = 'card';
-    c.innerHTML = '<div class="face">'+p.face+'</div><div class="who">'+p.who+'</div>';
+    c.innerHTML = '<div class="face"></div><div class="who">'+p.who+'</div>';
+    BabyPhotos.fill(c.querySelector('.face'), p.who, p.face, {round:true, alt:p.who});
     c.addEventListener('click', function(){ pick(p, c); });
     box.appendChild(c);
   });
@@ -103,8 +182,7 @@ function pick(p, card){
     card.classList.add('win'); chime(); confetti();
     var cheer = CHEERS[Math.floor(Math.random()*CHEERS.length)];
     document.getElementById('prompt').innerHTML = cheer + " 🎉";
-    say(cheer + " That's " + target.say + "!", function(){ round(); });
-    setTimeout(round, 2600);
+    scheduleNext(cheer + " That's " + target.say + "!", 900);
   } else {
     card.classList.add('wiggle'); boing();
     setTimeout(function(){ card.classList.remove('wiggle'); }, 400);
