@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#fff6dd">
+<title>Baby Games — TWC</title>
+<meta name="description" content="Bright, gentle Bible games for babies and toddlers: squish, draw, animal sounds, colours, first words and more." />
+<link rel="icon" type="image/x-icon" href="https://www.twcministries.net/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFFFF; --ink:#2C2350; --soft:#6B6390; --faint:#9A93B8;
+  --line:#F0E7D4; --tint:#FFFBF0;
+  --sun:#FFC53D; --peach:#FF8C5A; --rose:#FF5F8D; --grape:#8B5CF6;
+  --sky:#37A2F5; --mint:#22C79B; --lime:#8CD44A;
+  --shadow:0 10px 26px rgba(90,60,140,.13);
+  --shadow-lift:0 18px 40px rgba(90,60,140,.22);
+}
+html[data-theme="dark"]{
+  --paper:#211D33; --ink:#F3EEFF; --soft:#B4ACD4; --faint:#8A82AC;
+  --line:#332C4E; --tint:#1A1729;
+  --shadow:0 10px 26px rgba(0,0,0,.45);
+  --shadow-lift:0 18px 40px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:"Nunito Sans",system-ui,-apple-system,sans-serif;
+  color:var(--ink);min-height:100vh;overflow-x:hidden;
+  background:
+    radial-gradient(1100px 520px at 8% -8%,#FFE9A8 0%,transparent 58%),
+    radial-gradient(900px 520px at 96% 2%,#FFD3E2 0%,transparent 55%),
+    radial-gradient(900px 620px at 50% 108%,#C6F3E4 0%,transparent 60%),
+    linear-gradient(168deg,#FFFDF4 0%,#F4FBFF 100%);
+}
+html[data-theme="dark"] body{
+  background:
+    radial-gradient(1000px 500px at 10% -10%,rgba(139,92,246,.30) 0%,transparent 58%),
+    radial-gradient(900px 500px at 95% 0%,rgba(255,95,141,.20) 0%,transparent 55%),
+    radial-gradient(900px 600px at 50% 108%,rgba(34,199,155,.18) 0%,transparent 60%),
+    linear-gradient(168deg,#151226 0%,#100E1E 100%);
+}
+h1,h2,h3,.gm-name{font-family:"Baloo 2",system-ui,sans-serif;font-weight:800;letter-spacing:-.01em}
+a{text-decoration:none;color:inherit}
+
+/* floating balloons */
+.balloons{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.balloons i{
+  position:absolute;bottom:-90px;width:34px;height:42px;border-radius:50% 50% 46% 46%;opacity:.42;
+  animation:rise linear infinite
+}
+@keyframes rise{
+  0%{transform:translateY(0) rotate(0)}
+  100%{transform:translateY(-118vh) rotate(24deg)}
+}
+
+.wrap{max-width:960px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 66px) 16px 70px}
+
+/* hero */
+.hero{text-align:center;margin-bottom:22px}
+.hero .badge{
+  width:78px;height:78px;border-radius:26px;margin:0 auto 12px;display:grid;place-items:center;font-size:40px;
+  background:linear-gradient(140deg,var(--sun),var(--peach));box-shadow:0 12px 26px rgba(255,140,90,.38);
+  animation:wiggle 4.5s ease-in-out infinite
+}
+@keyframes wiggle{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg) scale(1.03)}}
+.hero h1{font-size:clamp(30px,8vw,46px);line-height:1.05}
+.hero h1 span{
+  background:linear-gradient(92deg,var(--peach),var(--rose),var(--grape));
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent
+}
+.hero p{color:var(--soft);font-weight:700;margin-top:8px;font-size:16px}
+
+/* filter chips */
+.tabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:18px 0 20px}
+.tab{
+  border:2px solid var(--line);background:var(--paper);color:var(--soft);border-radius:999px;
+  padding:9px 16px;font:800 14px/1 "Baloo 2",system-ui,sans-serif;cursor:pointer;box-shadow:var(--shadow)
+}
+.tab[aria-pressed="true"]{background:linear-gradient(135deg,var(--grape),var(--rose));border-color:transparent;color:#fff}
+
+/* game grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.gm{
+  position:relative;background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:18px 16px 16px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;overflow:hidden;
+  transition:transform .16s cubic-bezier(.34,1.4,.64,1),box-shadow .16s
+}
+.gm:hover{transform:translateY(-5px);box-shadow:var(--shadow-lift)}
+.gm:active{transform:scale(.98)}
+.gm .tile{
+  width:100%;aspect-ratio:16/9;border-radius:18px;display:grid;place-items:center;font-size:54px;
+  box-shadow:inset 0 -14px 30px rgba(255,255,255,.28)
+}
+.gm .gm-name{font-size:21px;line-height:1.15}
+.gm .gm-desc{font-size:13.5px;color:var(--soft);font-weight:700;line-height:1.45;flex:1}
+.gm .row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.gm .chip{
+  font:800 11px/1 "Nunito Sans",sans-serif;letter-spacing:.04em;text-transform:uppercase;
+  padding:5px 10px;border-radius:999px;background:var(--tint);color:var(--soft);border:1px solid var(--line)
+}
+.gm .play{
+  margin-top:2px;border-radius:14px;padding:12px;text-align:center;font:800 16px/1 "Baloo 2",system-ui,sans-serif;
+  color:#fff;box-shadow:0 8px 18px rgba(90,60,140,.2)
+}
+
+/* grown-up notes */
+.notes{margin-top:30px;background:var(--paper);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+.notes h2{font-size:20px;margin-bottom:10px}
+.notes ul{list-style:none;display:grid;gap:12px}
+.notes li{display:flex;gap:11px;font-size:14.5px;font-weight:700;color:var(--soft);line-height:1.5}
+.notes li b{color:var(--ink)}
+.notes .ico{flex:0 0 34px;height:34px;border-radius:12px;display:grid;place-items:center;font-size:17px;background:var(--tint);border:1px solid var(--line)}
+.foot{text-align:center;color:var(--faint);font-size:12.5px;font-weight:700;margin-top:24px}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-kit-back="../index.html">
+
+<div class="balloons" id="balloons" aria-hidden="true"></div>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="badge">🧸</div>
+    <h1>Baby <span>Games</span></h1>
+    <p>Gentle, bright little games for small hands — and a kind voice to go with them.</p>
+  </header>
+
+  <div class="tabs" id="tabs" role="group" aria-label="Filter games">
+    <button class="tab" data-tag="all" aria-pressed="true">All games</button>
+    <button class="tab" data-tag="tap" aria-pressed="false">Tap &amp; play</button>
+    <button class="tab" data-tag="learn" aria-pressed="false">Learning</button>
+    <button class="tab" data-tag="bible" aria-pressed="false">Bible</button>
+    <button class="tab" data-tag="calm" aria-pressed="false">Calm</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <section class="notes">
+    <h2>For the grown-up 👋</h2>
+    <ul>
+      <li><span class="ico">🗣️</span><span><b>The voice sets itself up.</b> If the phone already has an extra-natural
+        voice we use it. If it only has the flat robot one — which is what a new iPhone gives you — the games quietly
+        fetch <b>Jenny, British and gentle</b> once (about 63 MB, then it works offline). On mobile data we skip the
+        download and leave it to you: tap <b>🗣️ Voice</b> any time to change or install one.</span></li>
+      <li><span class="ico">⛶</span><span><b>Full screen and Voice live at the top</b> of every game, never at the
+        bottom where Safari's toolbar hides them. On an iPhone, <b>Share → Add to Home Screen</b> gives a true full
+        screen with no address bar at all.</span></li>
+      <li><span class="ico">🌙</span><span><b>Night mode</b> is the moon button, top right. It dims every game for
+        bedtime and is remembered across all of them.</span></li>
+      <li><span class="ico">🔒</span><span><b>Stop little fingers escaping:</b> iPhone → Settings → Accessibility →
+        Guided Access. Android → screen pinning.</span></li>
+    </ul>
+  </section>
+
+  <p class="foot" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+    <a href="tutorial.html" style="color:var(--grape)">▸ Watch the tutorial</a>
+    <a href="../index.html" style="color:var(--sky)">← All TWC apps</a>
+    <span>TWC Ministries · Baby Games</span>
+  </p>
+</div>
+
+<script src="voice.js"></script>
+<script src="kit.js"></script>
+<script>
+(function(){
+  "use strict";
+  var GAMES = [
+    { f:"baby-squish-game.html", n:"Squish!",  e:"🫧", g:"linear-gradient(135deg,#6EE7F9,#3B82F6)", btn:"linear-gradient(135deg,#38BDF8,#2563EB)",
+      d:"Tap anywhere and colourful bubbles pop with a happy sound. The very first game to try.",
+      tags:["tap","calm"], chip:"Ages 0–2" },
+    { f:"baby-bible-squish.html", n:"God Loves You!", e:"✨", g:"linear-gradient(135deg,#FDE68A,#F59E0B)", btn:"linear-gradient(135deg,#FBBF24,#EA580C)",
+      d:"Squish stars to hear little Bible truths, then switch to letters or numbers as they grow.",
+      tags:["tap","bible","learn"], chip:"Letters & numbers" },
+    { f:"baby-draw.html", n:"God's Rainbow", e:"🎨", g:"linear-gradient(135deg,#FBCFE8,#A78BFA)", btn:"linear-gradient(135deg,#EC4899,#8B5CF6)",
+      d:"Finger painting in rainbow colours with gentle worship songs playing along.",
+      tags:["calm","bible"], chip:"Drawing" },
+    { f:"baby-animals.html", n:"Animal Sounds", e:"🐮", g:"linear-gradient(135deg,#BBF7D0,#34D399)", btn:"linear-gradient(135deg,#34D399,#059669)",
+      d:"Fifteen animals to tap. Each one says its name and the sound it makes.",
+      tags:["learn","tap"], chip:"First sounds" },
+    { f:"baby-colors.html", n:"Colors!", e:"🌈", g:"linear-gradient(135deg,#FDBA74,#F472B6)", btn:"linear-gradient(135deg,#FB923C,#DB2777)",
+      d:"Big blocks of colour that say their names out loud when they are tapped.",
+      tags:["learn","tap"], chip:"Colours" },
+    { f:"baby-words.html", n:"First Words", e:"📖", g:"linear-gradient(135deg,#A5B4FC,#6366F1)", btn:"linear-gradient(135deg,#818CF8,#4F46E5)",
+      d:"One clear picture and one clear word at a time, at your child's own pace.",
+      tags:["learn"], chip:"Talking" },
+    { f:"baby-body.html", n:"Point To…", e:"👃", g:"linear-gradient(135deg,#FCA5A5,#F87171)", btn:"linear-gradient(135deg,#F87171,#DC2626)",
+      d:"Where is your nose? A gentle game of naming ears, eyes, toes and tummy.",
+      tags:["learn"], chip:"Body parts" },
+    { f:"baby-family.html", n:"Where's Mommy?", e:"👨‍👩‍👧", g:"linear-gradient(135deg,#FDE68A,#FCA5A5)", btn:"linear-gradient(135deg,#FBBF24,#F87171)",
+      d:"Mommy, Daddy, Grandma and baby — tap a face to hear who it is.",
+      tags:["learn","calm"], chip:"Family" }
+  ];
+
+  var grid = document.getElementById("grid");
+  function draw(tag){
+    grid.innerHTML = GAMES.filter(function(g){ return tag==="all" || g.tags.indexOf(tag)>-1; }).map(function(g){
+      return '<a class="gm" href="'+g.f+'">'+
+        '<span class="tile" style="background:'+g.g+'">'+g.e+'</span>'+
+        '<span class="gm-name">'+g.n+'</span>'+
+        '<span class="gm-desc">'+g.d+'</span>'+
+        '<span class="row"><span class="chip">'+g.chip+'</span></span>'+
+        '<span class="play" style="background:'+g.btn+'">Play ▸</span>'+
+      '</a>';
+    }).join("");
+  }
+  draw("all");
+
+  var tabs = document.getElementById("tabs");
+  tabs.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-tag]"); if (!b) return;
+    Array.prototype.forEach.call(tabs.querySelectorAll(".tab"), function(x){
+      x.setAttribute("aria-pressed", String(x===b));
+    });
+    draw(b.getAttribute("data-tag"));
+  });
+
+  // balloons
+  var COLS = ["#FFC53D","#FF8C5A","#FF5F8D","#8B5CF6","#37A2F5","#22C79B","#8CD44A"];
+  var host = document.getElementById("balloons"), out = "";
+  for (var i=0;i<9;i++){
+    out += '<i style="left:'+Math.round(Math.random()*94)+'%;background:'+COLS[i%COLS.length]+
+      ';animation-duration:'+(19+Math.random()*16).toFixed(1)+'s;animation-delay:-'+(Math.random()*20).toFixed(1)+
+      's;transform:scale('+(0.7+Math.random()*0.8).toFixed(2)+')"></i>';
+  }
+  host.innerHTML = out;
+})();
+</script>
+</body>
+</html>

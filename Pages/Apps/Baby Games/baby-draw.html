@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>God's Rainbow Drawing</title>
+<script type="importmap">
+{ "imports": { "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm" } }
+</script>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap');
 
@@ -11,7 +15,7 @@
 
 body{
   font-family:'Nunito',sans-serif;
-  background:linear-gradient(160deg,#fff9c4 0%,#ffe0f0 40%,#d0f0ff 100%);
+  background:linear-gradient(160deg,#FFF7B0 0%,#FFD9EC 40%,#BFEBFF 100%);
   height:100vh;width:100vw;overflow:hidden;
   display:flex;flex-direction:row;align-items:stretch;
 }
@@ -169,7 +173,7 @@ body::before{
 /* ── SPLASH / START SCREEN ── */
 #splashScreen{
   position:fixed;inset:0;z-index:1000;
-  background:linear-gradient(160deg,#fff9c4 0%,#ffe0f0 40%,#d0f0ff 100%);
+  background:linear-gradient(160deg,#FFF7B0 0%,#FFD9EC 40%,#BFEBFF 100%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
 }
 #splashScreen h1{
@@ -549,6 +553,7 @@ function getBestVoice(){
 }
 function speakText(text){
   return new Promise(res=>{
+    if(window.BabyVoice && BabyVoice.say){ BabyVoice.say(text, res); return; }
     if(!window.speechSynthesis){res();return;}
     speechSynthesis.cancel();
     const u=new SpeechSynthesisUtterance(text);
@@ -829,5 +834,7 @@ document.getElementById('startBtn').addEventListener('click',()=>{
   },900);
 });
 </script>
+<script src="voice.js"></script>
+<script src="kit.js"></script>
 </body>
 </html>

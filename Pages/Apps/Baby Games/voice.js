@@ -21,6 +21,9 @@
   var MODE_KEY = "babyVoiceMode_v1";     // 'system' | 'natural'
   var SYS_KEY  = "babyVoiceURI_v1";      // chosen system voiceURI
   var PIP_KEY  = "babyPiperVoice_v1";    // chosen Piper voiceId
+  var PICKED_KEY = "babyVoicePicked_v1"; // '1' once a grown-up chose on purpose
+  var AUTO_KEY   = "babyVoiceAuto_v1";   // 'done' once the default was fetched
+  var DEFAULT_PIPER = "en_GB-jenny_dioco-medium";   // Jenny — British, gentle
   var PIPER_URL = "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js";
 
   function getStr(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
@@ -31,9 +34,9 @@
 
   // Verified voice IDs (all English Piper voices are ~63 MB — no small tier).
   var PIPER_VOICES = [
+    { id: "en_GB-jenny_dioco-medium", label: "Jenny — British, gentle", size: "~63 MB" },
     { id: "en_US-amy-medium",         label: "Amy — American, warm",    size: "~63 MB" },
     { id: "en_US-hfc_female-medium",  label: "Grace — American, clear", size: "~63 MB" },
-    { id: "en_GB-jenny_dioco-medium", label: "Jenny — British, gentle", size: "~63 MB" },
     { id: "en_GB-cori-medium",        label: "Cori — British, lively",  size: "~63 MB" },
     { id: "en_US-hfc_male-medium",    label: "Sam — American, male",    size: "~63 MB" },
     { id: "en_GB-alan-medium",        label: "Alan — British, male",    size: "~63 MB" }
@@ -199,7 +202,7 @@
         vs.forEach(function (v) {
           var b = btn(v.name + (v.localService === false ? "  ✨" : ""));
           if (chosen && chosen.voiceURI === v.voiceURI) b.style.borderColor = "#7c3aed";
-          b.onclick = function () { chosen = v; setStr(SYS_KEY, v.voiceURI); mode = "system"; setStr(MODE_KEY, "system"); render(); speakSystem("Hi! Let's play together!"); };
+          b.onclick = function () { chosen = v; setStr(SYS_KEY, v.voiceURI); mode = "system"; setStr(MODE_KEY, "system"); setStr(PICKED_KEY, "1"); render(); speakSystem("Hi! Let's play together!"); };
           box.appendChild(b);
         });
       } else {
@@ -214,7 +217,7 @@
             b.disabled = true; b.style.opacity = ".6";
             downloadVoice(pv.id, function (pct) { status.textContent = "Downloading… " + pct + "% (one time)"; })
               .then(function () {
-                mode = "natural"; setStr(MODE_KEY, "natural"); setStr(PIP_KEY, pv.id);
+                mode = "natural"; setStr(MODE_KEY, "natural"); setStr(PIP_KEY, pv.id); setStr(PICKED_KEY, "1");
                 status.textContent = "Ready! Playing a sample…";
                 render(); speakNatural("Hi! Let's play together!");
               })
@@ -234,5 +237,73 @@
     document.body.appendChild(ov);
   }
 
-  window.BabyVoice = { say: say, openPicker: openPicker };
+  // ── Automatic setup ─────────────────────────────────────────────────────
+  // A fresh iPhone reads with a flat robotic voice, so on first visit we either
+  // adopt an "extra natural" voice already on the phone, or quietly fetch Jenny
+  // (British, gentle) once. Never on a metered or slow connection, and never
+  // again after a grown-up has picked a voice by hand.
+  function bestSystemScore() {
+    if (typeof speechSynthesis === "undefined") return -999;
+    var vs = (speechSynthesis.getVoices() || []).filter(function (v) { return /^en/i.test(v.lang); });
+    if (!vs.length) return -999;
+    return vs.map(scoreVoice).sort(function (a, b) { return b - a; })[0];
+  }
+  function hasNaturalSystemVoice() {
+    if (typeof speechSynthesis === "undefined") return false;
+    return (speechSynthesis.getVoices() || []).some(function (v) {
+      if (!/^en/i.test(v.lang)) return false;
+      var n = (v.name || "") + " " + (v.voiceURI || "");
+      if (BAD.test(n)) return false;
+      return GREAT.test(n) || v.localService === false;   // Siri / neural / enhanced / online
+    });
+  }
+  function metered() {
+    var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection || {};
+    if (c.saveData === true) return true;
+    return /^(slow-2g|2g|3g)$/.test(c.effectiveType || "");
+  }
+  function whenVoicesReady(cb) {
+    var tries = 0;
+    (function poll() {
+      var n = (typeof speechSynthesis !== "undefined" ? (speechSynthesis.getVoices() || []).length : 0);
+      if (n || tries++ > 12) { refreshSystem(); cb(); return; }
+      setTimeout(poll, 250);
+    })();
+  }
+
+  function autoSetup(chip, chipHide) {
+    if (getStr(PICKED_KEY, "") === "1") return;                 // grown-up chose already
+    whenVoicesReady(function () {
+      if (hasNaturalSystemVoice()) {                            // already lovely, no download
+        mode = "system"; setStr(MODE_KEY, "system");
+        return;
+      }
+      if (mode === "natural" && piperId) return;                // a natural voice is installed
+      if (getStr(AUTO_KEY, "") === "done") return;
+      if (metered()) {
+        if (chip) chip("Tap 🗣️ Voice for a gentler voice (63 MB)", 5000);
+        return;
+      }
+      if (chip) chip("Getting a gentle voice… 0%", 0);
+      downloadVoice(DEFAULT_PIPER, function (pct) {
+        if (chip) chip("Getting a gentle voice… " + pct + "%", 0);
+      }).then(function () {
+        mode = "natural"; setStr(MODE_KEY, "natural");
+        setStr(PIP_KEY, DEFAULT_PIPER); setStr(AUTO_KEY, "done");
+        if (chip) chip("Gentle voice ready ✨", 2600);
+      }).catch(function () {
+        mode = "system"; setStr(MODE_KEY, "system");            // phone voice carries on
+        if (chipHide) chipHide();
+      });
+    });
+  }
+
+  window.BabyVoice = {
+    say: say,
+    openPicker: openPicker,
+    autoSetup: autoSetup,
+    hasNaturalSystemVoice: hasNaturalSystemVoice,
+    bestSystemScore: bestSystemScore,
+    defaultPiper: DEFAULT_PIPER
+  };
 })();

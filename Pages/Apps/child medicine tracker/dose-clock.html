@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Dose Clock | Family medicine tracker</title>
+<title>Medicine Tracker | Medicines, nappies, temperature &amp; weight</title>
 <meta name="description" content="Track several medicines for the whole family, see every dose on one friendly timeline, and get an email when the next dose is due." />
 <meta name="theme-color" content="#FFFCF6" />
 <link rel="icon" type="image/x-icon" href="https://www.twcministries.net/favicon.ico">
@@ -247,6 +247,22 @@ details.fold .fold-body{padding:0 18px 18px}
 .kv:last-child{border-bottom:0}
 .kv span:first-child{color:var(--soft)}
 
+/* ── quick log buttons ───────────────────────────────────── */
+.quick{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.qk{
+  border-radius:16px;padding:16px 8px 13px;font-family:var(--display);font-weight:700;font-size:15px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1;color:var(--ink);
+  border:1.5px solid var(--line);background:var(--paper);box-shadow:var(--shadow);
+  font-size:26px;transition:transform .12s ease
+}
+.qk span{font-size:13.5px;font-weight:800}
+.qk:active{transform:scale(.95)}
+.qk.wet{background:var(--sky-l);border-color:#C9DFFA;color:#22599F}
+.qk.dirty{background:var(--peach-l);border-color:#F8D6C2;color:#9A4A18}
+.qk.both{background:var(--grape-l);border-color:#DCD2FB;color:#5B45B8}
+.qk.done{animation:pop .5s cubic-bezier(.34,1.5,.64,1)}
+@keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.09)}100%{transform:scale(1)}}
+
 /* ── logs ────────────────────────────────────────────────── */
 .log-list{list-style:none;margin:14px 0 0;padding:0}
 .log-list li{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line-2);font-size:14px}
@@ -321,8 +337,8 @@ details.fold .fold-body{padding:0 18px 18px}
         <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.5 1.5"/><path d="M9 2.5h6"/><path d="M12 2.5V5"/></svg>
       </span>
       <span>
-        <span class="brand-name">Dose Clock</span>
-        <span class="brand-sub">Every medicine, one gentle timeline</span>
+        <span class="brand-name">Medicine Tracker</span>
+        <span class="brand-sub">Medicines, nappies, temperature &amp; weight</span>
       </span>
     </div>
     <button class="chip-btn" id="syncChip" title="Sync and email settings"><span class="dot"></span><span id="syncChipTxt">On this device</span></button>
@@ -401,7 +417,7 @@ details.fold .fold-body{padding:0 18px 18px}
     <div id="medList"></div>
     <div class="card empty" id="emptyState">
       <b>No medicines yet</b>
-      Add the first one below and Dose Clock will keep the times for you.
+      Add the first one below and Medicine Tracker will keep the times for you.
     </div>
     <div class="btn-row no-print" id="exportRow" hidden>
       <button class="btn ghost small" id="btnIcsAll">Add all to calendar</button>
@@ -412,29 +428,69 @@ details.fold .fold-body{padding:0 18px 18px}
 
   <!-- ── fever / symptom log ─────────────────────────────── -->
   <section id="logSection">
-    <div class="sec-head"><h3>Temperature &amp; symptoms</h3></div>
+    <div class="sec-head"><h3>Baby log</h3><span class="count" id="logCount">today</span></div>
+
     <div class="card">
+      <p style="margin:0 0 12px;font-size:13.5px;color:var(--soft);font-weight:700">One tap each time — no forms.</p>
+      <div class="quick" id="quickRow">
+        <button class="qk wet"   data-quick="wet">💧<span>Wet</span></button>
+        <button class="qk dirty" data-quick="dirty">💩<span>Dirty</span></button>
+        <button class="qk both"  data-quick="both">💧💩<span>Both</span></button>
+      </div>
+
+      <div class="row" style="margin-top:16px">
+        <div class="field" style="flex:1 1 130px">
+          <label for="lPerson">Who is this for</label>
+          <input id="lPerson" list="personList" placeholder="Micah" autocomplete="off" />
+          <datalist id="personList"></datalist>
+        </div>
+        <div class="field" style="flex:1 1 150px">
+          <label for="lNote">Note <span class="hint">Optional</span></label>
+          <input id="lNote" type="text" placeholder="Settled after the dose" autocomplete="off" />
+        </div>
+      </div>
+
       <div class="row">
         <div class="field" style="flex:1 1 110px">
           <label for="lTemp">Temperature</label>
           <input id="lTemp" type="number" step="0.1" inputmode="decimal" placeholder="101.4" />
         </div>
-        <div class="field" style="flex:0 0 96px">
+        <div class="field" style="flex:0 0 92px">
           <label for="lUnit">Unit</label>
           <select id="lUnit"><option value="F" selected>°F</option><option value="C">°C</option></select>
         </div>
-        <div class="field" style="flex:1 1 130px">
-          <label for="lPerson">Who</label>
-          <input id="lPerson" list="personList" placeholder="Micah" autocomplete="off" />
-          <datalist id="personList"></datalist>
+        <div class="field" style="flex:1 1 110px">
+          <label for="lWeight">Weight</label>
+          <input id="lWeight" type="number" step="0.01" inputmode="decimal" placeholder="14.6" />
         </div>
-      </div>
-      <div class="field">
-        <label for="lNote">How are they doing <span class="hint">Optional — sleeping well, less fussy, rash, drinking fluids.</span></label>
-        <input id="lNote" type="text" placeholder="Settled after the dose" autocomplete="off" />
+        <div class="field" style="flex:0 0 92px">
+          <label for="lWUnit">Unit</label>
+          <select id="lWUnit"><option value="lb" selected>lb</option><option value="kg">kg</option></select>
+        </div>
       </div>
       <button class="btn sky wide" id="btnLogAdd">Save reading</button>
       <ul class="log-list" id="logList"></ul>
+      <button class="link-btn no-print" id="btnMoreLog" hidden>Show more entries</button>
+    </div>
+
+    <div class="card" id="rhythmCard" hidden>
+      <div class="sec-head" style="margin-bottom:10px"><h3 style="font-size:17px">Nappies &amp; weight</h3>
+        <span class="spacer"></span>
+        <div class="seg" id="rhythmSeg" role="group" aria-label="Days shown">
+          <button data-days="7" aria-pressed="true">7 days</button>
+          <button data-days="14" aria-pressed="false">14 days</button>
+          <button data-days="30" aria-pressed="false">30 days</button>
+        </div>
+      </div>
+      <div class="stats" id="rhythmStats"></div>
+      <div id="rhythmNote"></div>
+      <svg id="diaperChart" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;margin-top:14px"></svg>
+      <div class="chart-key">
+        <span><i style="background:var(--sky)"></i>Wet</span>
+        <span><i style="background:var(--peach)"></i>Dirty</span>
+        <span><i style="background:var(--grape)"></i>Weight</span>
+      </div>
+      <svg id="weightChart" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:auto;margin-top:6px"></svg>
     </div>
   </section>
 
@@ -477,7 +533,7 @@ details.fold .fold-body{padding:0 18px 18px}
 
       <div class="field">
         <label for="fDose">Dose to give
-          <span class="hint">Copy this exactly from the label, or from your doctor, nurse or pharmacist. Dose Clock never works out an amount for you.</span>
+          <span class="hint">Copy this exactly from the label, or from your doctor, nurse or pharmacist. Medicine Tracker never works out an amount for you.</span>
         </label>
         <input id="fDose" type="text" placeholder="2.5 mL" autocomplete="off" />
       </div>
@@ -548,20 +604,74 @@ details.fold .fold-body{padding:0 18px 18px}
     </div>
   </section>
 
-  <!-- ── sync & email ────────────────────────────────────── -->
+  <!-- ── accounts, sync & email ──────────────────────────── -->
   <section id="syncSection">
-    <div class="sec-head"><h3>Reminders</h3></div>
+    <div class="sec-head"><h3>Account &amp; reminders</h3></div>
+
+    <details class="fold" id="foldAccount">
+      <summary>👨‍👩‍👦 Sign in so both parents see the same log</summary>
+      <div class="fold-body">
+        <p style="margin:0 0 14px;font-size:14px;color:var(--soft);font-weight:600">
+          Type your family code on each phone. Every medicine, dose, nappy, temperature and weight is then shared
+          between you both — whoever gives the dose, the other one sees it. The server also sends the reminder emails
+          on its own, even with the app closed.
+        </p>
+        <div class="row">
+          <div class="field">
+            <label for="fCode">Family code</label>
+            <input id="fCode" type="password" placeholder="Family code" autocomplete="current-password" />
+          </div>
+          <div class="field" style="flex:0 0 auto;align-self:flex-end">
+            <button class="btn sky" id="btnLogin">Sign in</button>
+          </div>
+        </div>
+        <div id="syncStatus"></div>
+        <div id="cloudBox" hidden>
+          <div class="btn-row">
+            <button class="btn ghost small" id="btnPull">Refresh from the other phone</button>
+            <button class="btn ghost small" id="btnLogout">Sign out of this device</button>
+          </div>
+          <div id="adminBox" hidden style="margin-top:18px;border-top:1px dashed var(--line);padding-top:14px">
+            <h4 style="font-size:16px;margin-bottom:4px">Admin — church families</h4>
+            <p style="margin:0 0 10px;font-size:13px;color:var(--soft);font-weight:600">
+              Each family gets its own code and its own private log. Give the code to the parents and they sign in on
+              their own phones — nobody can see another family's log.
+            </p>
+            <div id="roomList" style="font-size:13.5px"></div>
+            <div class="row" style="margin-top:10px">
+              <div class="field"><label for="fNewRoomName">Family name</label><input id="fNewRoomName" placeholder="Smith Family" /></div>
+              <div class="field"><label for="fNewRoomPass">New family code</label><input id="fNewRoomPass" placeholder="smith 2026" /></div>
+              <div class="field" style="flex:0 0 auto;align-self:flex-end"><button class="btn ghost" id="btnAddRoom">Create</button></div>
+            </div>
+          </div>
+        </div>
+        <details class="fold" style="margin-top:16px;box-shadow:none;border-style:dashed">
+          <summary style="font-size:15px">Advanced — server address</summary>
+          <div class="fold-body">
+            <div class="field">
+              <label for="fApi">Worker address
+                <span class="hint">Already set. Only change this if the worker moves.</span>
+              </label>
+              <input id="fApi" type="url" placeholder="https://…workers.dev" autocomplete="off" />
+            </div>
+            <p style="margin:0;font-size:13px;color:var(--soft);font-weight:600">
+              Clear this box and sign out to keep everything on this phone alone.
+            </p>
+          </div>
+        </details>
+      </div>
+    </details>
 
     <details class="fold" id="foldSync">
       <summary>📧 Email the parents when a dose is due</summary>
       <div class="fold-body">
         <p style="margin:0 0 14px;font-size:14px;color:var(--soft);font-weight:600">
-          Type each parent's address once. When a dose comes due this page emails them straight from the phone —
-          no sign-in and no server address to remember.
+          Add each parent's address once. Signed in, the server sends these on its own. Not signed in, this page sends
+          them from the phone while it is open.
         </p>
 
         <label class="switch" style="margin-bottom:14px">
-          <input type="checkbox" id="fEmailOn" checked /> Send dose emails from this phone
+          <input type="checkbox" id="fEmailOn" checked /> Send dose emails from this phone when not signed in
         </label>
 
         <h4 style="margin:6px 0 8px;font-size:16px">Who gets the emails</h4>
@@ -595,49 +705,9 @@ details.fold .fold-body{padding:0 18px 18px}
         </div>
         <div id="emailStatus"></div>
         <div class="note warn" style="margin-top:14px">
-          <b>Keep this page open</b> on one phone — a browser can only send while the page is loaded. Add the doses to
-          your calendar as well (below) so an alert still arrives if the page gets closed.
+          Not signed in, a browser can only send while this page is open, so <b>keep it open on one phone</b> and add
+          the doses to your calendar as well (below). Signed in, the server handles it with everything closed.
         </div>
-
-        <details class="fold" style="margin-top:16px;box-shadow:none;border-style:dashed">
-          <summary style="font-size:15px">Advanced — share one schedule between two phones</summary>
-          <div class="fold-body">
-            <p style="margin:0 0 12px;font-size:13.5px;color:var(--soft);font-weight:600">
-              Optional and off by default. If you ever deploy the Dose Clock worker, paste its address here: both phones
-              then share one schedule and the server sends the emails on its own, even with every app closed.
-              Leave these blank to keep everything on this phone.
-            </p>
-            <div class="field">
-              <label for="fApi">Worker address <span class="hint">Optional</span></label>
-              <input id="fApi" type="url" placeholder="leave blank" autocomplete="off" />
-            </div>
-            <div class="row">
-              <div class="field">
-                <label for="fCode">Family code</label>
-                <input id="fCode" type="password" placeholder="Family code" autocomplete="current-password" />
-              </div>
-              <div class="field" style="flex:0 0 auto;align-self:flex-end">
-                <button class="btn ghost" id="btnLogin">Connect</button>
-              </div>
-            </div>
-            <div id="syncStatus"></div>
-            <div id="cloudBox" hidden>
-              <div class="btn-row">
-                <button class="btn ghost small" id="btnPull">Refresh from other phone</button>
-                <button class="btn ghost small" id="btnLogout">Sign out of this device</button>
-              </div>
-              <div id="adminBox" hidden style="margin-top:18px;border-top:1px dashed var(--line);padding-top:14px">
-                <h4 style="font-size:16px;margin-bottom:8px">Admin — families</h4>
-                <div id="roomList" style="font-size:13.5px"></div>
-                <div class="row" style="margin-top:10px">
-                  <div class="field"><label for="fNewRoomName">Family name</label><input id="fNewRoomName" placeholder="Smith Family" /></div>
-                  <div class="field"><label for="fNewRoomPass">New family code</label><input id="fNewRoomPass" placeholder="smith 2026" /></div>
-                  <div class="field" style="flex:0 0 auto;align-self:flex-end"><button class="btn ghost" id="btnAddRoom">Create</button></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </details>
       </div>
     </details>
 
@@ -662,14 +732,16 @@ details.fold .fold-body{padding:0 18px 18px}
     </details>
 
     <details class="fold">
-      <summary>❓ How Dose Clock works</summary>
+      <summary>❓ How Medicine Tracker works</summary>
       <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
         <ul class="steps" style="padding-left:20px">
-          <li><b style="color:var(--ink)">Add each medicine once</b> with the amount from the label and how often it repeats. Dose Clock builds every dose time.</li>
+          <li><b style="color:var(--ink)">Add each medicine once</b> with the amount from the label and how often it repeats. Medicine Tracker builds every dose time.</li>
           <li><b style="color:var(--ink)">Tap Given</b> when the medicine is actually in. It records the time and who gave it, so the other parent can see.</li>
           <li><b style="color:var(--ink)">The timeline</b> shows every medicine on its own row. Drag it sideways, pinch to zoom, tap a dose to mark it given, skip it or undo.</li>
           <li><b style="color:var(--ink)">Safety checks</b> warn you if a dose is early, if the 24 hour limit is reached, or if two medicines share the same active ingredient.</li>
           <li><b style="color:var(--ink)">Fever line</b> — log temperatures and the timeline draws them over the doses, so you can see whether the medicine is helping.</li>
+          <li><b style="color:var(--ink)">Nappies and weight</b> — tap 💧 or 💩 once each change; the app counts the day, charts the week and warns you if wet nappies drop off, which is the first sign of not drinking enough. Weigh-ins draw a trend line.</li>
+          <li><b style="color:var(--ink)">Both parents, one log</b> — sign in with your family code on each phone under <b>Account &amp; reminders</b>. Everything merges, so Mum marking a dose and Dad logging a nappy at the same time both survive.</li>
         </ul>
       </div>
     </details>
@@ -679,16 +751,17 @@ details.fold .fold-body{padding:0 18px 18px}
 
   <footer class="foot">
     <div class="card">
-      <p style="margin-top:0"><b>Please read.</b> Dose Clock only keeps time. It does not decide how much medicine to give,
+      <p style="margin-top:0"><b>Please read.</b> Medicine Tracker only keeps time. It does not decide how much medicine to give,
       it does not know your child's weight or history, and it is not medical advice. Use the amount printed on the label or
       given to you by your doctor, nurse or pharmacist. Two medicines can share the same active ingredient, so check before
       giving both. If your child is under three months old, is getting worse, will not drink, or you are unsure about
       anything, call your doctor or a nurse line. In an emergency call 911.</p>
       <div class="safety">Never give a dose based on a reminder alone. Check the label, the amount and the child every time.</div>
-      <p style="margin-bottom:0"><b>Where your information lives.</b> Everything you type stays in this browser on this
-      phone. There is no account and no server holding your child's medicines. The only thing that ever leaves the device
-      is the reminder email itself, sent to the addresses you entered. If you later connect the optional family worker,
-      the schedule is also kept in the family's own private repository, reachable only with your family code.</p>
+      <p style="margin-bottom:0"><b>Where your information lives.</b> Until you sign in, everything you type stays in this
+      browser on this phone. Once you sign in with a family code, the log is kept in the church's own <b>private</b>
+      repository so both parents' phones agree — reachable only with that code, and never shown to another family. The
+      reminder emails go only to the addresses you enter. Use a code you would be happy to treat as a password, and if a
+      phone is lost, sign out or ask the admin to change the family code.</p>
     </div>
   </footer>
 </div>
@@ -702,9 +775,10 @@ details.fold .fold-body{padding:0 18px 18px}
 /* ═══════════════════════════════════════════════════════════════════════════
    0. Config
    ═══════════════════════════════════════════════════════════════════════════ */
-// Optional. Leave blank to keep everything on the phone with no server at all.
-// (Only fill this in if you deploy the twc-dose-clock worker for closed-app reminders.)
-var DEFAULT_API_BASE = "";
+// The family worker: signs both parents into one shared log and sends the dose
+// emails on its own. Deploy with:  cd 00_All_Workers\twc-dose-clock && npx wrangler deploy
+// Clear the box in Advanced to keep a phone entirely offline.
+var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -742,7 +816,8 @@ function blankState(){
     meds:[], logs:[], caregivers:[], deletedMedIds:{},
     settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30, emailFromDevice:true },
     sync:{ apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 },
-    ui:{ person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"", unit:"F" }
+    ui:{ person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"",
+         unit:"F", wunit:"lb", rhythmDays:7, logExpanded:false }
   };
 }
 var state = blankState();
@@ -1015,7 +1090,7 @@ function login(code){
 function logout(){
   state.sync.code=""; state.sync.name=""; state.sync.isAdmin=false; state.sync.rev=0;
   connected=false; save({push:false});
-  syncChip("", "On this device");
+  syncChip("", "Sign in");
   renderSyncPanel(); renderAll();
 }
 
@@ -1094,7 +1169,7 @@ function renderHero(){
   if (!activeMeds().length){
     main.innerHTML = '<div class="eyebrow"><span class="pip"></span>Welcome</div>'+
       '<h2>Add the first medicine</h2>'+
-      '<p class="who">Type what the label or your doctor says. Dose Clock works out every dose time, keeps both parents in step and can email you when the next one is due.</p>'+
+      '<p class="who">Type what the label or your doctor says. Medicine Tracker works out every dose time, keeps both parents in step and can email you when the next one is due.</p>'+
       '<div class="btn-row"><button class="btn" data-act="jumpAdd">Add a medicine</button></div>';
     ringSet(0, "--:--", "nothing due");
     return;
@@ -1188,7 +1263,7 @@ function renderStats(){
       if (!d.given && !d.skipped && d.planned < today.getTime()+DAY && d.planned >= now) dueLeft++;
     });
   });
-  var temps = state.logs.filter(function(l){ return l.temp; });
+  var temps = state.logs.filter(function(l){ return logType(l)==="temp" && l.temp != null; });
   var lastTemp = temps.length ? temps[temps.length-1] : null;
   var adh = adherence();
   var cards = [
@@ -1296,17 +1371,195 @@ function renderMeds(){
 /* ═══════════════════════════════════════════════════════════════════════════
    8. Rendering — logs
    ═══════════════════════════════════════════════════════════════════════════ */
+var LOG_ICON = { wet:"💧", dirty:"💩", both:"💧💩", temp:"🌡", weight:"⚖️", note:"📝" };
+var LOG_WORD = { wet:"Wet nappy", dirty:"Dirty nappy", both:"Wet & dirty", temp:"Temperature", weight:"Weight", note:"Note" };
+
+function logType(l){
+  if (l.type) return l.type;
+  if (l.temp != null) return "temp";
+  if (l.weight != null) return "weight";
+  return "note";
+}
+function logsFor(person){
+  return state.logs.filter(function(l){
+    if (person && person !== "all"){
+      var lp = l.person || "";
+      if (lp && lp !== person) return false;
+    }
+    return true;
+  });
+}
+function isDiaper(t){ return t==="wet" || t==="dirty" || t==="both"; }
+function countDiapers(logs, fromMs, toMs){
+  var wet = 0, dirty = 0, last = null;
+  logs.forEach(function(l){
+    var t = logType(l);
+    if (!isDiaper(t)) return;
+    if (l.at < fromMs || l.at >= toMs) return;
+    if (t==="wet" || t==="both") wet++;
+    if (t==="dirty" || t==="both") dirty++;
+    if (!last || l.at > last) last = l.at;
+  });
+  return { wet:wet, dirty:dirty, last:last };
+}
+function weightLogs(logs){
+  return logs.filter(function(l){ return logType(l)==="weight" && l.weight != null; })
+             .sort(function(a,b){ return a.at-b.at; });
+}
+function toLb(l){ return (l.wunit||"lb")==="kg" ? l.weight*2.20462 : l.weight; }
+function showWeight(l){
+  var u = state.ui.wunit || (l.wunit||"lb");
+  var v = (l.wunit||"lb") === u ? l.weight : (u==="kg" ? l.weight/2.20462 : l.weight*2.20462);
+  return trimNum(Math.round(v*100)/100)+" "+u;
+}
+
 function renderLogs(){
-  var logs = state.logs.slice().sort(function(a,b){ return b.at-a.at; }).slice(0,8);
-  el("logList").innerHTML = logs.map(function(l){
-    var hot = l.temp && ((l.unit==="F" && l.temp>=100.4) || (l.unit==="C" && l.temp>=38));
-    return '<li><span class="log-temp'+(hot?" hot":"")+'">'+(l.temp?trimNum(l.temp)+"°"+l.unit:"—")+'</span>'+
+  var all = state.logs.slice().sort(function(a,b){ return b.at-a.at; });
+  var limit = state.ui.logExpanded ? 40 : 8;
+  el("btnMoreLog").hidden = all.length <= 8;
+  el("btnMoreLog").textContent = state.ui.logExpanded ? "Show fewer" : "Show all "+Math.min(all.length,40)+" entries";
+  el("logList").innerHTML = all.slice(0,limit).map(function(l){
+    var t = logType(l);
+    var hot = l.temp != null && ((l.unit==="F" && l.temp>=100.4) || (l.unit==="C" && l.temp>=38));
+    var big = t==="temp" ? trimNum(l.temp)+"°"+l.unit
+            : t==="weight" ? showWeight(l)
+            : LOG_ICON[t];
+    return '<li><span class="log-temp'+(hot?" hot":"")+'">'+esc(big)+'</span>'+
       '<span class="log-when">'+fmtTime(l.at)+' '+fmtDay(l.at)+'</span>'+
-      '<span class="log-note">'+esc([l.person, l.note].filter(Boolean).join(" · "))+'</span>'+
+      '<span class="log-note">'+esc([isDiaper(t)?LOG_WORD[t]:null, l.person, l.note, l.by?"— "+l.by:null].filter(Boolean).join(" · "))+'</span>'+
       '<button class="btn tiny ghost no-print" data-act="delLog" data-id="'+l.id+'">✕</button></li>';
   }).join("");
   var dl = el("personList");
   dl.innerHTML = people().map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
+
+  var today = new Date(); today.setHours(0,0,0,0);
+  var c = countDiapers(state.logs, today.getTime(), today.getTime()+DAY);
+  el("logCount").textContent = (c.wet+c.dirty) ? ("today 💧"+c.wet+" 💩"+c.dirty) : "today";
+  renderRhythm();
+}
+
+/* ── nappies and weight ─────────────────────────────────────────────── */
+function renderRhythm(){
+  var logs = logsFor(state.ui.person);
+  var diapers = logs.filter(function(l){ return isDiaper(logType(l)); });
+  var weights = weightLogs(logs);
+  var card = el("rhythmCard");
+  if (!diapers.length && !weights.length){ card.hidden = true; return; }
+  card.hidden = false;
+
+  var now = Date.now();
+  var today = new Date(); today.setHours(0,0,0,0);
+  var t0 = today.getTime();
+  var todayC = countDiapers(logs, t0, t0+DAY);
+  var dayC   = countDiapers(logs, now-DAY, now+1);
+  var lastW  = weights[weights.length-1];
+  var firstW = weights[0];
+
+  var cards = [
+    { k:"Wet today", v:"💧 "+todayC.wet },
+    { k:"Dirty today", v:"💩 "+todayC.dirty }
+  ];
+  if (todayC.last || dayC.last) cards.push({ k:"Last change", v:durTxt(now-(todayC.last||dayC.last))+" ago" });
+  if (lastW){
+    cards.push({ k:"Weight", v:showWeight(lastW) });
+    if (weights.length > 1){
+      var d = toLb(lastW) - toLb(firstW);
+      var u = state.ui.wunit || lastW.wunit || "lb";
+      var shown = u==="kg" ? d/2.20462 : d;
+      cards.push({ k:"Since "+fmtDay(firstW.at), v:(d>=0?"+":"")+trimNum(Math.round(shown*100)/100)+" "+u });
+    }
+  }
+  el("rhythmStats").innerHTML = cards.map(function(c){
+    return '<div class="stat"><div class="v">'+esc(String(c.v))+'</div><div class="k">'+esc(c.k)+'</div></div>';
+  }).join("");
+
+  // A gentle hydration note — wet nappies are the usual first sign. Only once
+  // there is close to a full day of logging, so a first afternoon of use never
+  // worries anyone needlessly.
+  var note = "";
+  var oldest = diapers.reduce(function(m,l){ return Math.min(m, l.at); }, now);
+  var fullDay = now - oldest >= 18*HOUR;
+  var nap = function(n){ return n + " wet " + (n === 1 ? "nappy" : "nappies"); };
+  if (fullDay && dayC.wet > 0 && dayC.wet < 6){
+    note = '<div class="note warn">Only '+nap(dayC.wet)+
+      ' in the last 24 hours. Fewer wet nappies than usual can mean they are not taking enough fluids — worth a call to your doctor or nurse line if it carries on.</div>';
+  } else if (fullDay && dayC.wet >= 6){
+    note = '<div class="note">'+nap(dayC.wet)+' in the last 24 hours — a reassuring sign they are drinking enough.</div>';
+  } else if (diapers.length){
+    note = '<div class="note">'+nap(dayC.wet)+' and '+dayC.dirty+' dirty in the last 24 hours. Keep tapping and the pattern builds up here.</div>';
+  }
+  el("rhythmNote").innerHTML = note;
+
+  drawDiaperChart(logs);
+  drawWeightChart(weights);
+}
+
+function dayKey(ms){ var d = new Date(ms); d.setHours(0,0,0,0); return d.getTime(); }
+
+function drawDiaperChart(logs){
+  var svg = el("diaperChart");
+  var days = state.ui.rhythmDays || 7;
+  var W = Math.max(280, (svg.parentNode.clientWidth || 320) - 4), H = 132;
+  var padL = 26, padB = 22, padT = 12;
+  var t0 = dayKey(Date.now()) - (days-1)*DAY;
+  var buckets = [];
+  for (var i=0;i<days;i++){
+    var from = t0 + i*DAY;
+    buckets.push({ at:from, c:countDiapers(logs, from, from+DAY) });
+  }
+  var max = Math.max(6, buckets.reduce(function(m,b){ return Math.max(m, b.c.wet+b.c.dirty); }, 0));
+  var plotW = W - padL - 8, plotH = H - padT - padB;
+  var bw = Math.max(6, Math.min(38, (plotW/days) - (days>14?2:6)));
+  var s = [];
+  [0, Math.round(max/2), max].forEach(function(v){
+    var y = padT + plotH - (v/max)*plotH;
+    s.push('<line x1="'+padL+'" y1="'+y.toFixed(1)+'" x2="'+(padL+plotW)+'" y2="'+y.toFixed(1)+'" stroke="var(--line-2)" stroke-width="1"/>');
+    s.push('<text x="'+(padL-6)+'" y="'+(y+3.5).toFixed(1)+'" text-anchor="end" font-size="9.5" fill="var(--faint)">'+v+'</text>');
+  });
+  buckets.forEach(function(b, i){
+    var cx = padL + (i+0.5)*(plotW/days);
+    var hW = (b.c.wet/max)*plotH, hD = (b.c.dirty/max)*plotH;
+    var yW = padT + plotH - hW, yD = yW - hD;
+    if (hW > 0) s.push('<rect x="'+(cx-bw/2).toFixed(1)+'" y="'+yW.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hW.toFixed(1)+'" rx="3" fill="var(--sky)"/>');
+    if (hD > 0) s.push('<rect x="'+(cx-bw/2).toFixed(1)+'" y="'+yD.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hD.toFixed(1)+'" rx="3" fill="var(--peach)"/>');
+    if (days <= 14 || i % 3 === 0){
+      var d = new Date(b.at);
+      s.push('<text x="'+cx.toFixed(1)+'" y="'+(H-7)+'" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--faint)">'+
+        (days<=7 ? ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][d.getDay()] : (d.getMonth()+1)+"/"+d.getDate())+'</text>');
+    }
+  });
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  svg.innerHTML = s.join("");
+}
+
+function drawWeightChart(weights){
+  var svg = el("weightChart");
+  if (weights.length < 2){ svg.innerHTML = ""; svg.setAttribute("height", 0); return; }
+  var W = Math.max(280, (svg.parentNode.clientWidth || 320) - 4), H = 96;
+  var padL = 26, padT = 14, padB = 18;
+  var plotW = W - padL - 10, plotH = H - padT - padB;
+  var vals = weights.map(toLb);
+  var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+  if (hi - lo < 0.5){ var mid = (hi+lo)/2; lo = mid-0.4; hi = mid+0.4; }
+  var t0 = weights[0].at, t1 = weights[weights.length-1].at;
+  var span = Math.max(1, t1 - t0);
+  var x = function(ms){ return padL + ((ms-t0)/span)*plotW; };
+  var y = function(v){ return padT + plotH - ((v-lo)/(hi-lo))*plotH; };
+  var s = [];
+  s.push('<rect x="'+padL+'" y="'+padT+'" width="'+plotW+'" height="'+plotH+'" rx="10" fill="var(--grape-l)" opacity=".5"/>');
+  s.push('<polyline points="'+weights.map(function(l){ return x(l.at).toFixed(1)+","+y(toLb(l)).toFixed(1); }).join(" ")+
+    '" fill="none" stroke="var(--grape)" stroke-width="2.5" stroke-linejoin="round"/>');
+  weights.forEach(function(l, i){
+    s.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+y(toLb(l)).toFixed(1)+'" r="4" fill="#fff" stroke="var(--grape)" stroke-width="2.5"/>');
+    if (i === 0 || i === weights.length-1){
+      s.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(y(toLb(l))-9).toFixed(1)+'" text-anchor="middle" font-size="10" font-weight="800" fill="#5B45B8">'+esc(showWeight(l))+'</text>');
+      s.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(H-5)+'" text-anchor="'+(i?"end":"start")+'" font-size="9.5" font-weight="700" fill="var(--faint)">'+fmtDay(l.at)+'</text>');
+    }
+  });
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  svg.innerHTML = s.join("");
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1593,26 +1846,80 @@ el("btnAddJump").addEventListener("click", function(){
 /* ═══════════════════════════════════════════════════════════════════════════
    11. Temperature log
    ═══════════════════════════════════════════════════════════════════════════ */
+function logPerson(){
+  var typed = el("lPerson").value.trim();
+  if (typed) return typed;
+  if (state.ui.person && state.ui.person !== "all") return state.ui.person;
+  var ps = people();
+  return ps.length === 1 ? ps[0] : "";
+}
+function addLog(entry){
+  entry.id = uid();
+  if (entry.at == null) entry.at = Date.now();
+  entry.by = state.ui.me || "";
+  state.logs.push(entry);
+  save();
+  renderLogs(); renderChart(); renderStats(); renderBanners();
+  return entry;
+}
+
+/* one tap per nappy — the most common thing you do all day */
+el("quickRow").addEventListener("click", function(ev){
+  var b = ev.target.closest("[data-quick]"); if (!b) return;
+  var kind = b.getAttribute("data-quick");
+  addLog({ type:kind, person:logPerson(), note:el("lNote").value.trim() });
+  el("lNote").value = "";
+  b.classList.remove("done"); void b.offsetWidth; b.classList.add("done");
+  var t0 = new Date(); t0.setHours(0,0,0,0);
+  var c = countDiapers(logsFor(state.ui.person), t0.getTime(), t0.getTime()+DAY);
+  toast(LOG_WORD[kind]+" logged · today 💧"+c.wet+" 💩"+c.dirty);
+});
+
 el("btnLogAdd").addEventListener("click", function(){
   var t = el("lTemp").value.trim();
+  var wRaw = el("lWeight").value.trim();
   var note = el("lNote").value.trim();
-  if (!t && !note){ toast("Add a temperature or a note first"); return; }
+  if (!t && !wRaw && !note){ toast("Add a temperature, a weight or a note first"); return; }
+
+  var unit = el("lUnit").value, wunit = el("lWUnit").value;
+  var person = logPerson();
   var temp = t ? parseFloat(t) : null;
-  var unit = el("lUnit").value;
+  var weight = wRaw ? parseFloat(wRaw) : null;
+
   if (temp != null){
     if (unit==="F" && (temp<90 || temp>112)){ toast("That temperature looks off for °F — check it"); return; }
     if (unit==="C" && (temp<32 || temp>44)){ toast("That temperature looks off for °C — check it"); return; }
   }
-  state.logs.push({
-    id: uid(), at: Date.now(), person: el("lPerson").value.trim(),
-    temp: temp, unit: unit, note: note, by: state.ui.me || ""
-  });
-  state.ui.unit = unit;
-  save();
-  el("lTemp").value=""; el("lNote").value="";
-  renderLogs(); renderChart(); renderStats();
+  if (weight != null){
+    if (weight <= 0 || (wunit==="lb" && weight>400) || (wunit==="kg" && weight>200)){
+      toast("That weight looks off — check it"); return;
+    }
+  }
+
+  // Temperature and weight are separate readings, so they get separate entries.
+  if (temp != null) addLog({ type:"temp", person:person, temp:temp, unit:unit, note:note });
+  if (weight != null) addLog({ type:"weight", person:person, weight:weight, wunit:wunit, note:temp!=null?"":note });
+  if (temp == null && weight == null) addLog({ type:"note", person:person, note:note });
+
+  state.ui.unit = unit; state.ui.wunit = wunit;
+  save({push:false});
+  el("lTemp").value=""; el("lWeight").value=""; el("lNote").value="";
+
   var hot = temp!=null && ((unit==="F"&&temp>=104)||(unit==="C"&&temp>=40));
   toast(hot ? "Saved — a temperature that high needs a call to your doctor or nurse line" : "Reading saved");
+});
+
+el("btnMoreLog").addEventListener("click", function(){
+  state.ui.logExpanded = !state.ui.logExpanded;
+  save({push:false}); renderLogs();
+});
+el("rhythmSeg").addEventListener("click", function(ev){
+  var b = ev.target.closest("button[data-days]"); if (!b) return;
+  state.ui.rhythmDays = parseInt(b.getAttribute("data-days"),10) || 7;
+  Array.prototype.forEach.call(el("rhythmSeg").querySelectorAll("button"), function(x){
+    x.setAttribute("aria-pressed", String(x === b));
+  });
+  save({push:false}); renderRhythm();
 });
 /* ═══════════════════════════════════════════════════════════════════════════
    12. Interactive timeline
@@ -1647,7 +1954,7 @@ function renderChart(){
 
   var unit = state.ui.unit || "F";
   var temps = state.logs.filter(function(l){
-    if (l.temp == null) return false;
+    if (logType(l) !== "temp" || l.temp == null) return false;
     if (state.ui.person !== "all" && (l.person||"") && l.person !== state.ui.person) return false;
     return true;
   }).sort(function(a,b){ return a.at-b.at; });
@@ -1900,7 +2207,7 @@ el("btnTempToggle").addEventListener("click", function(){
 });
 window.addEventListener("resize", function(){
   clearTimeout(window.__dcResize);
-  window.__dcResize = setTimeout(renderChart, 160);
+  window.__dcResize = setTimeout(function(){ renderChart(); renderRhythm(); }, 160);
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -1921,7 +2228,7 @@ function fold(line){
   return out+"\r\n "+rest;
 }
 function buildICS(meds){
-  var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//TWC Dose Clock//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//TWC Medicine Tracker//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
   L.push("X-WR-CALNAME:"+icsEsc("Medicine schedule"));
   var stamp = icsStamp(Date.now());
   meds.forEach(function(med){
@@ -1975,7 +2282,7 @@ function scheduleText(){
     });
     lines.push("");
   });
-  var temps = state.logs.filter(function(l){ return l.temp; }).slice(-10);
+  var temps = state.logs.filter(function(l){ return logType(l)==="temp"; }).slice(-10);
   if (temps.length){
     lines.push("TEMPERATURES");
     temps.forEach(function(l){
@@ -1984,7 +2291,24 @@ function scheduleText(){
     });
     lines.push("");
   }
-  lines.push("Dose Clock only keeps time. Follow the label or your doctor, nurse or pharmacist for the amount.");
+  var t0 = new Date(); t0.setHours(0,0,0,0);
+  var dc = countDiapers(state.logs, t0.getTime(), t0.getTime()+DAY);
+  var yc = countDiapers(state.logs, t0.getTime()-DAY, t0.getTime());
+  if (dc.wet+dc.dirty+yc.wet+yc.dirty > 0){
+    lines.push("NAPPIES");
+    lines.push("  today: "+dc.wet+" wet, "+dc.dirty+" dirty"+(dc.last?" (last "+fmtTime(dc.last)+")":""));
+    lines.push("  yesterday: "+yc.wet+" wet, "+yc.dirty+" dirty");
+    lines.push("");
+  }
+  var ws = weightLogs(state.logs);
+  if (ws.length){
+    lines.push("WEIGHT");
+    ws.slice(-6).forEach(function(l){
+      lines.push("  "+fmtDay(l.at)+" "+fmtTime(l.at)+" — "+showWeight(l)+(l.person?" ("+l.person+")":""));
+    });
+    lines.push("");
+  }
+  lines.push("Medicine Tracker only keeps time. Follow the label or your doctor, nurse or pharmacist for the amount.");
   return lines.join("\n");
 }
 el("btnIcsAll").addEventListener("click", function(){ openCalSheet(visibleMeds()); });
@@ -1996,14 +2320,21 @@ el("btnCopyAll").addEventListener("click", function(){
   } else window.prompt("Copy the schedule", txt);
 });
 function printSheet(){
-  var temps = state.logs.filter(function(l){ return l.temp; }).slice(-8);
+  var temps = state.logs.filter(function(l){ return logType(l)==="temp"; }).slice(-8);
+  var t0 = new Date(); t0.setHours(0,0,0,0);
+  var dc = countDiapers(state.logs, t0.getTime(), t0.getTime()+DAY);
+  var ws = weightLogs(state.logs);
+  var lastW = ws[ws.length-1];
   el("printHeader").innerHTML =
     '<h2 style="font-size:22px">Medicine handover sheet'+(state.sync.name?' — '+esc(state.sync.name):'')+'</h2>'+
     '<p style="font-size:13px">Printed '+new Date().toLocaleString()+
     '. Tick each dose as it is given and write the time and your name.</p>'+
     (temps.length? '<p style="font-size:13px"><b>Recent temperatures:</b> '+temps.map(function(l){
       return trimNum(l.temp)+"°"+l.unit+" at "+fmtTime(l.at);
-    }).join(" · ")+'</p>' : '');
+    }).join(" · ")+'</p>' : '')+
+    '<p style="font-size:13px"><b>Nappies today:</b> '+dc.wet+' wet, '+dc.dirty+' dirty'+
+      (dc.last? ' (last change '+fmtTime(dc.last)+')' : '')+
+      (lastW? ' &nbsp;·&nbsp; <b>Weight:</b> '+esc(showWeight(lastW))+' on '+fmtDay(lastW.at) : '')+'</p>';
   window.print();
 }
 el("btnPrint").addEventListener("click", printSheet);
@@ -2027,7 +2358,7 @@ function renderBell(){
 el("bellChip").addEventListener("click", function(){
   if (!("Notification" in window)){ toast("This browser cannot show pop-up alerts. Use the calendar file or emails instead."); return; }
   if (Notification.permission === "granted"){
-    new Notification("Dose Clock", { body:"Pop-up alerts are already on for this browser." });
+    new Notification("Medicine Tracker", { body:"Pop-up alerts are already on for this browser." });
     return;
   }
   Notification.requestPermission().then(function(p){
@@ -2047,7 +2378,7 @@ function scheduleLocalAlert(){
   alertTimer = setTimeout(function(){
     try {
       new Notification("Time for "+next.med.name+(next.med.person?" · "+next.med.person:""), {
-        body: "Give "+(next.med.dose||"the amount on the label")+". Tap Given in Dose Clock when it is in.",
+        body: "Give "+(next.med.dose||"the amount on the label")+". Tap Given in Medicine Tracker when it is in.",
         tag: "dose-"+next.med.id+"-"+next.index
       });
     } catch(e){}
@@ -2091,13 +2422,13 @@ function doseEmailParams(med, dose, index, carer, kind){
   if (med.notes) lines.push("Note: "+med.notes);
   lines.push("Doses given in the last 24 hours: "+givenSince(med, Date.now()-DAY));
   lines.push("");
-  lines.push('Open Dose Clock and tap "Given" once the dose is in, so the other parent can see it.');
-  lines.push("Dose Clock only keeps time. Always follow the label or your doctor, nurse or pharmacist.");
+  lines.push('Open Medicine Tracker and tap "Given" once the dose is in, so the other parent can see it.');
+  lines.push("Medicine Tracker only keeps time. Always follow the label or your doctor, nurse or pharmacist.");
   return {
     to_name: carer.name || "there",
     name: carer.name || "there",
     email: carer.email,
-    assigned_by: "Dose Clock",
+    assigned_by: "Medicine Tracker",
     task_title: title,
     task_priority: late ? "high" : "medium",
     task_desc: lines.join("\n"),
@@ -2193,7 +2524,7 @@ function googleUrl(med){
     med.ingredient ? "Active ingredient: "+med.ingredient+"." : "",
     med.notes ? "Note: "+med.notes : "",
     "",
-    "Dose Clock only keeps time. Always follow the label or your doctor, nurse or pharmacist."
+    "Medicine Tracker only keeps time. Always follow the label or your doctor, nurse or pharmacist."
   ].filter(Boolean).join("\n");
   var whole = Math.abs(med.intervalH - Math.round(med.intervalH)) < 0.01;
   var rrule = whole
@@ -2276,8 +2607,11 @@ function renderSyncPanel(){
   var on = canSync() && connected;
   el("cloudBox").hidden = !on;
   el("syncStatus").innerHTML = on
-    ? '<div class="note">Connected as <b>'+esc(state.sync.name||"family")+'</b>. The schedule syncs between phones and the server sends the reminder emails.</div>'
-    : (canSync() ? '<div class="note warn">Saved, but the server has not answered yet. Tap Connect to try again.</div>' : "");
+    ? '<div class="note">Signed in as <b>'+esc(state.sync.name||"family")+'</b>'+(state.sync.isAdmin?' (admin)':'')+
+      '. Medicines, doses, nappies, temperatures and weight are shared with the other phone, and the server sends the reminder emails.</div>'
+    : (canSync()
+        ? '<div class="note warn">Not signed in yet. Enter your family code and tap Sign in. If it keeps failing, the worker may not be deployed.</div>'
+        : '<div class="note warn">This phone is offline-only: nothing is shared. Add the worker address under Advanced to share with the other parent.</div>');
   el("fLead").value = String(state.settings.leadMinutes==null?5:state.settings.leadMinutes);
   el("fOverdue").value = state.settings.overdueNudge ? String(state.settings.overdueMinutes||30) : "0";
   el("fEmailOn").checked = state.settings.emailFromDevice !== false;
@@ -2339,24 +2673,24 @@ el("fEmailOn").addEventListener("change", function(){
 el("btnLogin").addEventListener("click", function(){
   state.sync.apiBase = el("fApi").value.trim();
   var code = el("fCode").value.trim();
-  if (!state.sync.apiBase){ toast("Paste the worker address first"); return; }
+  if (!state.sync.apiBase){ toast("Add the worker address under Advanced first"); return; }
   if (!code){ toast("Enter your family code"); return; }
   save({push:false});
-  syncChip("busy","Connecting…");
+  syncChip("busy","Signing in…");
   login(code).then(function(){
     syncChip("ok", state.sync.name || "Synced");
     renderSyncPanel(); renderAll();
-    toast("Connected as "+(state.sync.name||"family"));
+    toast("Signed in as "+(state.sync.name||"family"));
     loadRooms();
   }).catch(function(e){
     connected = false;
-    syncChip("bad","Not connected");
+    syncChip("bad","Not signed in");
     renderSyncPanel();
     toast(e.message);
   });
 });
 el("btnLogout").addEventListener("click", function(){
-  if (window.confirm("Sign out on this device? The schedule stays on the server and on this phone.")) logout();
+  if (window.confirm("Sign out on this device? The log stays on the server and a copy stays on this phone.")) logout();
 });
 el("btnPull").addEventListener("click", function(){ pull(false).then(renderSyncPanel); });
 el("btnTestEmail").addEventListener("click", function(){
@@ -2369,17 +2703,17 @@ el("btnTestEmail").addEventListener("click", function(){
     : Promise.all(targets.map(function(c){
         return sendBrowserEmail({
           to_name: c.name || "there", name: c.name || "there", email: c.email,
-          assigned_by: "Dose Clock",
-          task_title: "Dose Clock test — reminders are working",
+          assigned_by: "Medicine Tracker",
+          task_title: "Medicine Tracker test — reminders are working",
           task_priority: "low",
           task_desc: [
-            "This is a test from Dose Clock on "+(state.ui.me || "this phone")+".",
+            "This is a test from Medicine Tracker on "+(state.ui.me || "this phone")+".",
             "",
             "When a dose is due you will get an email like this one, with the medicine, the amount to give",
             "and the time it was due.",
             "",
-            "Reminders are sent by the page itself, so keep Dose Clock open on one phone.",
-            "Dose Clock only keeps time. Always follow the label or your doctor, nurse or pharmacist."
+            "Reminders are sent by the page itself, so keep Medicine Tracker open on one phone.",
+            "Medicine Tracker only keeps time. Always follow the label or your doctor, nurse or pharmacist."
           ].join("\n"),
           is_reminder: "true",
           app_url: location.href.split("#")[0]
@@ -2395,15 +2729,17 @@ el("btnTestEmail").addEventListener("click", function(){
   });
 });
 el("syncChip").addEventListener("click", function(){
-  var f = el("foldSync"); f.open = true;
+  var f = el(connected ? "foldSync" : "foldAccount"); f.open = true;
   scrollTo(f);
+  if (!connected) setTimeout(function(){ try { el("fCode").focus(); } catch(e){} }, 300);
 });
 
 function loadRooms(){
   if (!state.sync.isAdmin) return;
   api("/api/admin/rooms").then(function(d){
     el("roomList").innerHTML = (d.rooms||[]).map(function(r){
-      return '<div class="kv"><span>'+esc(r.name)+' — '+r.medCount+' medicine'+(r.medCount===1?'':'s')+'</span>'+
+      return '<div class="kv"><span>'+esc(r.name)+' — '+r.medCount+' medicine'+(r.medCount===1?'':'s')+
+        (r.updatedAt?' · last used '+fmtDay(Date.parse(r.updatedAt)):'')+'</span>'+
         '<span><code>'+esc(r.password)+'</code> <button class="btn tiny danger" data-room-del="'+esc(r.password)+'">Delete</button></span></div>';
     }).join("") || '<p class="hint">No families yet.</p>';
     Array.prototype.forEach.call(document.querySelectorAll("[data-room-del]"), function(b){
@@ -2443,10 +2779,10 @@ scheduleLocalAlert();
 checkDueEmails();
 
 if (canSync()){
-  syncChip("busy","Connecting…");
+  syncChip("busy","Signing in…");
   pull(true).then(function(){ renderSyncPanel(); renderAll(); loadRooms(); });
 } else {
-  syncChip("", "On this device");
+  syncChip("", canSync() ? "Sign in" : "On this device");
 }
 
 setInterval(tick, 1000);

@@ -6,6 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>God Loves You!</title>
+<script type="importmap">
+{ "imports": { "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm" } }
+</script>
+
 <style>
   * {
     margin: 0; padding: 0; box-sizing: border-box;
@@ -18,7 +22,7 @@
   html, body {
     width: 100%; height: 100%;
     overflow: hidden;
-    background: #0a1628;
+    background: #1E3A8A;
     font-family: 'Fredoka One', 'Comic Sans MS', cursive;
   }
 
@@ -26,10 +30,10 @@
   #bg {
     position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse at 20% 20%, #1a3a6b 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 80%, #2a1060 0%, transparent 55%),
-      radial-gradient(ellipse at 60% 10%, #0d3050 0%, transparent 40%),
-      #050e20;
+      radial-gradient(ellipse at 20% 18%, #38BDF8 0%, transparent 55%),
+      radial-gradient(ellipse at 82% 78%, #A78BFA 0%, transparent 55%),
+      radial-gradient(ellipse at 58% 8%, #FCD34D 0%, transparent 38%),
+      linear-gradient(168deg, #2563EB 0%, #4C1D95 100%);
     transition: background 0.6s ease;
     z-index: 0;
   }
@@ -249,7 +253,7 @@
   #fs-btn:active{background:rgba(255,255,255,0.28);}
 
   #exit-btn {
-    position: absolute; bottom: 20px; right: 20px; z-index: 100;
+    position: absolute; top: calc(env(safe-area-inset-top,0px) + 58px); right: 12px; bottom: auto; z-index: 100;
     background: rgba(255,80,80,0.15);
     border: 2px solid rgba(255,120,120,0.35);
     color: #ffaaaa; border-radius: 50px;
@@ -341,7 +345,7 @@
 
   /* ── MODE TOGGLE ── */
   #mode-btn {
-    position: absolute; bottom: 20px; left: 20px; z-index: 100;
+    position: absolute; top: calc(env(safe-area-inset-top,0px) + 58px); left: 12px; bottom: auto; z-index: 100;
     background: rgba(255,200,80,0.2);
     border: 2px solid rgba(255,200,80,0.5);
     color: #ffd066; border-radius: 50px;
@@ -921,6 +925,9 @@ function speakText(text) {
   const clean = text.replace(/[^\x00-\x7F\u00C0-\u024F\u0027]/g, '').replace(/\s+/g,' ').trim();
   if (!clean) return;
 
+  // The shared kit voice (natural, or the best voice on the phone) wins.
+  if (window.BabyVoice && BabyVoice.say) { BabyVoice.say(clean); return; }
+
   // Must call synchronously inside user gesture — NO setTimeout wrapper
   synth.cancel();
 
@@ -1067,5 +1074,7 @@ if (window.speechSynthesis) {
   overlay.addEventListener('mousedown',  startApp, {once:true});
 })();
 </script>
+<script src="voice.js"></script>
+<script src="kit.js"></script>
 </body>
 </html>
