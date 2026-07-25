@@ -255,6 +255,24 @@ details.fold .fold-body{padding:0 18px 18px}
 .log-when{color:var(--faint);font-size:12px;font-weight:700;min-width:96px}
 .log-note{flex:1;color:var(--soft);font-weight:600}
 
+/* ── bottom sheet (calendar chooser) ─────────────────────── */
+.sheet-back{
+  position:fixed;inset:0;z-index:70;background:rgba(42,51,72,.42);backdrop-filter:blur(3px);
+  display:flex;align-items:flex-end;justify-content:center;padding:0 12px 12px
+}
+.sheet{
+  position:relative;width:100%;max-width:440px;background:var(--paper);border:1px solid var(--line);
+  border-radius:22px;padding:20px 18px 18px;box-shadow:var(--shadow-lift);
+  animation:sheetUp .26s cubic-bezier(.2,.9,.3,1.15)
+}
+@keyframes sheetUp{from{transform:translateY(24px);opacity:.4}to{transform:none;opacity:1}}
+.sheet h4{font-size:20px;margin-bottom:2px}
+.sheet .meta{color:var(--soft);font-size:13px;font-weight:600;margin:0 0 12px}
+.sheet .meta:last-child{margin:12px 0 0}
+.sheet .btn{margin-bottom:9px}
+.sheet .close{position:absolute;top:8px;right:12px;background:none;color:var(--faint);font-size:22px;line-height:1;padding:4px}
+@media (min-width:560px){ .sheet-back{align-items:center;padding:12px} }
+
 /* ── toast + banner ──────────────────────────────────────── */
 .toast{
   position:fixed;left:50%;bottom:20px;transform:translate(-50%,150%);z-index:60;max-width:92vw;
@@ -532,88 +550,114 @@ details.fold .fold-body{padding:0 18px 18px}
 
   <!-- ── sync & email ────────────────────────────────────── -->
   <section id="syncSection">
-    <div class="sec-head"><h3>Sync &amp; email reminders</h3></div>
+    <div class="sec-head"><h3>Reminders</h3></div>
 
     <details class="fold" id="foldSync">
       <summary>📧 Email the parents when a dose is due</summary>
       <div class="fold-body">
         <p style="margin:0 0 14px;font-size:14px;color:var(--soft);font-weight:600">
-          Sign in with your family code to share the schedule between phones and let the server email you at dose time —
-          even when nobody has the app open.
+          Type each parent's address once. When a dose comes due this page emails them straight from the phone —
+          no sign-in and no server address to remember.
         </p>
-        <div class="field">
-          <label for="fApi">Worker address
-            <span class="hint">From <code>wrangler deploy</code>, e.g. https://twc-dose-clock.xxxx.workers.dev</span>
-          </label>
-          <input id="fApi" type="url" placeholder="https://twc-dose-clock.xxxx.workers.dev" autocomplete="off" />
-        </div>
-        <div class="row">
+
+        <label class="switch" style="margin-bottom:14px">
+          <input type="checkbox" id="fEmailOn" checked /> Send dose emails from this phone
+        </label>
+
+        <h4 style="margin:6px 0 8px;font-size:16px">Who gets the emails</h4>
+        <div id="careList"></div>
+        <button class="btn ghost small" id="btnAddCare">+ Add a parent or carer</button>
+
+        <div class="row" style="margin-top:16px">
           <div class="field">
-            <label for="fCode">Family code</label>
-            <input id="fCode" type="password" placeholder="Family code" autocomplete="current-password" />
+            <label for="fLead">Send the email</label>
+            <select id="fLead">
+              <option value="0">right at dose time</option>
+              <option value="5" selected>5 minutes before</option>
+              <option value="10">10 minutes before</option>
+              <option value="15">15 minutes before</option>
+              <option value="30">30 minutes before</option>
+            </select>
           </div>
-          <div class="field" style="flex:0 0 auto;align-self:flex-end">
-            <button class="btn sky" id="btnLogin">Connect</button>
-          </div>
-        </div>
-        <div id="syncStatus"></div>
-
-        <div id="cloudBox" hidden>
-          <h4 style="margin:16px 0 8px;font-size:16px">Who gets the emails</h4>
-          <div id="careList"></div>
-          <button class="btn ghost small" id="btnAddCare">+ Add a parent or carer</button>
-
-          <div class="row" style="margin-top:16px">
-            <div class="field">
-              <label for="fLead">Send the email</label>
-              <select id="fLead">
-                <option value="0">right at dose time</option>
-                <option value="5" selected>5 minutes before</option>
-                <option value="10">10 minutes before</option>
-                <option value="15">15 minutes before</option>
-                <option value="30">30 minutes before</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="fOverdue">Follow up if not marked given</label>
-              <select id="fOverdue">
-                <option value="0">do not follow up</option>
-                <option value="20">after 20 minutes</option>
-                <option value="30" selected>after 30 minutes</option>
-                <option value="60">after 1 hour</option>
-              </select>
-            </div>
-          </div>
-          <div class="btn-row">
-            <button class="btn small" id="btnSaveCloud">Save email settings</button>
-            <button class="btn ghost small" id="btnTestEmail">Send me a test email</button>
-            <button class="btn ghost small" id="btnPull">Refresh from other phone</button>
-            <button class="btn ghost small" id="btnLogout">Sign out of this device</button>
-          </div>
-          <div id="adminBox" hidden style="margin-top:18px;border-top:1px dashed var(--line);padding-top:14px">
-            <h4 style="font-size:16px;margin-bottom:8px">Admin — families</h4>
-            <div id="roomList" style="font-size:13.5px"></div>
-            <div class="row" style="margin-top:10px">
-              <div class="field"><label for="fNewRoomName">Family name</label><input id="fNewRoomName" placeholder="Smith Family" /></div>
-              <div class="field"><label for="fNewRoomPass">New family code</label><input id="fNewRoomPass" placeholder="smith 2026" /></div>
-              <div class="field" style="flex:0 0 auto;align-self:flex-end"><button class="btn ghost" id="btnAddRoom">Create</button></div>
-            </div>
+          <div class="field">
+            <label for="fOverdue">Follow up if not marked given</label>
+            <select id="fOverdue">
+              <option value="0">do not follow up</option>
+              <option value="20">after 20 minutes</option>
+              <option value="30" selected>after 30 minutes</option>
+              <option value="60">after 1 hour</option>
+            </select>
           </div>
         </div>
+        <div class="btn-row">
+          <button class="btn small" id="btnSaveCloud">Save reminder settings</button>
+          <button class="btn ghost small" id="btnTestEmail">Send a test email</button>
+        </div>
+        <div id="emailStatus"></div>
+        <div class="note warn" style="margin-top:14px">
+          <b>Keep this page open</b> on one phone — a browser can only send while the page is loaded. Add the doses to
+          your calendar as well (below) so an alert still arrives if the page gets closed.
+        </div>
+
+        <details class="fold" style="margin-top:16px;box-shadow:none;border-style:dashed">
+          <summary style="font-size:15px">Advanced — share one schedule between two phones</summary>
+          <div class="fold-body">
+            <p style="margin:0 0 12px;font-size:13.5px;color:var(--soft);font-weight:600">
+              Optional and off by default. If you ever deploy the Dose Clock worker, paste its address here: both phones
+              then share one schedule and the server sends the emails on its own, even with every app closed.
+              Leave these blank to keep everything on this phone.
+            </p>
+            <div class="field">
+              <label for="fApi">Worker address <span class="hint">Optional</span></label>
+              <input id="fApi" type="url" placeholder="leave blank" autocomplete="off" />
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="fCode">Family code</label>
+                <input id="fCode" type="password" placeholder="Family code" autocomplete="current-password" />
+              </div>
+              <div class="field" style="flex:0 0 auto;align-self:flex-end">
+                <button class="btn ghost" id="btnLogin">Connect</button>
+              </div>
+            </div>
+            <div id="syncStatus"></div>
+            <div id="cloudBox" hidden>
+              <div class="btn-row">
+                <button class="btn ghost small" id="btnPull">Refresh from other phone</button>
+                <button class="btn ghost small" id="btnLogout">Sign out of this device</button>
+              </div>
+              <div id="adminBox" hidden style="margin-top:18px;border-top:1px dashed var(--line);padding-top:14px">
+                <h4 style="font-size:16px;margin-bottom:8px">Admin — families</h4>
+                <div id="roomList" style="font-size:13.5px"></div>
+                <div class="row" style="margin-top:10px">
+                  <div class="field"><label for="fNewRoomName">Family name</label><input id="fNewRoomName" placeholder="Smith Family" /></div>
+                  <div class="field"><label for="fNewRoomPass">New family code</label><input id="fNewRoomPass" placeholder="smith 2026" /></div>
+                  <div class="field" style="flex:0 0 auto;align-self:flex-end"><button class="btn ghost" id="btnAddRoom">Create</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
     </details>
 
     <details class="fold">
-      <summary>📅 Calendar alerts and phone pop-ups</summary>
+      <summary>📅 Getting the doses into the iPhone calendar</summary>
       <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
-        <p style="margin-top:0"><b style="color:var(--ink)">Calendar (works with no internet, no sign-in)</b></p>
+        <p style="margin-top:0">Tap <b>Add to calendar</b> on any medicine (or <b>Add all to calendar</b> below the list)
+        and pick the way that suits the phone:</p>
         <ol class="steps">
-          <li>Tap <b>Add all to calendar</b> in the Medicines section. A file ending in .ics downloads.</li>
-          <li>On iPhone tap the download arrow in Safari, tap the file, choose a calendar, then tap <b>Add All</b>.</li>
-          <li>Every dose becomes an event with an alert at dose time and a heads-up 5 minutes before.</li>
+          <li><b style="color:var(--ink)">Google Calendar</b> — opens the Google Calendar app or site with the whole
+          course already filled in as one repeating event. Tap <b>Save</b> and it appears in the iPhone calendar too,
+          as long as the Google account is added under Settings → Calendar → Accounts.</li>
+          <li><b style="color:var(--ink)">Open in Calendar (iPhone)</b> — hands the schedule to iOS through the share
+          sheet. Choose <b>Calendar</b>, then <b>Add All</b>. If iOS shows a preview first, tap the file and then
+          <b>Add All</b>.</li>
+          <li><b style="color:var(--ink)">Download the .ics file</b> — best on a computer or Android. On iPhone the file
+          lands in Files, so use one of the two options above instead.</li>
         </ol>
-        <p><b style="color:var(--ink)">Pop-up alerts</b> — tap 🔔 at the top of this page while it is open in your browser.
-        Pop-ups only fire while the page is open, which is why the email reminders exist.</p>
+        <p>Every dose becomes an event with an alert at dose time and a heads-up 5 minutes before.
+        <b style="color:var(--ink)">Pop-up alerts</b> — tap 🔔 at the top of this page; those fire while the page is open.</p>
       </div>
     </details>
 
@@ -641,8 +685,10 @@ details.fold .fold-body{padding:0 18px 18px}
       giving both. If your child is under three months old, is getting worse, will not drink, or you are unsure about
       anything, call your doctor or a nurse line. In an emergency call 911.</p>
       <div class="safety">Never give a dose based on a reminder alone. Check the label, the amount and the child every time.</div>
-      <p style="margin-bottom:0">Without a family code everything stays on this device only. With a family code the schedule is
-      stored in your family's private repository so both parents' phones agree, and reminder emails can be sent.</p>
+      <p style="margin-bottom:0"><b>Where your information lives.</b> Everything you type stays in this browser on this
+      phone. There is no account and no server holding your child's medicines. The only thing that ever leaves the device
+      is the reminder email itself, sent to the addresses you entered. If you later connect the optional family worker,
+      the schedule is also kept in the family's own private repository, reachable only with your family code.</p>
     </div>
   </footer>
 </div>
@@ -656,8 +702,17 @@ details.fold .fold-body{padding:0 18px 18px}
 /* ═══════════════════════════════════════════════════════════════════════════
    0. Config
    ═══════════════════════════════════════════════════════════════════════════ */
-// Paste your deployed worker URL here to make cloud sync one tap for everyone.
+// Optional. Leave blank to keep everything on the phone with no server at all.
+// (Only fill this in if you deploy the twc-dose-clock worker for closed-app reminders.)
 var DEFAULT_API_BASE = "";
+
+// EmailJS — same service and template the Family Tasks app uses. The public key
+// is safe to ship in a page; it can only send through this one template.
+var EMAILJS = {
+  service:   "service_h96tng5s",
+  template:  "template_y7cdp15",
+  publicKey: "Hzb7w3nDbYqseJ6Gz"
+};
 
 var COLOURS = { sky:"#3C8FEF", mint:"#22B08C", peach:"#FF8A5B", grape:"#8A6BF2", rose:"#EF5570", sun:"#FFB43D" };
 var COLOUR_KEYS = ["sky","mint","peach","grape","rose","sun"];
@@ -685,7 +740,7 @@ var KEY = "doseclock.v2", OLDKEY = "doseclock.v1";
 function blankState(){
   return {
     meds:[], logs:[], caregivers:[], deletedMedIds:{},
-    settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30 },
+    settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30, emailFromDevice:true },
     sync:{ apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 },
     ui:{ person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"", unit:"F" }
   };
@@ -1229,7 +1284,7 @@ function renderMeds(){
         (nd?'<button class="btn tiny" data-act="give" data-med="'+med.id+'">✓ Given</button>':'')+
         '<button class="btn tiny ghost" data-act="edit" data-med="'+med.id+'">Edit</button>'+
         '<button class="btn tiny ghost" data-act="pause" data-med="'+med.id+'">'+(med.paused?"Resume":"Pause")+'</button>'+
-        '<button class="btn tiny ghost" data-act="ics" data-med="'+med.id+'">Calendar</button>'+
+        '<button class="btn tiny ghost" data-act="ics" data-med="'+med.id+'">Add to calendar</button>'+
         '<button class="btn tiny danger" data-act="delete" data-med="'+med.id+'">Delete</button>'+
       '</div></div>'+
       progress + meter + notes + pausedNote + doneNote +
@@ -1306,7 +1361,7 @@ function markGiven(medId, index, atMs){
     }
   }
   med.updatedAt = Date.now();
-  save(); renderAll(); scheduleLocalAlert();
+  save(); renderAll(); scheduleLocalAlert(); checkDueEmails();
   toast("Marked given at "+fmtTime(when)+(med.doses[index].givenBy?" by "+med.doses[index].givenBy:""));
 }
 
@@ -1375,7 +1430,7 @@ document.addEventListener("click", function(ev){
   else if (act==="pause") togglePause(medId);
   else if (act==="delete") deleteMed(medId);
   else if (act==="edit") startEdit(medId);
-  else if (act==="ics"){ var m1=findMed(medId); if (m1) downloadICS([m1], slug(m1.name)); }
+  else if (act==="ics"){ var m1=findMed(medId); if (m1) openCalSheet([m1]); }
   else if (act==="expand"){ var m2=findMed(medId); if (m2){ m2.expanded=!m2.expanded; renderMeds(); } }
   else if (act==="person"){ state.ui.person = b.getAttribute("data-p"); save({push:false}); renderAll(); }
   else if (act==="jumpAdd"){ scrollTo("addSection"); el("fName").focus(); }
@@ -1932,7 +1987,7 @@ function scheduleText(){
   lines.push("Dose Clock only keeps time. Follow the label or your doctor, nurse or pharmacist for the amount.");
   return lines.join("\n");
 }
-el("btnIcsAll").addEventListener("click", function(){ downloadICS(visibleMeds(), "medicine"); });
+el("btnIcsAll").addEventListener("click", function(){ openCalSheet(visibleMeds()); });
 el("btnCopyAll").addEventListener("click", function(){
   var txt = scheduleText();
   if (navigator.clipboard && navigator.clipboard.writeText){
@@ -2001,6 +2056,218 @@ function scheduleLocalAlert(){
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   14b. Email reminders sent straight from this phone (EmailJS)
+   ═══════════════════════════════════════════════════════════════════════════ */
+function sendBrowserEmail(params){
+  return fetch("https://api.emailjs.com/api/v1.0/email/send", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      service_id:  EMAILJS.service,
+      template_id: EMAILJS.template,
+      user_id:     EMAILJS.publicKey,
+      template_params: params
+    })
+  }).then(function(r){
+    if (!r.ok) return r.text().then(function(t){ throw new Error(t || ("EmailJS "+r.status)); });
+    return true;
+  });
+}
+
+function doseEmailParams(med, dose, index, carer, kind){
+  var late = kind === "overdue";
+  var who = med.person || "your child";
+  var title = late
+    ? "Still waiting: "+med.name+" for "+who+" was due "+fmtTime(dose.planned)
+    : "Time for "+med.name+" for "+who+" at "+fmtTime(dose.planned);
+  var lines = [];
+  lines.push(late
+    ? "This dose was due at "+fmtTime(dose.planned)+" "+fmtDay(dose.planned)+" and nobody has marked it given yet."
+    : "Next dose is due at "+fmtTime(dose.planned)+" "+fmtDay(dose.planned)+".");
+  lines.push("Give: "+(med.dose || "the amount printed on the label"));
+  lines.push("Medicine: "+med.name+(med.ingredient?" ("+med.ingredient+")":""));
+  lines.push("Schedule: every "+trimNum(med.intervalH)+" hours, dose "+(index+1)+" of "+med.doses.length);
+  if (med.maxPerDay) lines.push("Do not go over "+med.maxPerDay+" doses in 24 hours.");
+  if (med.notes) lines.push("Note: "+med.notes);
+  lines.push("Doses given in the last 24 hours: "+givenSince(med, Date.now()-DAY));
+  lines.push("");
+  lines.push('Open Dose Clock and tap "Given" once the dose is in, so the other parent can see it.');
+  lines.push("Dose Clock only keeps time. Always follow the label or your doctor, nurse or pharmacist.");
+  return {
+    to_name: carer.name || "there",
+    name: carer.name || "there",
+    email: carer.email,
+    assigned_by: "Dose Clock",
+    task_title: title,
+    task_priority: late ? "high" : "medium",
+    task_desc: lines.join("\n"),
+    is_reminder: "true",
+    app_url: location.href.split("#")[0]
+  };
+}
+
+function emailRecipients(){
+  return state.caregivers.filter(function(c){ return c.email && c.email.indexOf("@")>0 && c.notify !== false; });
+}
+function deviceEmailsOn(){
+  return state.settings.emailFromDevice !== false && !connected && emailRecipients().length > 0;
+}
+function sendToAll(med, dose, index, kind){
+  var carers = emailRecipients();
+  return Promise.all(carers.map(function(c){
+    return sendBrowserEmail(doseEmailParams(med, dose, index, c, kind));
+  })).then(function(){ return carers.length; });
+}
+
+function checkDueEmails(){
+  if (!deviceEmailsOn()) return;
+  var now = Date.now();
+  var lead = Math.max(0, Number(state.settings.leadMinutes)||0)*MIN;
+  var nudge = state.settings.overdueNudge !== false;
+  var after = Math.max(5, Number(state.settings.overdueMinutes)||30)*MIN;
+
+  activeMeds().forEach(function(med){
+    if (med.paused) return;
+    var nd = nextDose(med); if (!nd) return;
+    var d = nd.dose;
+    if (now - d.planned > 12*HOUR) return;               // far too stale to chase
+
+    function fire(kind){
+      save({push:false});
+      sendToAll(med, d, nd.index, kind).then(function(n){
+        state.ui.lastEmailAt = Date.now();
+        state.ui.lastEmailErr = "";
+        save({push:false}); renderEmailStatus();
+        toast((kind==="overdue"?"Follow-up":"Reminder")+" emailed to "+n+" address"+(n===1?"":"es"));
+      }).catch(function(e){
+        d.tries = (d.tries||0)+1;
+        if (d.tries < 3){ if (kind==="overdue") d.overdueAt = null; else d.remindedAt = null; }
+        state.ui.lastEmailErr = e.message;
+        save({push:false}); renderEmailStatus();
+      });
+    }
+    // If the page was closed when the dose came due, say so rather than "next dose".
+    if (!d.remindedAt && d.planned - lead <= now){ d.remindedAt = now; fire(now - d.planned > 10*MIN ? "overdue" : "due"); }
+    else if (nudge && d.remindedAt && !d.overdueAt && now >= d.planned + after){ d.overdueAt = now; fire("overdue"); }
+  });
+}
+
+function renderEmailStatus(){
+  var host = el("emailStatus"); if (!host) return;
+  var carers = emailRecipients();
+  if (connected){
+    host.innerHTML = '<div class="note">Connected to the family worker, so the server sends the emails. This phone will not send duplicates.</div>';
+    return;
+  }
+  if (state.settings.emailFromDevice === false){
+    host.innerHTML = '<div class="note warn">Dose emails from this phone are switched off.</div>';
+    return;
+  }
+  if (!carers.length){
+    host.innerHTML = '<div class="note warn">Add at least one address with the email box ticked, then save.</div>';
+    return;
+  }
+  var bits = ["Emails will go to "+carers.map(function(c){ return esc(c.email); }).join(", ")+"."];
+  if (state.ui.lastEmailAt) bits.push("Last sent "+fmtTime(state.ui.lastEmailAt)+" "+fmtDay(state.ui.lastEmailAt)+".");
+  host.innerHTML = '<div class="note">'+bits.join(" ")+'</div>'+
+    (state.ui.lastEmailErr ? '<div class="note bad">Last attempt failed: '+esc(state.ui.lastEmailErr)+'</div>' : '');
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   14c. Calendar sheet — Google, iPhone share, or file
+   ═══════════════════════════════════════════════════════════════════════════ */
+function gcalStamp(ms){
+  var d = new Date(ms);
+  return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+
+         pad(d.getUTCHours())+pad(d.getUTCMinutes())+"00Z";
+}
+function googleUrl(med){
+  var nd = nextDose(med);
+  var startIdx = nd ? nd.index : 0;
+  var start = nd ? nd.dose.planned : med.doses[0].planned;
+  var count = med.doses.slice(startIdx).filter(function(d){ return !d.given && !d.skipped; }).length || 1;
+  var text = med.name + (med.person ? " · "+med.person : "") + " — " + (med.dose || "see label");
+  var details = [
+    "Give "+(med.dose||"the amount printed on the label")+".",
+    "Every "+trimNum(med.intervalH)+" hours"+(med.maxPerDay?", no more than "+med.maxPerDay+" doses in 24 hours":"")+".",
+    med.ingredient ? "Active ingredient: "+med.ingredient+"." : "",
+    med.notes ? "Note: "+med.notes : "",
+    "",
+    "Dose Clock only keeps time. Always follow the label or your doctor, nurse or pharmacist."
+  ].filter(Boolean).join("\n");
+  var whole = Math.abs(med.intervalH - Math.round(med.intervalH)) < 0.01;
+  var rrule = whole
+    ? "RRULE:FREQ=HOURLY;INTERVAL="+Math.max(1,Math.round(med.intervalH))+";COUNT="+count
+    : "RRULE:FREQ=MINUTELY;INTERVAL="+Math.max(1,Math.round(med.intervalH*60))+";COUNT="+count;
+  return "https://calendar.google.com/calendar/render?action=TEMPLATE"+
+    "&text="+encodeURIComponent(text)+
+    "&dates="+gcalStamp(start)+"/"+gcalStamp(start+10*MIN)+
+    "&details="+encodeURIComponent(details)+
+    "&recur="+encodeURIComponent(rrule);
+}
+
+function pendingDoses(meds){
+  var n = 0;
+  meds.forEach(function(m){ m.doses.forEach(function(d){ if(!d.given&&!d.skipped&&!m.paused) n++; }); });
+  return n;
+}
+function shareICS(meds, name){
+  if (!pendingDoses(meds)){ toast("There are no upcoming doses to add"); return; }
+  var text = buildICS(meds);
+  var file = null;
+  try { file = new File([text], (name||"medicine")+"-doses.ics", { type:"text/calendar" }); } catch(e){}
+  if (file && navigator.canShare && navigator.share && navigator.canShare({ files:[file] })){
+    navigator.share({ files:[file], title:"Medicine doses" })
+      .then(function(){ toast("Choose Calendar, then Add All"); })
+      .catch(function(){ /* the parent cancelled */ });
+    return;
+  }
+  // Older iOS and desktop: open the file itself so the calendar app can claim it.
+  var url = URL.createObjectURL(new Blob([text], { type:"text/calendar;charset=utf-8" }));
+  var win = window.open(url, "_blank");
+  if (!win) window.location.href = url;
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 20000);
+  toast("If nothing opens, use Download .ics instead");
+}
+
+function closeSheet(){
+  var s = document.getElementById("calSheet");
+  if (s) s.parentNode.removeChild(s);
+}
+function openCalSheet(meds){
+  meds = (meds||[]).filter(function(m){ return m && m.doses && m.doses.length; });
+  if (!meds.length){ toast("Add a medicine first"); return; }
+  closeSheet();
+  var back = document.createElement("div");
+  back.className = "sheet-back"; back.id = "calSheet";
+  back.innerHTML = '<div class="sheet" role="dialog" aria-label="Add to calendar">'+
+    '<button class="close" data-cal-close="1" aria-label="Close">×</button>'+
+    '<h4>Add to calendar</h4>'+
+    '<p class="meta">'+pendingDoses(meds)+' dose'+(pendingDoses(meds)===1?'':'s')+' still to come.</p>'+
+    meds.map(function(m){
+      return '<button class="btn sky wide" data-cal-g="'+m.id+'">📅 Google Calendar — '+esc(m.name)+'</button>';
+    }).join("")+
+    '<button class="btn wide" data-cal-share="1">📲 Open in Calendar (iPhone)</button>'+
+    '<button class="btn ghost wide" data-cal-dl="1">⬇︎ Download .ics file</button>'+
+    '<p class="meta">iPhone: pick <b>Calendar</b> in the share sheet then <b>Add All</b>, and leave “Remove Alarms” switched off so the dose alerts come with it. Google Calendar adds the whole course as one repeating event.</p>'+
+  '</div>';
+  document.body.appendChild(back);
+
+  back.addEventListener("click", function(e){
+    if (e.target === back || e.target.getAttribute("data-cal-close")){ closeSheet(); return; }
+    var g = e.target.closest ? e.target.closest("[data-cal-g]") : null;
+    if (g){
+      var med = findMed(g.getAttribute("data-cal-g"));
+      if (med) window.open(googleUrl(med), "_blank", "noopener");
+      return;
+    }
+    if (e.target.closest("[data-cal-share]")){ shareICS(meds, slug(meds.length===1?meds[0].name:"medicine")); return; }
+    if (e.target.closest("[data-cal-dl]")){ downloadICS(meds, slug(meds.length===1?meds[0].name:"medicine")); closeSheet(); }
+  });
+}
+document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeSheet(); closePop(); } });
+
+/* ═══════════════════════════════════════════════════════════════════════════
    15. Sync & email panel
    ═══════════════════════════════════════════════════════════════════════════ */
 function renderSyncPanel(){
@@ -2013,6 +2280,7 @@ function renderSyncPanel(){
     : (canSync() ? '<div class="note warn">Saved, but the server has not answered yet. Tap Connect to try again.</div>' : "");
   el("fLead").value = String(state.settings.leadMinutes==null?5:state.settings.leadMinutes);
   el("fOverdue").value = state.settings.overdueNudge ? String(state.settings.overdueMinutes||30) : "0";
+  el("fEmailOn").checked = state.settings.emailFromDevice !== false;
   el("adminBox").hidden = !state.sync.isAdmin;
 
   var rows = state.caregivers.length ? state.caregivers : [{ id:uid(), name:"", email:"", notify:true }];
@@ -2031,20 +2299,21 @@ function renderSyncPanel(){
       renderSyncPanel();
     });
   });
+  renderEmailStatus();
 }
-function collectCare(){
+function collectCare(keepEmpty){
   var out = [];
   Array.prototype.forEach.call(document.querySelectorAll("[data-care]"), function(row){
     var name = row.querySelector('[data-f="name"]').value.trim();
     var email = row.querySelector('[data-f="email"]').value.trim();
     var notify = row.querySelector('[data-f="notify"]').checked;
-    if (name || email) out.push({ id:uid(), name:name, email:email, notify:notify });
+    if (name || email || keepEmpty) out.push({ id:uid(), name:name, email:email, notify:notify });
   });
   state.caregivers = out;
   return out;
 }
 el("btnAddCare").addEventListener("click", function(){
-  collectCare();
+  collectCare(true);
   state.caregivers.push({ id:uid(), name:"", email:"", notify:true });
   renderSyncPanel();
 });
@@ -2054,12 +2323,18 @@ el("btnSaveCloud").addEventListener("click", function(){
   var ov = parseInt(el("fOverdue").value,10)||0;
   state.settings.overdueNudge = ov > 0;
   state.settings.overdueMinutes = ov || 30;
+  state.settings.emailFromDevice = el("fEmailOn").checked;
   save();
   var bad = state.caregivers.filter(function(c){ return c.notify && (!c.email || c.email.indexOf("@")<0); });
-  pushNow().then(function(){
+  Promise.resolve(canSync() && connected ? pushNow() : null).then(function(){
     renderSyncPanel();
-    toast(bad.length ? "Saved, but one address looks wrong — check it" : "Email settings saved");
+    checkDueEmails();
+    toast(bad.length ? "Saved, but one address looks wrong — check it" : "Reminder settings saved");
   });
+});
+el("fEmailOn").addEventListener("change", function(){
+  state.settings.emailFromDevice = el("fEmailOn").checked;
+  save({push:false}); renderEmailStatus();
 });
 el("btnLogin").addEventListener("click", function(){
   state.sync.apiBase = el("fApi").value.trim();
@@ -2086,11 +2361,38 @@ el("btnLogout").addEventListener("click", function(){
 el("btnPull").addEventListener("click", function(){ pull(false).then(renderSyncPanel); });
 el("btnTestEmail").addEventListener("click", function(){
   collectCare(); save();
-  var target = state.caregivers.filter(function(c){ return c.email; })[0];
-  if (!target){ toast("Add an email address first"); return; }
-  api("/api/test-email", { method:"POST", body:{ to:target.email, name:target.name } })
-    .then(function(){ toast("Test email sent to "+target.email); })
-    .catch(function(e){ toast("Could not send: "+e.message); });
+  var targets = state.caregivers.filter(function(c){ return c.email && c.email.indexOf("@")>0; });
+  if (!targets.length){ toast("Add an email address first"); return; }
+  toast("Sending…");
+  var job = (canSync() && connected)
+    ? api("/api/test-email", { method:"POST", body:{ to:targets[0].email, name:targets[0].name } })
+    : Promise.all(targets.map(function(c){
+        return sendBrowserEmail({
+          to_name: c.name || "there", name: c.name || "there", email: c.email,
+          assigned_by: "Dose Clock",
+          task_title: "Dose Clock test — reminders are working",
+          task_priority: "low",
+          task_desc: [
+            "This is a test from Dose Clock on "+(state.ui.me || "this phone")+".",
+            "",
+            "When a dose is due you will get an email like this one, with the medicine, the amount to give",
+            "and the time it was due.",
+            "",
+            "Reminders are sent by the page itself, so keep Dose Clock open on one phone.",
+            "Dose Clock only keeps time. Always follow the label or your doctor, nurse or pharmacist."
+          ].join("\n"),
+          is_reminder: "true",
+          app_url: location.href.split("#")[0]
+        });
+      }));
+  job.then(function(){
+    state.ui.lastEmailAt = Date.now(); state.ui.lastEmailErr = "";
+    save({push:false}); renderEmailStatus();
+    toast("Test email sent to "+targets.map(function(c){ return c.email; }).join(", "));
+  }).catch(function(e){
+    state.ui.lastEmailErr = e.message; renderEmailStatus();
+    toast("Could not send: "+e.message);
+  });
 });
 el("syncChip").addEventListener("click", function(){
   var f = el("foldSync"); f.open = true;
@@ -2138,6 +2440,7 @@ renderBell();
 renderSyncPanel();
 renderAll();
 scheduleLocalAlert();
+checkDueEmails();
 
 if (canSync()){
   syncChip("busy","Connecting…");
@@ -2148,10 +2451,11 @@ if (canSync()){
 
 setInterval(tick, 1000);
 setInterval(function(){ renderBanners(); renderMeds(); renderChart(); renderStats(); }, 60000);
+setInterval(checkDueEmails, 30000);
 setInterval(function(){ if (canSync()) pull(true); }, 45000);
 document.addEventListener("visibilitychange", function(){
   if (!document.hidden){
-    renderAll(); scheduleLocalAlert();
+    renderAll(); scheduleLocalAlert(); checkDueEmails();
     if (canSync()) pull(true);
   }
 });
