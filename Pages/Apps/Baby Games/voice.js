@@ -1,15 +1,19 @@
 /* Baby Games — shared friendly-voice helper.
  *
- * Two voice engines:
- *   1. "system"  — the device's own speech voice (instant, no download). We rank
- *                  the installed voices and pick the most natural one, spoken in
- *                  a gentle, calm tone.
- *   2. "natural" — a Piper neural voice that runs entirely in the browser via
- *                  WebAssembly (vits-web + onnxruntime-web). Warm and lifelike.
- *                  Downloads a small model once, then works offline.
+ *   "system"  — the device's own speech voice (instant, no download). We rank the
+ *               installed voices, pick the most natural one, and speak gently.
+ *   "natural" — a Piper neural voice running fully in the browser (WASM) via
+ *               @mintplex-labs/piper-tts-web. Warm & lifelike; downloads a model
+ *               once (~63 MB), then works offline. Uses a reusable TtsSession so
+ *               each phrase isn't re-parsed, plays through a gesture-unlocked
+ *               AudioContext, and caches every generated clip so repeats are
+ *               instant. Always falls back to the system voice on any failure.
  *
- * A parent chooses in the "Voice" picker; the choice is remembered on the device.
- * Natural mode always falls back to the system voice if a model can't load.
+ * NOTE: each game's HTML must include the onnxruntime-web import map (the Piper
+ * library imports it by bare name):
+ *   <script type="importmap">
+ *   {"imports":{"onnxruntime-web":"https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm"}}
+ *   </script>
  */
 (function () {
   "use strict";
@@ -17,8 +21,7 @@
   var MODE_KEY = "babyVoiceMode_v1";     // 'system' | 'natural'
   var SYS_KEY  = "babyVoiceURI_v1";      // chosen system voiceURI
   var PIP_KEY  = "babyPiperVoice_v1";    // chosen Piper voiceId
-  // ESM build of the in-browser Piper engine (bundled with onnxruntime-web).
-  var VITS_URL = "https://cdn.jsdelivr.net/npm/@diffusionstudio/vits-web/+esm";
+  var PIPER_URL = "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js";
 
   function getStr(k, d) { try { return localStorage.getItem(k) || d; } catch (e) { return d; } }
   function setStr(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -26,16 +29,17 @@
   var mode    = getStr(MODE_KEY, "system");
   var piperId = getStr(PIP_KEY, "");
 
-  // A short, warm, TWC-family-friendly Piper voice menu (British & American).
+  // Verified voice IDs (all English Piper voices are ~63 MB — no small tier).
   var PIPER_VOICES = [
-    { id: "en_US-amy-low",           label: "Amy — American, warm",     size: "≈ 28 MB" },
-    { id: "en_US-hfc_female-medium", label: "Grace — American, clear",  size: "≈ 63 MB" },
-    { id: "en_GB-alba-medium",       label: "Alba — British, gentle",   size: "≈ 63 MB" },
-    { id: "en_US-ryan-low",          label: "Ryan — American, male",    size: "≈ 28 MB" },
-    { id: "en_GB-alan-low",          label: "Alan — British, male",     size: "≈ 28 MB" }
+    { id: "en_US-amy-medium",         label: "Amy — American, warm",    size: "~63 MB" },
+    { id: "en_US-hfc_female-medium",  label: "Grace — American, clear", size: "~63 MB" },
+    { id: "en_GB-jenny_dioco-medium", label: "Jenny — British, gentle", size: "~63 MB" },
+    { id: "en_GB-cori-medium",        label: "Cori — British, lively",  size: "~63 MB" },
+    { id: "en_US-hfc_male-medium",    label: "Sam — American, male",    size: "~63 MB" },
+    { id: "en_GB-alan-medium",        label: "Alan — British, male",    size: "~63 MB" }
   ];
 
-  // ── System voice ranking (natural-sounding first, robotic ones avoided) ──
+  // ── System voice ranking ────────────────────────────────────────────────
   var GREAT  = /natural|neural|online|siri|premium|enhanced/i;
   var GOOD   = /google|samantha|ava|allison|joanna|serena|karen|moira|tessa|fiona|nicky|aria|jenny|libby|sonia|nova|zoe|ada|amelie|matilda/i;
   var FEMALE = /female|woman|samantha|ava|aria|jenny|libby|sonia|karen|moira|fiona|zoe|nicky|serena|joanna|allison|nova/i;
@@ -81,54 +85,80 @@
     } catch (e) { if (cb) setTimeout(cb, 600); }
   }
 
-  // ── Piper (in-browser neural) ───────────────────────────────────────────
-  var tts = null, piperReady = false, loadingLib = null;
-  var clipCache = {}, curAudio = null;
+  // ── Audio playback through a gesture-unlocked AudioContext ───────────────
+  var actx = null, curSrc = null;
+  function ensureCtx() { if (!actx) { try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} } return actx; }
+  function unlock() { try { var c = ensureCtx(); if (c && c.state === "suspended") c.resume(); } catch (e) {} }
+  try { document.addEventListener("touchend", unlock, true); document.addEventListener("click", unlock, true); } catch (e) {}
+
+  function playBlob(blob, cb) {
+    var c = ensureCtx();
+    if (!c) {                              // last-resort: HTMLAudio
+      try { var a = new Audio(URL.createObjectURL(blob)); if (cb) { a.addEventListener("ended", cb, { once: true }); setTimeout(cb, 6000); } var pr = a.play(); if (pr && pr.catch) pr.catch(function () { if (cb) cb(); }); } catch (e) { if (cb) cb(); }
+      return;
+    }
+    blob.arrayBuffer().then(function (ab) { return c.decodeAudioData(ab); }).then(function (buf) {
+      try { if (curSrc) curSrc.stop(); } catch (e) {}
+      var src = c.createBufferSource(); src.buffer = buf; src.connect(c.destination); curSrc = src;
+      if (cb) { src.onended = cb; setTimeout(cb, Math.min(9000, buf.duration * 1000 + 500)); }
+      try { c.resume(); } catch (e) {}
+      src.start();
+    }).catch(function () { if (cb) cb(); });
+  }
+
+  // ── Piper engine ────────────────────────────────────────────────────────
+  var lib = null, loadingLib = null, session = null, sessionVoice = "";
+  var blobCache = {};
 
   function loadLib() {
-    if (tts) return Promise.resolve(true);
+    if (lib) return Promise.resolve(lib);
     if (loadingLib) return loadingLib;
-    // dynamic import via a data-Function so bundlers/linters don't choke on import()
-    loadingLib = (new Function("u", "return import(u)"))(VITS_URL)
-      .then(function (mod) { tts = mod && (mod.default && mod.default.predict ? mod.default : mod); return !!(tts && tts.predict); })
-      .catch(function () { return false; });
+    // indirect import() so classic-script linters don't choke on it
+    loadingLib = (new Function("u", "return import(u)"))(PIPER_URL)
+      .then(function (m) { lib = m; return m; })
+      .catch(function () { return null; });
     return loadingLib;
   }
+  function apiOf(m) { return (m && m.predict) ? m : (m && m.default) ? m.default : (m || {}); }
 
-  // Download a Piper model (cached by the library after first fetch).
-  function downloadVoice(id, onProgress) {
-    return loadLib().then(function (okLib) {
-      if (!okLib || !tts.download) throw new Error("Natural voice engine unavailable");
-      return tts.download(id, function (p) {
-        try { if (onProgress && p && p.total) onProgress(Math.round((p.loaded / p.total) * 100)); } catch (e) {}
-      });
-    }).then(function () { piperReady = true; piperId = id; return true; });
+  // Download a voice model with progress (parent picker uses this).
+  function downloadVoice(id, onPct) {
+    return loadLib().then(function (m) {
+      if (!m) throw new Error("Natural voice engine unavailable");
+      var api = apiOf(m);
+      if (!api.download) return true;
+      return api.download(id, function (p) { try { if (onPct && p && p.total) onPct(Math.round(p.loaded * 100 / p.total)); } catch (e) {} });
+    }).then(function () { piperId = id; session = null; sessionVoice = ""; return ensureSession(); }).then(function () { return true; });
   }
 
-  function stopAudio() { try { if (curAudio) { curAudio.pause(); curAudio.currentTime = 0; curAudio = null; } } catch (e) {} }
+  // A reusable session (so the 63 MB graph is parsed once, not per phrase).
+  function ensureSession() {
+    if (session && sessionVoice === piperId) return Promise.resolve(session);
+    if (!piperId) return Promise.resolve(null);
+    return loadLib().then(function (m) {
+      if (!m) return null;
+      var TS = m.TtsSession || (m.default && m.default.TtsSession);
+      if (TS && TS.create) {
+        return TS.create({ voiceId: piperId }).then(function (s) { session = s; sessionVoice = piperId; return s; });
+      }
+      var api = apiOf(m);                 // fallback: wrap predict() as a session
+      session = { predict: function (t) { return api.predict({ text: t, voiceId: piperId }); } };
+      sessionVoice = piperId; return session;
+    });
+  }
 
   function speakNatural(text, cb) {
-    loadLib().then(function (okLib) {
-      if (!okLib || !tts.predict || !piperId) throw new Error("not ready");
+    ensureSession().then(function (s) {
+      if (!s) throw new Error("no session");
       var key = piperId + "::" + text;
-      if (clipCache[key]) return clipCache[key];
-      return tts.predict({ text: text, voiceId: piperId }).then(function (wav) {
-        var url = URL.createObjectURL(wav); clipCache[key] = url; return url;
-      });
-    }).then(function (url) {
-      stopAudio();
-      var a = new Audio(url); curAudio = a;
-      if (cb) { a.addEventListener("ended", cb, { once: true }); setTimeout(cb, 6000); }
-      var pr = a.play(); if (pr && pr.catch) pr.catch(function () { if (cb) cb(); });
-    }).catch(function () { speakSystem(text, cb); });   // graceful fallback
+      if (blobCache[key]) return blobCache[key];
+      return s.predict(text).then(function (blob) { blobCache[key] = blob; return blob; });
+    }).then(function (blob) { playBlob(blob, cb); })
+      .catch(function () { speakSystem(text, cb); });   // graceful fallback
   }
 
   function say(text, cb) {
-    if (mode === "natural") {
-      if (!piperReady && piperId) downloadVoice(piperId).catch(function () {}); // warm up (cached → fast)
-      speakNatural(text, cb);
-      return;
-    }
+    if (mode === "natural" && piperId) { speakNatural(text, cb); return; }
     speakSystem(text, cb);
   }
 
@@ -137,41 +167,35 @@
     var ov = document.createElement("div");
     ov.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(20,10,40,.85);display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;";
     var box = document.createElement("div");
-    box.style.cssText = "background:#fff;max-width:440px;width:100%;max-height:84vh;overflow:auto;border-radius:22px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);";
+    box.style.cssText = "background:#fff;max-width:440px;width:100%;max-height:86vh;overflow:auto;border-radius:22px;padding:20px;box-shadow:0 24px 60px rgba(0,0,0,.4);";
     ov.appendChild(box);
     ov.addEventListener("click", function (e) { if (e.target === ov) close(); });
-    function close() { try { speechSynthesis.cancel(); } catch (e) {} stopAudio(); ov.remove(); }
+    function close() { try { speechSynthesis.cancel(); } catch (e) {} try { if (curSrc) curSrc.stop(); } catch (e) {} ov.remove(); }
 
-    function h(t) { var e = document.createElement("div"); e.textContent = t; e.style.cssText = "font-weight:800;font-size:21px;color:#3a1d6e;"; return e; }
-    function p(t) { var e = document.createElement("div"); e.textContent = t; e.style.cssText = "font-size:13px;color:#777;margin:4px 0 12px;line-height:1.45;"; return e; }
+    function el(tag, css, text) { var e = document.createElement(tag); if (css) e.style.cssText = css; if (text != null) e.textContent = text; return e; }
     function btn(label, primary) {
-      var b = document.createElement("button"); b.textContent = label;
-      b.style.cssText = "display:block;width:100%;text-align:left;padding:13px 15px;margin:6px 0;border-radius:13px;border:2px solid #eee;background:" + (primary ? "linear-gradient(90deg,#7c3aed,#ec4899);color:#fff;border:none;text-align:center;font-weight:800;" : "#faf7ff;color:#333;") + "font-size:15px;font-weight:600;cursor:pointer;";
-      return b;
+      return el("button", "display:block;width:100%;text-align:" + (primary ? "center" : "left") + ";padding:13px 15px;margin:6px 0;border-radius:13px;border:" + (primary ? "none" : "2px solid #eee") + ";background:" + (primary ? "linear-gradient(90deg,#7c3aed,#ec4899);color:#fff;font-weight:800;" : "#faf7ff;color:#333;") + "font-size:15px;font-weight:600;cursor:pointer;", label);
     }
 
     function render() {
       box.innerHTML = "";
-      box.appendChild(h("Voice"));
+      box.appendChild(el("div", "font-weight:800;font-size:21px;color:#3a1d6e;", "Voice"));
 
-      // engine toggle
-      var row = document.createElement("div"); row.style.cssText = "display:flex;gap:8px;margin:6px 0 14px;";
+      var row = el("div", "display:flex;gap:8px;margin:6px 0 14px;");
       ["system", "natural"].forEach(function (m) {
-        var b = document.createElement("button");
-        b.textContent = m === "system" ? "Phone voice" : "Natural ✨";
         var on = mode === m;
-        b.style.cssText = "flex:1;padding:11px;border-radius:12px;border:2px solid " + (on ? "#7c3aed" : "#eee") + ";background:" + (on ? "#f3ecff" : "#faf7ff") + ";font-weight:800;font-size:14px;color:#3a1d6e;cursor:pointer;";
+        var b = el("button", "flex:1;padding:11px;border-radius:12px;border:2px solid " + (on ? "#7c3aed" : "#eee") + ";background:" + (on ? "#f3ecff" : "#faf7ff") + ";font-weight:800;font-size:14px;color:#3a1d6e;cursor:pointer;", m === "system" ? "Phone voice" : "Natural ✨");
         b.onclick = function () { mode = m; setStr(MODE_KEY, m); render(); };
         row.appendChild(b);
       });
       box.appendChild(row);
 
       if (mode === "system") {
-        box.appendChild(p("Uses a voice already on this phone. Tap one to hear it (✨ = extra natural)."));
+        box.appendChild(el("div", "font-size:13px;color:#777;margin-bottom:10px;line-height:1.45;", "A voice already on this phone — instant, no download. Tap one to hear it (✨ = extra natural)."));
         var all = (typeof speechSynthesis !== "undefined" ? speechSynthesis.getVoices() : []) || [];
         var vs = all.filter(function (v) { return /^en/i.test(v.lang); }); if (!vs.length) vs = all;
         vs = vs.slice().sort(function (a, b) { return scoreVoice(b) - scoreVoice(a); });
-        if (!vs.length) box.appendChild(p("No voices are installed on this device yet."));
+        if (!vs.length) box.appendChild(el("div", "color:#a33;font-weight:600;", "No voices are installed on this device yet."));
         vs.forEach(function (v) {
           var b = btn(v.name + (v.localService === false ? "  ✨" : ""));
           if (chosen && chosen.voiceURI === v.voiceURI) b.style.borderColor = "#7c3aed";
@@ -179,35 +203,33 @@
           box.appendChild(b);
         });
       } else {
-        box.appendChild(p("A warm neural voice that runs on the phone. It downloads once (then works offline). Tap one to install it."));
-        var status = document.createElement("div"); status.style.cssText = "font-size:13px;font-weight:700;color:#7c3aed;min-height:18px;margin-bottom:6px;";
+        box.appendChild(el("div", "font-size:13px;color:#777;margin-bottom:6px;line-height:1.45;", "A warm neural voice that runs on the phone. Downloads once (~63 MB), then works offline. Tap a voice to install it."));
+        var status = el("div", "font-size:13px;font-weight:700;color:#7c3aed;min-height:18px;margin-bottom:6px;");
         box.appendChild(status);
         PIPER_VOICES.forEach(function (pv) {
           var b = btn(pv.label + "  ·  " + pv.size);
-          if (piperReady && piperId === pv.id) b.style.borderColor = "#7c3aed";
+          if (mode === "natural" && piperId === pv.id) b.style.borderColor = "#7c3aed";
           b.onclick = function () {
-            status.textContent = "Downloading " + pv.label.split(" — ")[0] + "… 0%";
+            status.textContent = "Downloading… 0% (one time)";
             b.disabled = true; b.style.opacity = ".6";
-            downloadVoice(pv.id, function (pct) { status.textContent = "Downloading… " + pct + "%"; })
+            downloadVoice(pv.id, function (pct) { status.textContent = "Downloading… " + pct + "% (one time)"; })
               .then(function () {
                 mode = "natural"; setStr(MODE_KEY, "natural"); setStr(PIP_KEY, pv.id);
                 status.textContent = "Ready! Playing a sample…";
                 render(); speakNatural("Hi! Let's play together!");
               })
-              .catch(function (e) {
+              .catch(function () {
                 status.textContent = "Couldn't load that voice — using the phone voice instead.";
                 mode = "system"; setStr(MODE_KEY, "system"); b.disabled = false; b.style.opacity = "1";
               });
           };
           box.appendChild(b);
         });
+        box.appendChild(el("div", "font-size:11px;color:#aaa;margin-top:8px;line-height:1.4;", "Voices: Piper (rhasspy / OHF-Voice). First use of a new word takes a moment, then it's saved."));
       }
 
-      var done = btn("Done", true);
-      done.onclick = close;
-      box.appendChild(done);
+      var done = btn("Done", true); done.onclick = close; box.appendChild(done);
     }
-
     render();
     document.body.appendChild(ov);
   }

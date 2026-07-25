@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Dose Clock | Family medicine tracker</title>
+<meta name="description" content="Track several medicines for the whole family, see every dose on one friendly timeline, and get an email when the next dose is due." />
+<meta name="theme-color" content="#FFFCF6" />
+<link rel="icon" type="image/x-icon" href="https://www.twcministries.net/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#FFFCF6; --paper:#FFFFFF; --ink:#2A3348; --soft:#6E7A96; --faint:#98A2BC;
+  --line:#ECE6DA; --line-2:#F5F1E8;
+  --mint:#22B08C; --mint-l:#E2F7F0;
+  --sky:#3C8FEF;  --sky-l:#E8F2FF;
+  --peach:#FF8A5B;--peach-l:#FFEDE3;
+  --grape:#8A6BF2;--grape-l:#EFEAFF;
+  --rose:#EF5570; --rose-l:#FFE9ED;
+  --sun:#FFB43D;  --sun-l:#FFF4DE;
+  --night:#EDEAFB;
+  --display:"Baloo 2",system-ui,sans-serif;
+  --body:"Nunito Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --r:18px; --r-s:12px;
+  --shadow:0 6px 22px rgba(42,51,72,.07);
+  --shadow-lift:0 14px 34px rgba(42,51,72,.13);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
+  -webkit-text-size-adjust:100%;padding:0 0 90px;position:relative;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(720px 420px at 12% -6%,rgba(60,143,239,.13),transparent 62%),
+    radial-gradient(620px 420px at 92% 4%,rgba(255,180,61,.16),transparent 60%),
+    radial-gradient(640px 460px at 50% 104%,rgba(34,176,140,.12),transparent 62%);
+}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+a{color:var(--sky)}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;letter-spacing:-.01em;margin:0}
+
+/* ── top bar ─────────────────────────────────────────────── */
+.topbar{display:flex;align-items:center;gap:12px;padding:18px 0 8px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;margin-right:auto}
+.brand-badge{
+  width:44px;height:44px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--sun),var(--peach));box-shadow:0 6px 16px rgba(255,138,91,.34)
+}
+.brand-badge svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2.1;stroke-linecap:round}
+.brand-name{font-family:var(--display);font-weight:800;font-size:24px;line-height:1.05}
+.brand-sub{font-size:12px;color:var(--soft);font-weight:600}
+.chip-btn{
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;
+  padding:8px 14px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;
+  align-items:center;gap:7px;box-shadow:0 2px 8px rgba(42,51,72,.05)
+}
+.chip-btn:hover{border-color:var(--sky);color:var(--sky)}
+.chip-btn .dot{width:8px;height:8px;border-radius:50%;background:var(--faint)}
+.chip-btn.ok .dot{background:var(--mint)}
+.chip-btn.busy .dot{background:var(--sun)}
+.chip-btn.bad .dot{background:var(--rose)}
+
+/* ── buttons ─────────────────────────────────────────────── */
+button{font-family:var(--body);cursor:pointer;border:0}
+.btn{
+  border-radius:14px;padding:14px 18px;font-size:16px;font-weight:800;min-height:52px;
+  background:linear-gradient(135deg,var(--mint),#16997a);color:#fff;box-shadow:0 8px 20px rgba(34,176,140,.28);
+  transition:transform .12s ease,box-shadow .12s ease,filter .12s ease
+}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(1px)}
+.btn.sky{background:linear-gradient(135deg,var(--sky),#2b6fd0);box-shadow:0 8px 20px rgba(60,143,239,.28)}
+.btn.sun{background:linear-gradient(135deg,var(--sun),var(--peach));box-shadow:0 8px 20px rgba(255,160,80,.3);color:#4A2A05}
+.btn.ghost{background:var(--paper);color:var(--ink);border:1.5px solid var(--line);box-shadow:none;font-weight:700}
+.btn.ghost:hover{border-color:var(--sky);color:var(--sky)}
+.btn.small{padding:9px 14px;font-size:14px;min-height:0;border-radius:11px}
+.btn.tiny{padding:6px 11px;font-size:12.5px;min-height:0;border-radius:9px;font-weight:700}
+.btn.wide{width:100%}
+.btn.danger{background:var(--paper);color:var(--rose);border:1.5px solid var(--rose-l);box-shadow:none}
+.btn-row{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.btn-row>.btn{flex:1 1 auto}
+:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+
+/* ── hero / next dose ────────────────────────────────────── */
+.hero{
+  position:relative;background:var(--paper);border:1px solid var(--line);border-radius:26px;
+  padding:22px;box-shadow:var(--shadow);overflow:hidden;margin-top:6px
+}
+.hero::after{
+  content:"";position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,180,61,.22),transparent 70%);pointer-events:none
+}
+.hero-grid{display:flex;gap:20px;align-items:center;position:relative;flex-wrap:wrap}
+.ring-wrap{position:relative;width:150px;height:150px;flex:0 0 auto}
+.ring-wrap svg{transform:rotate(-90deg);width:150px;height:150px}
+.ring-bg{fill:none;stroke:var(--line-2);stroke-width:12}
+.ring-fg{fill:none;stroke:var(--mint);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset .6s ease,stroke .4s ease}
+.ring-face{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.ring-time{font-family:var(--mono);font-weight:600;font-size:25px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.ring-lbl{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.hero-main{flex:1 1 260px;min-width:220px}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--peach)}
+.eyebrow .pip{width:8px;height:8px;border-radius:50%;background:var(--peach);animation:pip 2.2s infinite}
+@keyframes pip{0%,100%{box-shadow:0 0 0 0 rgba(255,138,91,.55)}70%{box-shadow:0 0 0 10px rgba(255,138,91,0)}}
+.hero h2{font-size:27px;line-height:1.15;margin:8px 0 2px}
+.hero .who{color:var(--soft);font-size:14.5px;font-weight:600}
+.at-time{font-family:var(--mono);font-size:14px;color:var(--soft);margin-top:4px}
+.hero-dose{
+  margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--sun-l);
+  border:1px solid #F6E4BE;font-size:15px;font-weight:600
+}
+.hero-dose b{font-family:var(--display);font-size:18px;color:#8A5A00}
+.hero.due .ring-fg{stroke:var(--sun)}
+.hero.late .ring-fg{stroke:var(--rose)}
+.hero.late .ring-time{color:var(--rose)}
+.given-by{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--soft);font-weight:700}
+
+/* ── generic cards / sections ────────────────────────────── */
+section{margin-top:26px}
+.sec-head{display:flex;align-items:center;gap:10px;margin:0 2px 12px}
+.sec-head h3{font-size:19px}
+.sec-head .count{font-size:12px;font-weight:800;color:var(--soft);background:var(--line-2);border-radius:999px;padding:3px 10px}
+.sec-head .spacer{margin-left:auto}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card+.card{margin-top:14px}
+.empty{color:var(--soft);text-align:center;padding:26px 12px;font-weight:600}
+.empty b{display:block;font-family:var(--display);color:var(--ink);font-size:18px;margin-bottom:4px}
+
+/* ── people filter chips ─────────────────────────────────── */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.pill{
+  border:1.5px solid var(--line);background:var(--paper);color:var(--soft);border-radius:999px;
+  padding:8px 14px;font-size:13.5px;font-weight:800;cursor:pointer
+}
+.pill[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ── timeline chart ──────────────────────────────────────── */
+.chart-card{padding:14px 12px 12px}
+.chart-tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:0 4px 10px}
+.seg{display:flex;background:var(--line-2);border-radius:11px;padding:3px;gap:2px}
+.seg button{background:none;border-radius:8px;padding:6px 11px;font-size:13px;font-weight:800;color:var(--soft)}
+.seg button[aria-pressed="true"]{background:var(--paper);color:var(--ink);box-shadow:0 2px 6px rgba(42,51,72,.1)}
+.icon-btn{width:34px;height:34px;border-radius:10px;background:var(--line-2);color:var(--ink);font-size:17px;font-weight:800;display:grid;place-items:center}
+.icon-btn:hover{background:var(--sky-l);color:var(--sky)}
+#chartHost{position:relative;touch-action:pan-y;cursor:grab;user-select:none}
+#chartHost.dragging{cursor:grabbing}
+#chartSvg{display:block;width:100%;height:auto;overflow:visible}
+.chart-legend{display:flex;gap:8px;flex-wrap:wrap;padding:10px 4px 2px}
+.leg{
+  display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--line);background:var(--paper);
+  border-radius:999px;padding:5px 12px;font-size:12.5px;font-weight:800;cursor:pointer;color:var(--ink)
+}
+.leg .sw{width:10px;height:10px;border-radius:50%}
+.leg.off{opacity:.42}
+.chart-key{display:flex;gap:14px;flex-wrap:wrap;padding:8px 4px 0;font-size:12px;color:var(--soft);font-weight:600}
+.chart-key i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:1px}
+.pop{
+  position:absolute;z-index:20;min-width:210px;max-width:280px;background:var(--paper);border:1px solid var(--line);
+  border-radius:14px;box-shadow:var(--shadow-lift);padding:12px 13px;font-size:13.5px
+}
+.pop h5{font-family:var(--display);font-size:16px;margin:0 0 2px}
+.pop .meta{color:var(--soft);font-weight:600;font-size:12.5px}
+.pop .btn-row{margin-top:10px;gap:7px}
+.pop .close{position:absolute;top:6px;right:8px;background:none;color:var(--faint);font-size:18px;line-height:1;padding:4px}
+
+/* ── medicine cards ──────────────────────────────────────── */
+.med{position:relative;padding-left:22px;overflow:hidden}
+.med .stripe{position:absolute;left:0;top:0;bottom:0;width:8px}
+.med-top{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
+.med-top h4{font-size:20px;line-height:1.2}
+.tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.tag{font-size:11px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:999px;background:var(--line-2);color:var(--soft)}
+.tag.who{background:var(--sky-l);color:#2467B8}
+.tag.ing{background:var(--grape-l);color:#5B45B8}
+.tag.paused{background:var(--sun-l);color:#8A5A00}
+.med-meta{font-size:13.5px;color:var(--soft);font-weight:600;margin-top:2px}
+.med-actions{margin-left:auto;display:flex;gap:7px;flex-wrap:wrap}
+.meter{margin-top:14px}
+.meter-bar{height:9px;border-radius:99px;background:var(--line-2);overflow:hidden}
+.meter-fill{height:100%;border-radius:99px;background:var(--mint);transition:width .35s ease}
+.meter-fill.warn{background:var(--sun)}
+.meter-fill.full{background:var(--rose)}
+.meter-row{display:flex;gap:10px;flex-wrap:wrap;font-size:12.5px;color:var(--soft);font-weight:700;margin-top:6px}
+.doses{list-style:none;margin:14px 0 0;padding:0}
+.doses li{display:flex;align-items:center;gap:11px;padding:10px 0;border-top:1px solid var(--line-2)}
+.doses li:first-child{border-top:0}
+.dose-time{font-family:var(--mono);font-size:15px;min-width:86px;font-variant-numeric:tabular-nums;font-weight:600}
+.dose-day{display:block;font-family:var(--body);font-size:11px;color:var(--faint);font-weight:700}
+.dose-state{flex:1;font-size:13px;color:var(--soft);font-weight:600}
+.doses li.given .dose-time{color:var(--mint)}
+.doses li.given .dose-state{color:var(--mint)}
+.doses li.overdue .dose-state{color:var(--rose)}
+.doses li.next{background:var(--sun-l);margin:0 -10px;padding:10px;border-radius:12px;border-top-color:transparent}
+.doses li.night .dose-day::after{content:" · night";color:var(--grape)}
+.link-btn{background:none;color:var(--sky);font-size:13px;font-weight:800;padding:10px 0}
+.note{
+  margin-top:12px;font-size:13.5px;font-weight:600;border-radius:12px;padding:10px 12px;
+  background:var(--sky-l);color:#255FA8
+}
+.note.warn{background:var(--sun-l);color:#8A5A00}
+.note.bad{background:var(--rose-l);color:#B32138}
+
+/* ── stats strip ─────────────────────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.stat .v{font-family:var(--display);font-size:24px;font-weight:800;line-height:1.1}
+.stat .k{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+
+/* ── forms ───────────────────────────────────────────────── */
+label{display:block;font-size:13px;font-weight:800;margin:0 0 6px}
+.hint{display:block;font-weight:600;color:var(--soft);font-size:12px;margin-top:3px}
+input,select,textarea{
+  width:100%;background:#FCFBF7;color:var(--ink);border:1.5px solid var(--line);border-radius:12px;
+  padding:12px;font-size:16px;font-family:var(--body);font-weight:600
+}
+input:focus,select:focus,textarea:focus{border-color:var(--sky);background:var(--paper);outline:none}
+textarea{min-height:62px;resize:vertical}
+.field{margin-bottom:14px}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>*{flex:1 1 150px;min-width:0}
+.switch{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;cursor:pointer}
+.switch input{width:auto;flex:0 0 auto;width:20px;height:20px;accent-color:var(--mint)}
+.preset-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.preset{border:1.5px dashed var(--line);background:var(--paper);border-radius:12px;padding:8px 12px;font-size:13px;font-weight:800;color:var(--soft)}
+.preset:hover{border-color:var(--mint);color:var(--mint);border-style:solid}
+details.fold{background:var(--paper);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+details.fold+details.fold{margin-top:12px}
+details.fold>summary{
+  cursor:pointer;padding:15px 18px;font-family:var(--display);font-weight:700;font-size:17px;
+  display:flex;align-items:center;gap:10px;list-style:none
+}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary::after{content:"+";margin-left:auto;font-size:20px;color:var(--soft)}
+details.fold[open]>summary::after{content:"–"}
+details.fold .fold-body{padding:0 18px 18px}
+.care-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.care-row input[type=text]{flex:1 1 110px}
+.care-row input[type=email]{flex:1 1 170px}
+.care-row .switch{flex:0 0 auto}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line-2);font-size:13.5px;font-weight:600}
+.kv:last-child{border-bottom:0}
+.kv span:first-child{color:var(--soft)}
+
+/* ── logs ────────────────────────────────────────────────── */
+.log-list{list-style:none;margin:14px 0 0;padding:0}
+.log-list li{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line-2);font-size:14px}
+.log-temp{font-family:var(--mono);font-weight:600;min-width:64px}
+.log-temp.hot{color:var(--rose)}
+.log-when{color:var(--faint);font-size:12px;font-weight:700;min-width:96px}
+.log-note{flex:1;color:var(--soft);font-weight:600}
+
+/* ── toast + banner ──────────────────────────────────────── */
+.toast{
+  position:fixed;left:50%;bottom:20px;transform:translate(-50%,150%);z-index:60;max-width:92vw;
+  background:var(--ink);color:#fff;padding:13px 20px;border-radius:14px;font-weight:800;font-size:15px;
+  box-shadow:var(--shadow-lift);transition:transform .32s cubic-bezier(.2,.9,.3,1.25)
+}
+.toast.show{transform:translate(-50%,0)}
+.banner{
+  display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--rose-l);border:1px solid #F8C7CF;
+  color:#A81E36;border-radius:16px;padding:13px 15px;margin-top:14px;font-weight:700;font-size:14.5px
+}
+.banner.calm{background:var(--sky-l);border-color:#C9DFFA;color:#22599F}
+.banner .btn{margin-left:auto}
+
+/* ── footer ──────────────────────────────────────────────── */
+.foot{margin-top:34px;font-size:13.5px;color:var(--soft);font-weight:600}
+.foot .card{background:#FFFDF9}
+.foot b{color:var(--ink)}
+.steps{padding-left:20px;margin:8px 0 0}
+.steps li{margin-bottom:6px}
+.safety{border-left:4px solid var(--rose);background:var(--rose-l);color:#8E1F33;padding:12px 14px;border-radius:0 12px 12px 0;margin-top:14px;font-weight:600}
+
+@media (max-width:560px){
+  .ring-wrap,.ring-wrap svg{width:126px;height:126px}
+  .ring-time{font-size:21px}
+  .hero h2{font-size:23px}
+  .med-actions{margin-left:0;width:100%}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{
+  body{background:#fff;padding:0}
+  body::before,.topbar,.hero,.chart-card,.chart-tools,.chart-legend,.chart-key,#addSection,
+  #syncSection,.btn,.btn-row,.link-btn,.filters,.no-print,.toast{display:none!important}
+  .card{box-shadow:none;border:1px solid #bbb;break-inside:avoid}
+  .print-only{display:block!important}
+}
+.print-only{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-badge" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9.5V13l2.5 1.5"/><path d="M9 2.5h6"/><path d="M12 2.5V5"/></svg>
+      </span>
+      <span>
+        <span class="brand-name">Dose Clock</span>
+        <span class="brand-sub">Every medicine, one gentle timeline</span>
+      </span>
+    </div>
+    <button class="chip-btn" id="syncChip" title="Sync and email settings"><span class="dot"></span><span id="syncChipTxt">On this device</span></button>
+    <button class="chip-btn" id="bellChip" title="Turn on pop-up reminders">🔔 <span id="bellTxt">Alerts off</span></button>
+  </header>
+
+  <div id="banners"></div>
+
+  <!-- ── next dose ───────────────────────────────────────── -->
+  <div class="hero" id="hero">
+    <div class="hero-grid" id="heroGrid">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 150 150" aria-hidden="true">
+          <circle class="ring-bg" cx="75" cy="75" r="63"></circle>
+          <circle class="ring-fg" id="ringFg" cx="75" cy="75" r="63" stroke-dasharray="396" stroke-dashoffset="396"></circle>
+        </svg>
+        <div class="ring-face">
+          <div class="ring-time" id="ringTime">--:--</div>
+          <div class="ring-lbl" id="ringLbl">to go</div>
+        </div>
+      </div>
+      <div class="hero-main" id="heroMain"></div>
+    </div>
+  </div>
+
+  <!-- ── stats ───────────────────────────────────────────── -->
+  <section id="statsSection" hidden>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <!-- ── timeline ────────────────────────────────────────── -->
+  <section id="chartSection" hidden>
+    <div class="sec-head">
+      <h3>Dose timeline</h3>
+      <span class="spacer"></span>
+      <button class="btn ghost tiny" id="btnTempToggle">Fever line: on</button>
+    </div>
+    <div class="card chart-card">
+      <div class="chart-tools">
+        <div class="seg" id="rangeSeg" role="group" aria-label="Time range">
+          <button data-hours="12" aria-pressed="false">12h</button>
+          <button data-hours="24" aria-pressed="true">24h</button>
+          <button data-hours="72" aria-pressed="false">3d</button>
+          <button data-hours="168" aria-pressed="false">Week</button>
+        </div>
+        <button class="icon-btn" id="btnPanBack" title="Earlier">‹</button>
+        <button class="icon-btn" id="btnPanFwd" title="Later">›</button>
+        <button class="btn ghost tiny" id="btnNow">Now</button>
+        <span class="spacer" style="margin-left:auto"></span>
+        <button class="icon-btn" id="btnZoomOut" title="Zoom out">−</button>
+        <button class="icon-btn" id="btnZoomIn" title="Zoom in">+</button>
+      </div>
+      <div id="chartHost">
+        <svg id="chartSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+      <div class="chart-key">
+        <span><i style="background:var(--mint)"></i>Given</span>
+        <span><i style="background:var(--sun)"></i>Coming up</span>
+        <span><i style="background:var(--rose)"></i>Missed</span>
+        <span><i style="background:var(--night);outline:1px solid #D9D3F5"></i>Night hours</span>
+        <span>Drag to move · pinch or scroll to zoom · tap a dose for options</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── medicines ───────────────────────────────────────── -->
+  <section id="medsSection">
+    <div class="sec-head">
+      <h3>Medicines</h3>
+      <span class="count" id="medCount">0</span>
+      <span class="spacer"></span>
+      <button class="btn ghost tiny" id="btnAddJump">+ Add medicine</button>
+    </div>
+    <div class="filters" id="peopleFilters"></div>
+    <div id="medList"></div>
+    <div class="card empty" id="emptyState">
+      <b>No medicines yet</b>
+      Add the first one below and Dose Clock will keep the times for you.
+    </div>
+    <div class="btn-row no-print" id="exportRow" hidden>
+      <button class="btn ghost small" id="btnIcsAll">Add all to calendar</button>
+      <button class="btn ghost small" id="btnCopyAll">Copy as text</button>
+      <button class="btn ghost small" id="btnPrint">Print handover sheet</button>
+    </div>
+  </section>
+
+  <!-- ── fever / symptom log ─────────────────────────────── -->
+  <section id="logSection">
+    <div class="sec-head"><h3>Temperature &amp; symptoms</h3></div>
+    <div class="card">
+      <div class="row">
+        <div class="field" style="flex:1 1 110px">
+          <label for="lTemp">Temperature</label>
+          <input id="lTemp" type="number" step="0.1" inputmode="decimal" placeholder="101.4" />
+        </div>
+        <div class="field" style="flex:0 0 96px">
+          <label for="lUnit">Unit</label>
+          <select id="lUnit"><option value="F" selected>°F</option><option value="C">°C</option></select>
+        </div>
+        <div class="field" style="flex:1 1 130px">
+          <label for="lPerson">Who</label>
+          <input id="lPerson" list="personList" placeholder="Micah" autocomplete="off" />
+          <datalist id="personList"></datalist>
+        </div>
+      </div>
+      <div class="field">
+        <label for="lNote">How are they doing <span class="hint">Optional — sleeping well, less fussy, rash, drinking fluids.</span></label>
+        <input id="lNote" type="text" placeholder="Settled after the dose" autocomplete="off" />
+      </div>
+      <button class="btn sky wide" id="btnLogAdd">Save reading</button>
+      <ul class="log-list" id="logList"></ul>
+    </div>
+  </section>
+
+  <!-- ── add / edit medicine ─────────────────────────────── -->
+  <section id="addSection">
+    <div class="sec-head"><h3 id="formTitle">Add a medicine</h3><span class="spacer"></span>
+      <button class="btn ghost tiny" id="btnCancelEdit" hidden>Cancel edit</button></div>
+    <div class="card">
+      <div class="preset-row" id="presetRow"></div>
+
+      <div class="row">
+        <div class="field">
+          <label for="fPerson">Who is it for</label>
+          <input id="fPerson" list="personList" placeholder="Micah" autocomplete="off" />
+        </div>
+        <div class="field" style="flex:0 0 150px">
+          <label for="fWho">Age group</label>
+          <select id="fWho"><option value="baby" selected>Baby or child</option><option value="adult">Adult</option></select>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="fName">Medicine</label>
+          <input id="fName" type="text" placeholder="Tylenol infant drops" autocomplete="off" />
+        </div>
+        <div class="field" style="flex:0 0 190px">
+          <label for="fIngredient">Active ingredient
+            <span class="hint">Used to warn about doubling up.</span>
+          </label>
+          <input id="fIngredient" list="ingredientList" placeholder="acetaminophen" autocomplete="off" />
+          <datalist id="ingredientList">
+            <option>acetaminophen</option><option>ibuprofen</option><option>amoxicillin</option>
+            <option>azithromycin</option><option>cetirizine</option><option>diphenhydramine</option>
+            <option>albuterol</option><option>prednisolone</option><option>zinc</option><option>iron</option>
+            <option>vitamin D</option><option>probiotic</option><option>simethicone</option>
+          </datalist>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fDose">Dose to give
+          <span class="hint">Copy this exactly from the label, or from your doctor, nurse or pharmacist. Dose Clock never works out an amount for you.</span>
+        </label>
+        <input id="fDose" type="text" placeholder="2.5 mL" autocomplete="off" />
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="fStart">First dose at</label>
+          <input id="fStart" type="datetime-local" />
+        </div>
+        <div class="field" style="flex:0 0 150px">
+          <label for="fEvery">Repeat every</label>
+          <select id="fEvery">
+            <option value="4">4 hours</option><option value="6" selected>6 hours</option>
+            <option value="8">8 hours</option><option value="12">12 hours</option>
+            <option value="24">24 hours</option><option value="custom">Custom…</option>
+          </select>
+        </div>
+        <div class="field" id="customWrap" style="flex:0 0 110px" hidden>
+          <label for="fEveryCustom">Hours</label>
+          <input id="fEveryCustom" type="number" min="0.5" step="0.5" value="5" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="fLength">Keep going for</label>
+          <div class="row">
+            <input id="fLength" type="number" min="1" step="1" value="5" />
+            <select id="fLengthUnit" style="flex:0 0 108px">
+              <option value="days" selected>days</option><option value="doses">doses</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="fMax">Most doses in 24 hours <span class="hint">Optional, from the label.</span></label>
+          <input id="fMax" type="number" min="1" step="1" placeholder="4" />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="fMode">If a dose runs late</label>
+          <select id="fMode">
+            <option value="fixed" selected>Keep the planned times</option>
+            <option value="shift">Push the rest back</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="fSupply">Doses left in the bottle <span class="hint">Optional. Counts down as you give them.</span></label>
+          <input id="fSupply" type="number" min="0" step="1" placeholder="20" />
+        </div>
+        <div class="field" style="flex:0 0 140px">
+          <label for="fColour">Timeline colour</label>
+          <select id="fColour">
+            <option value="sky">Blue</option><option value="mint">Green</option><option value="peach">Orange</option>
+            <option value="grape">Purple</option><option value="rose">Pink</option><option value="sun">Yellow</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="fNotes">Notes for whoever is on duty <span class="hint">Optional — give with food, shake well, finish the whole course.</span></label>
+        <textarea id="fNotes" placeholder="Give with a little milk"></textarea>
+      </div>
+
+      <div id="formWarn"></div>
+      <button class="btn wide" id="btnSave">Save and build the schedule</button>
+    </div>
+  </section>
+
+  <!-- ── sync & email ────────────────────────────────────── -->
+  <section id="syncSection">
+    <div class="sec-head"><h3>Sync &amp; email reminders</h3></div>
+
+    <details class="fold" id="foldSync">
+      <summary>📧 Email the parents when a dose is due</summary>
+      <div class="fold-body">
+        <p style="margin:0 0 14px;font-size:14px;color:var(--soft);font-weight:600">
+          Sign in with your family code to share the schedule between phones and let the server email you at dose time —
+          even when nobody has the app open.
+        </p>
+        <div class="field">
+          <label for="fApi">Worker address
+            <span class="hint">From <code>wrangler deploy</code>, e.g. https://twc-dose-clock.xxxx.workers.dev</span>
+          </label>
+          <input id="fApi" type="url" placeholder="https://twc-dose-clock.xxxx.workers.dev" autocomplete="off" />
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="fCode">Family code</label>
+            <input id="fCode" type="password" placeholder="Family code" autocomplete="current-password" />
+          </div>
+          <div class="field" style="flex:0 0 auto;align-self:flex-end">
+            <button class="btn sky" id="btnLogin">Connect</button>
+          </div>
+        </div>
+        <div id="syncStatus"></div>
+
+        <div id="cloudBox" hidden>
+          <h4 style="margin:16px 0 8px;font-size:16px">Who gets the emails</h4>
+          <div id="careList"></div>
+          <button class="btn ghost small" id="btnAddCare">+ Add a parent or carer</button>
+
+          <div class="row" style="margin-top:16px">
+            <div class="field">
+              <label for="fLead">Send the email</label>
+              <select id="fLead">
+                <option value="0">right at dose time</option>
+                <option value="5" selected>5 minutes before</option>
+                <option value="10">10 minutes before</option>
+                <option value="15">15 minutes before</option>
+                <option value="30">30 minutes before</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="fOverdue">Follow up if not marked given</label>
+              <select id="fOverdue">
+                <option value="0">do not follow up</option>
+                <option value="20">after 20 minutes</option>
+                <option value="30" selected>after 30 minutes</option>
+                <option value="60">after 1 hour</option>
+              </select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn small" id="btnSaveCloud">Save email settings</button>
+            <button class="btn ghost small" id="btnTestEmail">Send me a test email</button>
+            <button class="btn ghost small" id="btnPull">Refresh from other phone</button>
+            <button class="btn ghost small" id="btnLogout">Sign out of this device</button>
+          </div>
+          <div id="adminBox" hidden style="margin-top:18px;border-top:1px dashed var(--line);padding-top:14px">
+            <h4 style="font-size:16px;margin-bottom:8px">Admin — families</h4>
+            <div id="roomList" style="font-size:13.5px"></div>
+            <div class="row" style="margin-top:10px">
+              <div class="field"><label for="fNewRoomName">Family name</label><input id="fNewRoomName" placeholder="Smith Family" /></div>
+              <div class="field"><label for="fNewRoomPass">New family code</label><input id="fNewRoomPass" placeholder="smith 2026" /></div>
+              <div class="field" style="flex:0 0 auto;align-self:flex-end"><button class="btn ghost" id="btnAddRoom">Create</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="fold">
+      <summary>📅 Calendar alerts and phone pop-ups</summary>
+      <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
+        <p style="margin-top:0"><b style="color:var(--ink)">Calendar (works with no internet, no sign-in)</b></p>
+        <ol class="steps">
+          <li>Tap <b>Add all to calendar</b> in the Medicines section. A file ending in .ics downloads.</li>
+          <li>On iPhone tap the download arrow in Safari, tap the file, choose a calendar, then tap <b>Add All</b>.</li>
+          <li>Every dose becomes an event with an alert at dose time and a heads-up 5 minutes before.</li>
+        </ol>
+        <p><b style="color:var(--ink)">Pop-up alerts</b> — tap 🔔 at the top of this page while it is open in your browser.
+        Pop-ups only fire while the page is open, which is why the email reminders exist.</p>
+      </div>
+    </details>
+
+    <details class="fold">
+      <summary>❓ How Dose Clock works</summary>
+      <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
+        <ul class="steps" style="padding-left:20px">
+          <li><b style="color:var(--ink)">Add each medicine once</b> with the amount from the label and how often it repeats. Dose Clock builds every dose time.</li>
+          <li><b style="color:var(--ink)">Tap Given</b> when the medicine is actually in. It records the time and who gave it, so the other parent can see.</li>
+          <li><b style="color:var(--ink)">The timeline</b> shows every medicine on its own row. Drag it sideways, pinch to zoom, tap a dose to mark it given, skip it or undo.</li>
+          <li><b style="color:var(--ink)">Safety checks</b> warn you if a dose is early, if the 24 hour limit is reached, or if two medicines share the same active ingredient.</li>
+          <li><b style="color:var(--ink)">Fever line</b> — log temperatures and the timeline draws them over the doses, so you can see whether the medicine is helping.</li>
+        </ul>
+      </div>
+    </details>
+  </section>
+
+  <div class="print-only" id="printHeader"></div>
+
+  <footer class="foot">
+    <div class="card">
+      <p style="margin-top:0"><b>Please read.</b> Dose Clock only keeps time. It does not decide how much medicine to give,
+      it does not know your child's weight or history, and it is not medical advice. Use the amount printed on the label or
+      given to you by your doctor, nurse or pharmacist. Two medicines can share the same active ingredient, so check before
+      giving both. If your child is under three months old, is getting worse, will not drink, or you are unsure about
+      anything, call your doctor or a nurse line. In an emergency call 911.</p>
+      <div class="safety">Never give a dose based on a reminder alone. Check the label, the amount and the child every time.</div>
+      <p style="margin-bottom:0">Without a family code everything stays on this device only. With a family code the schedule is
+      stored in your family's private repository so both parents' phones agree, and reminder emails can be sent.</p>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   0. Config
+   ═══════════════════════════════════════════════════════════════════════════ */
+// Paste your deployed worker URL here to make cloud sync one tap for everyone.
+var DEFAULT_API_BASE = "";
+
+var COLOURS = { sky:"#3C8FEF", mint:"#22B08C", peach:"#FF8A5B", grape:"#8A6BF2", rose:"#EF5570", sun:"#FFB43D" };
+var COLOUR_KEYS = ["sky","mint","peach","grape","rose","sun"];
+var PRESETS = [
+  { label:"Tylenol / paracetamol", name:"Tylenol infant drops", ingredient:"acetaminophen", every:6, max:4, colour:"sky" },
+  { label:"Motrin / ibuprofen",    name:"Motrin infant drops",  ingredient:"ibuprofen",     every:8, max:3, colour:"peach" },
+  { label:"Antibiotic 2x a day",   name:"Amoxicillin",          ingredient:"amoxicillin",   every:12, max:2, colour:"mint", days:10, notes:"Finish the whole course even if they feel better." },
+  { label:"Antibiotic 3x a day",   name:"Antibiotic",           ingredient:"",              every:8, max:3, colour:"grape", days:7, notes:"Finish the whole course." },
+  { label:"Vitamin once a day",    name:"Vitamin D drops",      ingredient:"vitamin D",     every:24, max:1, colour:"sun", days:30 }
+];
+
+var DAY = 86400000, HOUR = 3600000, MIN = 60000;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   1. Storage
+   ═══════════════════════════════════════════════════════════════════════════ */
+var mem = {};
+var store = {
+  get:function(k){ try{ return window.localStorage.getItem(k); }catch(e){ return mem[k]||null; } },
+  set:function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ mem[k]=v; } },
+  del:function(k){ try{ window.localStorage.removeItem(k); }catch(e){ delete mem[k]; } }
+};
+var KEY = "doseclock.v2", OLDKEY = "doseclock.v1";
+
+function blankState(){
+  return {
+    meds:[], logs:[], caregivers:[], deletedMedIds:{},
+    settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30 },
+    sync:{ apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 },
+    ui:{ person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"", unit:"F" }
+  };
+}
+var state = blankState();
+
+(function load(){
+  var raw = store.get(KEY);
+  if (raw){
+    try{
+      var p = JSON.parse(raw);
+      if (p && p.meds){
+        state = Object.assign(blankState(), p);
+        state.settings = Object.assign(blankState().settings, p.settings||{});
+        state.sync     = Object.assign(blankState().sync, p.sync||{});
+        state.ui       = Object.assign(blankState().ui, p.ui||{});
+        if (!state.sync.apiBase) state.sync.apiBase = DEFAULT_API_BASE;
+      }
+    }catch(e){}
+    return;
+  }
+  // migrate the pilot version
+  var old = store.get(OLDKEY);
+  if (old){
+    try{
+      var o = JSON.parse(old);
+      if (o && o.meds){
+        state.meds = o.meds.map(function(m,i){
+          return {
+            id:m.id||uid(), person:m.person||"", who:m.who||"baby", name:m.name||"Medicine",
+            ingredient:"", dose:m.dose||"", intervalH:m.intervalH||6, maxPerDay:m.maxPerDay||null,
+            mode:m.mode||"fixed", notes:m.notes||"", colour:COLOUR_KEYS[i%COLOUR_KEYS.length],
+            supplyDoses:null, paused:false, archived:false, updatedAt:Date.now(),
+            doses:(m.doses||[]).map(function(d){
+              return { planned:d.planned, given:d.given||null, givenBy:d.givenBy||null,
+                       skipped:!!d.skipped, remindedAt:null, overdueAt:null };
+            })
+          };
+        });
+      }
+    }catch(e){}
+  }
+})();
+
+var dirty = false, pushTimer = null;
+function save(opts){
+  store.set(KEY, JSON.stringify(state));
+  if (!opts || opts.push !== false){
+    dirty = true;
+    schedulePush();
+  }
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   2. Time helpers
+   ═══════════════════════════════════════════════════════════════════════════ */
+function pad(n){ return n<10 ? "0"+n : ""+n; }
+function fmtTime(d){
+  d = d instanceof Date ? d : new Date(d);
+  var h=d.getHours(), ap=h>=12?"pm":"am", hh=h%12; if(hh===0) hh=12;
+  return hh+":"+pad(d.getMinutes())+" "+ap;
+}
+function fmtShort(ms){
+  var d=new Date(ms), h=d.getHours(), ap=h>=12?"p":"a", hh=h%12; if(hh===0) hh=12;
+  return d.getMinutes() ? hh+":"+pad(d.getMinutes())+ap : hh+ap;
+}
+function fmtDay(ms){
+  var d=new Date(ms), t0=new Date(); t0.setHours(0,0,0,0);
+  var t=new Date(d.getTime()); t.setHours(0,0,0,0);
+  var diff=Math.round((t-t0)/DAY);
+  if(diff===0) return "today";
+  if(diff===1) return "tomorrow";
+  if(diff===-1) return "yesterday";
+  return d.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"});
+}
+function isNight(ms){ var h=new Date(ms).getHours(); return h>=21||h<7; }
+function localInput(d){
+  return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"T"+pad(d.getHours())+":"+pad(d.getMinutes());
+}
+function trimNum(n){ return (Math.round(Number(n)*10)/10).toString().replace(/\.0$/,""); }
+function durTxt(ms){
+  var m=Math.round(Math.abs(ms)/MIN), h=Math.floor(m/60), r=m%60;
+  if (h && r) return h+" h "+r+" min";
+  if (h) return h+" h";
+  return r+" min";
+}
+function esc(s){
+  return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+function el(id){ return document.getElementById(id); }
+function scrollTo(idOrNode){
+  var n = typeof idOrNode === "string" ? el(idOrNode) : idOrNode;
+  if (n && typeof n.scrollIntoView === "function"){
+    try { n.scrollIntoView({behavior:"smooth",block:"start"}); } catch(e){ n.scrollIntoView(); }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   3. Schedule maths
+   ═══════════════════════════════════════════════════════════════════════════ */
+function buildDoses(startMs, intervalH, count){
+  var out=[];
+  for (var i=0;i<count;i++){
+    out.push({ planned:startMs+Math.round(i*intervalH*HOUR), given:null, givenBy:null,
+               skipped:false, remindedAt:null, overdueAt:null });
+  }
+  return out;
+}
+function activeMeds(){ return state.meds.filter(function(m){ return !m.archived; }); }
+function visibleMeds(){
+  var p = state.ui.person;
+  return activeMeds().filter(function(m){ return p==="all" || (m.person||"Everyone")===p; });
+}
+function nextDose(med){
+  for (var i=0;i<med.doses.length;i++){
+    var d=med.doses[i];
+    if (!d.given && !d.skipped) return { dose:d, index:i };
+  }
+  return null;
+}
+function givenSince(med, cut){
+  return med.doses.filter(function(d){ return d.given && d.given>=cut; }).length;
+}
+function lastGiven(med){
+  var best=null;
+  med.doses.forEach(function(d){ if (d.given && (!best || d.given>best)) best=d.given; });
+  return best;
+}
+function soonest(){
+  var best=null;
+  visibleMeds().forEach(function(med){
+    if (med.paused) return;
+    var nd = nextDose(med);
+    if (nd && (!best || nd.dose.planned < best.dose.planned)) best = { med:med, dose:nd.dose, index:nd.index };
+  });
+  return best;
+}
+function findMed(id){
+  for (var i=0;i<state.meds.length;i++){ if (state.meds[i].id===id) return state.meds[i]; }
+  return null;
+}
+function people(){
+  var seen=[], out=[];
+  activeMeds().forEach(function(m){
+    var p = m.person || "Everyone";
+    if (seen.indexOf(p)===-1){ seen.push(p); out.push(p); }
+  });
+  return out;
+}
+function courseDone(med){ return !nextDose(med); }
+function adherence(){
+  var on=0, total=0;
+  activeMeds().forEach(function(m){
+    m.doses.forEach(function(d){
+      if (d.given){ total++; if (Math.abs(d.given-d.planned) <= 45*MIN) on++; }
+    });
+  });
+  return total ? Math.round((on/total)*100) : null;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4. Cloud sync
+   ═══════════════════════════════════════════════════════════════════════════ */
+var connected = false;
+function apiBase(){ return (state.sync.apiBase||"").replace(/\/+$/,""); }
+function canSync(){ return !!(apiBase() && state.sync.code); }
+
+function api(path, opts){
+  opts = opts||{};
+  var headers = { "Content-Type":"application/json" };
+  if (state.sync.code) headers.Authorization = "Bearer " + state.sync.code;
+  return fetch(apiBase()+path, {
+    method: opts.method||"GET",
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  }).then(function(r){
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      if (!r.ok) throw new Error(j.error || ("Request failed ("+r.status+")"));
+      return j;
+    });
+  });
+}
+
+function syncChip(kind, txt){
+  var chip = el("syncChip");
+  chip.className = "chip-btn" + (kind?" "+kind:"");
+  el("syncChipTxt").textContent = txt;
+}
+
+function adoptServer(d){
+  if (!d) return;
+  state.meds = Array.isArray(d.meds) ? d.meds : state.meds;
+  state.logs = Array.isArray(d.logs) ? d.logs : state.logs;
+  state.caregivers = Array.isArray(d.caregivers) ? d.caregivers : state.caregivers;
+  state.deletedMedIds = d.deletedMedIds || {};
+  if (d.settings){
+    state.settings.leadMinutes = Number(d.settings.leadMinutes)||0;
+    state.settings.overdueMinutes = Number(d.settings.overdueMinutes)||30;
+    state.settings.overdueNudge = d.settings.overdueNudge !== false;
+  }
+  state.sync.name = d.name || state.sync.name;
+  state.sync.rev = d.rev || 0;
+  state.sync.isAdmin = !!d.isAdmin;
+  state.sync.lastAt = Date.now();
+  dirty = false;
+  save({push:false});
+}
+
+function payload(){
+  return {
+    meds: state.meds,
+    logs: state.logs,
+    caregivers: state.caregivers,
+    deletedMedIds: state.deletedMedIds,
+    settings: {
+      leadMinutes: Number(state.settings.leadMinutes)||0,
+      overdueNudge: !!state.settings.overdueNudge,
+      overdueMinutes: Number(state.settings.overdueMinutes)||30,
+      tzOffsetMinutes: -new Date().getTimezoneOffset(),
+      tzLabel: (window.Intl && Intl.DateTimeFormat().resolvedOptions().timeZone) || ""
+    }
+  };
+}
+
+function schedulePush(){
+  if (!canSync() || !connected) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushNow, 1200);
+}
+function pushNow(){
+  if (!canSync() || !connected || !dirty) return Promise.resolve();
+  syncChip("busy","Saving…");
+  return api("/api/state", { method:"PUT", body:payload() }).then(function(d){
+    adoptServer(d);
+    syncChip("ok", "Synced " + fmtTime(new Date()));
+    renderAll();
+  }).catch(function(e){
+    syncChip("bad","Not saved");
+    toast("Could not sync: "+e.message);
+  });
+}
+function pull(silent){
+  if (!canSync()) return Promise.resolve();
+  if (!silent) syncChip("busy","Checking…");
+  return api("/api/state").then(function(d){
+    if (dirty) return pushNow();
+    if ((d.rev||0) !== state.sync.rev){ adoptServer(d); renderAll(); }
+    else { state.sync.isAdmin = !!d.isAdmin; }
+    connected = true;
+    syncChip("ok", state.sync.name || "Synced");
+  }).catch(function(e){
+    connected = false;
+    syncChip("bad","Offline");
+    if (!silent) toast("Could not reach the server: "+e.message);
+  });
+}
+function login(code){
+  var base = apiBase();
+  if (!base) return Promise.reject(new Error("Enter the worker address first"));
+  state.sync.code = code;
+  return api("/api/auth", { method:"POST", body:{ password:code } }).then(function(d){
+    state.sync.name = d.name || "Family";
+    state.sync.isAdmin = !!d.isAdmin;
+    connected = true;
+    save({push:false});
+    // Local edits made offline are pushed up, then the merged result comes back.
+    dirty = true;
+    return pushNow();
+  });
+}
+function logout(){
+  state.sync.code=""; state.sync.name=""; state.sync.isAdmin=false; state.sync.rev=0;
+  connected=false; save({push:false});
+  syncChip("", "On this device");
+  renderSyncPanel(); renderAll();
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   5. Toast
+   ═══════════════════════════════════════════════════════════════════════════ */
+var toastTimer;
+function toast(msg){
+  var t = el("toast");
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 3600);
+}
+/* ═══════════════════════════════════════════════════════════════════════════
+   6. Rendering — banners, hero, stats
+   ═══════════════════════════════════════════════════════════════════════════ */
+function renderBanners(){
+  var out = [], now = Date.now();
+
+  var late = [];
+  activeMeds().forEach(function(m){
+    if (m.paused) return;
+    var nd = nextDose(m);
+    if (nd && now - nd.dose.planned > 30*MIN) late.push(m);
+  });
+  if (late.length){
+    out.push('<div class="banner">⏰ <span><b>'+esc(late[0].name)+'</b>'+(late.length>1?' and '+(late.length-1)+' more':'')+
+      ' &mdash; a dose was due '+durTxt(now-nextDose(late[0]).dose.planned)+' ago and has not been marked given.</span>'+
+      '<button class="btn small sun" data-act="give" data-med="'+late[0].id+'">Mark given now</button></div>');
+  }
+
+  activeMeds().forEach(function(m){
+    if (m.supplyDoses != null && m.supplyDoses <= 3 && !courseDone(m)){
+      out.push('<div class="banner calm">🧴 <span>Only <b>'+m.supplyDoses+'</b> dose'+(m.supplyDoses===1?'':'s')+
+        ' of <b>'+esc(m.name)+'</b> left in the bottle. Time to refill.</span></div>');
+    }
+  });
+
+  var dupes = duplicateIngredients();
+  if (dupes.length){
+    out.push('<div class="banner">⚠️ <span>Two medicines on the list contain <b>'+esc(dupes[0])+
+      '</b>. Check with your pharmacist before giving both.</span></div>');
+  }
+
+  if (activeMeds().length && !canSync() && !state.ui.dismissEmailTip){
+    out.push('<div class="banner calm">📧 <span>Email reminders are off. Connect your family code in <b>Sync &amp; email</b> to be emailed when a dose is due, even with the app closed.</span>'+
+      '<button class="btn small ghost" data-act="dismissTip">Not now</button></div>');
+  }
+
+  el("banners").innerHTML = out.join("");
+}
+
+function duplicateIngredients(){
+  var seen = {}, dupes = [];
+  activeMeds().forEach(function(m){
+    var ing = (m.ingredient||"").trim().toLowerCase();
+    if (!ing || m.paused || courseDone(m)) return;
+    var key = ing + "|" + (m.person||"");
+    if (seen[key]) { if (dupes.indexOf(ing)===-1) dupes.push(ing); }
+    seen[key] = true;
+  });
+  return dupes;
+}
+
+function carerNames(){
+  var names = state.caregivers.map(function(c){ return c.name; }).filter(Boolean);
+  if (!names.length) names = ["Mum","Dad"];
+  if (state.ui.me && names.indexOf(state.ui.me)===-1) names.unshift(state.ui.me);
+  return names;
+}
+
+function renderHero(){
+  var hero = el("hero"), main = el("heroMain"), next = soonest();
+  hero.classList.remove("due","late");
+
+  if (!activeMeds().length){
+    main.innerHTML = '<div class="eyebrow"><span class="pip"></span>Welcome</div>'+
+      '<h2>Add the first medicine</h2>'+
+      '<p class="who">Type what the label or your doctor says. Dose Clock works out every dose time, keeps both parents in step and can email you when the next one is due.</p>'+
+      '<div class="btn-row"><button class="btn" data-act="jumpAdd">Add a medicine</button></div>';
+    ringSet(0, "--:--", "nothing due");
+    return;
+  }
+  if (!next){
+    main.innerHTML = '<div class="eyebrow"><span class="pip"></span>All finished</div>'+
+      '<h2>Every dose is done 🎉</h2>'+
+      '<p class="who">Nothing outstanding'+(state.ui.person==="all"?"":" for "+esc(state.ui.person))+'. Well done.</p>'+
+      '<div class="btn-row"><button class="btn ghost" data-act="jumpAdd">Add another medicine</button>'+
+      '<button class="btn ghost" id="btnPrint2">Print the record</button></div>';
+    ringSet(1, "Done", "course complete");
+    return;
+  }
+
+  var med = next.med, d = next.dose, now = Date.now(), diff = d.planned - now;
+  var prev = null;
+  for (var i=next.index-1;i>=0;i--){ if (med.doses[i].given){ prev = med.doses[i].given; break; } }
+  var span = med.intervalH*HOUR;
+  var frac = Math.max(0, Math.min(1, prev ? (now-prev)/span : 1 - (diff/span)));
+  if (diff < 0) frac = 1;
+  var heroCls = diff < 0 ? "late" : (diff < 15*MIN ? "due" : "");
+  if (heroCls) hero.classList.add(heroCls);
+
+  var names = carerNames();
+  var me = state.ui.me || names[0];
+  main.innerHTML =
+    '<div class="eyebrow"><span class="pip"></span>'+(diff<0?"Overdue":"Next dose")+(med.person?" · "+esc(med.person):"")+'</div>'+
+    '<h2>'+esc(med.name)+'</h2>'+
+    '<p class="who">Dose '+(next.index+1)+' of '+med.doses.length+' · every '+trimNum(med.intervalH)+' h'+
+      (med.ingredient?' · '+esc(med.ingredient):'')+'</p>'+
+    '<div class="at-time">'+fmtTime(d.planned)+" "+fmtDay(d.planned)+(isNight(d.planned)?" · night dose":"")+'</div>'+
+    '<div class="hero-dose">Give <b>'+esc(med.dose||"the amount on the label")+'</b>'+(med.notes?' · '+esc(med.notes):'')+'</div>'+
+    '<div class="given-by">Given by'+
+      '<select id="whoGave" style="width:auto;padding:7px 10px;font-size:13px">'+
+        names.map(function(n){ return '<option'+(n===me?' selected':'')+'>'+esc(n)+'</option>'; }).join("")+
+        '<option value="__other">Someone else…</option>'+
+      '</select></div>'+
+    '<div class="btn-row">'+
+      '<button class="btn" data-act="give" data-med="'+med.id+'">✓ Given now</button>'+
+      '<button class="btn ghost small" data-act="snooze" data-med="'+med.id+'">Snooze 15 min</button>'+
+      '<button class="btn ghost small" data-act="skip" data-med="'+med.id+'">Skip</button>'+
+    '</div>';
+
+  ringSet(frac, cdText(diff), diff<0 ? "overdue by" : "to go");
+
+  var sel = el("whoGave");
+  if (sel) sel.addEventListener("change", function(){
+    if (sel.value === "__other"){
+      var v = window.prompt("Who is giving this dose?", "");
+      if (v && v.trim()){ state.ui.me = v.trim(); save({push:false}); }
+      renderHero();
+      return;
+    }
+    state.ui.me = sel.value; save({push:false});
+  });
+}
+
+function cdText(diff){
+  var s = Math.floor(Math.abs(diff)/1000);
+  var h = Math.floor(s/3600), m = Math.floor((s%3600)/60), sec = s%60;
+  return (diff<0?"+":"") + (h ? h+":"+pad(m)+":"+pad(sec) : pad(m)+":"+pad(sec));
+}
+function ringSet(frac, time, lbl){
+  var C = 2*Math.PI*63;
+  el("ringFg").setAttribute("stroke-dasharray", C.toFixed(1));
+  el("ringFg").setAttribute("stroke-dashoffset", (C*(1-Math.max(0,Math.min(1,frac)))).toFixed(1));
+  el("ringTime").textContent = time;
+  el("ringLbl").textContent = lbl;
+}
+function tick(){
+  var next = soonest();
+  if (!next){ return; }
+  var diff = next.dose.planned - Date.now();
+  el("ringTime").textContent = cdText(diff);
+  el("ringLbl").textContent = diff<0 ? "overdue by" : "to go";
+  var hero = el("hero");
+  hero.classList.toggle("late", diff<0);
+  hero.classList.toggle("due", diff>=0 && diff<15*MIN);
+}
+
+function renderStats(){
+  var meds = visibleMeds();
+  if (!meds.length){ el("statsSection").hidden = true; return; }
+  el("statsSection").hidden = false;
+  var now = Date.now();
+  var today = new Date(); today.setHours(0,0,0,0);
+  var givenToday = 0, dueLeft = 0;
+  meds.forEach(function(m){
+    m.doses.forEach(function(d){
+      if (d.given && d.given >= today.getTime()) givenToday++;
+      if (!d.given && !d.skipped && d.planned < today.getTime()+DAY && d.planned >= now) dueLeft++;
+    });
+  });
+  var temps = state.logs.filter(function(l){ return l.temp; });
+  var lastTemp = temps.length ? temps[temps.length-1] : null;
+  var adh = adherence();
+  var cards = [
+    { k:"Given today", v:givenToday },
+    { k:"Still due today", v:dueLeft },
+    { k:"Medicines running", v:meds.filter(function(m){ return !m.paused && !courseDone(m); }).length }
+  ];
+  if (adh != null) cards.push({ k:"On time", v:adh+"%" });
+  if (lastTemp) cards.push({ k:"Last temp"+(lastTemp.person?" · "+lastTemp.person:""), v:trimNum(lastTemp.temp)+"°"+lastTemp.unit });
+  el("stats").innerHTML = cards.map(function(c){
+    return '<div class="stat"><div class="v">'+esc(String(c.v))+'</div><div class="k">'+esc(c.k)+'</div></div>';
+  }).join("");
+}
+
+function renderFilters(){
+  var ps = people();
+  var host = el("peopleFilters");
+  if (ps.length < 2){ host.innerHTML = ""; return; }
+  if (ps.indexOf(state.ui.person)===-1 && state.ui.person!=="all") state.ui.person = "all";
+  host.innerHTML = ['all'].concat(ps).map(function(p){
+    return '<button class="pill" data-act="person" data-p="'+esc(p)+'" aria-pressed="'+(state.ui.person===p)+'">'+
+      (p==='all'?'Everyone':esc(p))+'</button>';
+  }).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   7. Rendering — medicine cards
+   ═══════════════════════════════════════════════════════════════════════════ */
+function renderMeds(){
+  var meds = visibleMeds();
+  el("medCount").textContent = activeMeds().length;
+  el("emptyState").hidden = activeMeds().length > 0;
+  el("exportRow").hidden = activeMeds().length === 0;
+  var now = Date.now();
+
+  el("medList").innerHTML = meds.map(function(med){
+    var nd = nextDose(med), colour = COLOURS[med.colour] || COLOURS.sky;
+    var taken = givenSince(med, now-DAY);
+    var meter = "";
+    if (med.maxPerDay){
+      var pct = Math.min(100,(taken/med.maxPerDay)*100);
+      var cls = taken>=med.maxPerDay ? " full" : (taken>=med.maxPerDay-1 ? " warn" : "");
+      meter = '<div class="meter"><div class="meter-bar"><div class="meter-fill'+cls+'" style="width:'+pct+'%"></div></div>'+
+        '<div class="meter-row"><span>'+taken+' of '+med.maxPerDay+' doses in the last 24 h</span>'+
+        (taken>=med.maxPerDay?'<span style="color:var(--rose)">Limit reached — do not give more yet</span>':'')+'</div></div>';
+    }
+    var done = med.doses.filter(function(d){ return d.given||d.skipped; }).length;
+    var progress = '<div class="meter"><div class="meter-bar"><div class="meter-fill" style="width:'+
+      ((done/med.doses.length)*100)+'%;background:'+colour+'"></div></div>'+
+      '<div class="meter-row"><span>'+done+' of '+med.doses.length+' doses done</span>'+
+      (med.supplyDoses!=null?'<span>'+med.supplyDoses+' left in the bottle</span>':'')+
+      (lastGiven(med)?'<span>last given '+fmtTime(lastGiven(med))+'</span>':'')+'</div></div>';
+
+    var start = med.expanded ? 0 : Math.max(0, (nd?nd.index:med.doses.length-1) - 1);
+    var end   = med.expanded ? med.doses.length : Math.min(med.doses.length, start+5);
+    var items = "";
+    for (var i=start;i<end;i++){
+      var d = med.doses[i], when = d.given || d.planned;
+      var isNext = nd && nd.index===i;
+      var over = !d.given && !d.skipped && d.planned < now;
+      var stateTxt = d.skipped ? "Skipped" : d.given
+        ? ("Given"+(d.givenBy?" by "+esc(d.givenBy):"")+" at "+fmtTime(d.given))
+        : (over ? "Overdue by "+durTxt(now-d.planned) : (isNext?"Next up":"Planned"));
+      items += '<li class="'+(d.given?"given ":"")+(isNext?"next ":"")+(over&&!d.given?"overdue ":"")+(isNight(when)?"night":"")+'">'+
+        '<span class="dose-time">'+fmtTime(when)+'<span class="dose-day">'+fmtDay(when)+'</span></span>'+
+        '<span class="dose-state">'+stateTxt+'</span>'+
+        (d.given||d.skipped
+          ? '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+i+'">Undo</button>'
+          : '<button class="btn tiny ghost" data-act="giveat" data-med="'+med.id+'" data-i="'+i+'">Given</button>')+
+        '</li>';
+    }
+    var more = med.doses.length > (end-start)
+      ? '<button class="link-btn" data-act="expand" data-med="'+med.id+'">'+(med.expanded?"Show fewer":"Show all "+med.doses.length+" doses")+'</button>' : '';
+
+    var notes = med.notes ? '<div class="note">📝 '+esc(med.notes)+'</div>' : '';
+    var pausedNote = med.paused ? '<div class="note warn">Paused — no reminders will be sent.</div>' : '';
+    var doneNote = courseDone(med) ? '<div class="note">Course complete. Keep it for the record or finish it off.</div>' : '';
+
+    return '<div class="card med">'+
+      '<div class="stripe" style="background:'+colour+'"></div>'+
+      '<div class="med-top"><div>'+
+        '<div class="tags">'+
+          '<span class="tag who">'+(med.who==="baby"?"Child":"Adult")+(med.person?" · "+esc(med.person):"")+'</span>'+
+          (med.ingredient?'<span class="tag ing">'+esc(med.ingredient)+'</span>':'')+
+          (med.paused?'<span class="tag paused">Paused</span>':'')+
+        '</div>'+
+        '<h4>'+esc(med.name)+'</h4>'+
+        '<div class="med-meta">'+esc(med.dose||"dose per label")+' · every '+trimNum(med.intervalH)+' h'+
+          (med.maxPerDay?' · max '+med.maxPerDay+'/day':'')+
+          (nd?' · next '+fmtTime(nd.dose.planned)+' '+fmtDay(nd.dose.planned):'')+'</div>'+
+      '</div>'+
+      '<div class="med-actions no-print">'+
+        (nd?'<button class="btn tiny" data-act="give" data-med="'+med.id+'">✓ Given</button>':'')+
+        '<button class="btn tiny ghost" data-act="edit" data-med="'+med.id+'">Edit</button>'+
+        '<button class="btn tiny ghost" data-act="pause" data-med="'+med.id+'">'+(med.paused?"Resume":"Pause")+'</button>'+
+        '<button class="btn tiny ghost" data-act="ics" data-med="'+med.id+'">Calendar</button>'+
+        '<button class="btn tiny danger" data-act="delete" data-med="'+med.id+'">Delete</button>'+
+      '</div></div>'+
+      progress + meter + notes + pausedNote + doneNote +
+      '<ul class="doses">'+items+'</ul>'+more+
+    '</div>';
+  }).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   8. Rendering — logs
+   ═══════════════════════════════════════════════════════════════════════════ */
+function renderLogs(){
+  var logs = state.logs.slice().sort(function(a,b){ return b.at-a.at; }).slice(0,8);
+  el("logList").innerHTML = logs.map(function(l){
+    var hot = l.temp && ((l.unit==="F" && l.temp>=100.4) || (l.unit==="C" && l.temp>=38));
+    return '<li><span class="log-temp'+(hot?" hot":"")+'">'+(l.temp?trimNum(l.temp)+"°"+l.unit:"—")+'</span>'+
+      '<span class="log-when">'+fmtTime(l.at)+' '+fmtDay(l.at)+'</span>'+
+      '<span class="log-note">'+esc([l.person, l.note].filter(Boolean).join(" · "))+'</span>'+
+      '<button class="btn tiny ghost no-print" data-act="delLog" data-id="'+l.id+'">✕</button></li>';
+  }).join("");
+  var dl = el("personList");
+  dl.innerHTML = people().map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   9. Actions
+   ═══════════════════════════════════════════════════════════════════════════ */
+function whoIsGiving(){
+  var sel = el("whoGave");
+  var v = sel && sel.value !== "__other" ? sel.value : state.ui.me;
+  return v || carerNames()[0] || "";
+}
+
+function markGiven(medId, index, atMs){
+  var med = findMed(medId); if (!med) return;
+  if (index == null){ var nd = nextDose(med); if (!nd){ toast("No doses left for "+med.name); return; } index = nd.index; }
+  var when = atMs || Date.now();
+
+  // 1. too soon after the previous dose of the same medicine
+  var prev = null;
+  for (var i=index-1;i>=0;i--){ if (med.doses[i].given){ prev = med.doses[i].given; break; } }
+  if (prev && (when - prev) < med.intervalH*HOUR - 5*MIN){
+    var wait = med.intervalH*HOUR - (when - prev);
+    if (!window.confirm("The last dose of "+med.name+" was "+durTxt(when-prev)+" ago. There is still "+durTxt(wait)+
+        " to wait before the next one is due. Give it anyway?")) return;
+  }
+  // 2. daily limit
+  if (med.maxPerDay && givenSince(med, when-DAY) >= med.maxPerDay){
+    if (!window.confirm("That would be "+(givenSince(med,when-DAY)+1)+" doses of "+med.name+
+        " in 24 hours, and the label limit you entered is "+med.maxPerDay+". Give it anyway?")) return;
+  }
+  // 3. same active ingredient in another medicine
+  var ing = (med.ingredient||"").trim().toLowerCase();
+  if (ing){
+    var clash = null;
+    activeMeds().forEach(function(o){
+      if (o.id===med.id || (o.ingredient||"").trim().toLowerCase()!==ing) return;
+      if ((o.person||"") !== (med.person||"")) return;
+      var lg = lastGiven(o);
+      if (lg && when - lg < med.intervalH*HOUR) clash = { med:o, at:lg };
+    });
+    if (clash && !window.confirm(esc(clash.med.name)+" also contains "+ing+" and was given "+durTxt(when-clash.at)+
+        " ago. Giving both can be an overdose. Are you sure you want to record this dose?")) return;
+  }
+
+  med.doses[index].given = when;
+  med.doses[index].givenBy = whoIsGiving();
+  med.doses[index].skipped = false;
+  if (med.supplyDoses != null) med.supplyDoses = Math.max(0, med.supplyDoses-1);
+  if (med.mode === "shift"){
+    for (var j=index+1;j<med.doses.length;j++){
+      med.doses[j].planned = when + (j-index)*med.intervalH*HOUR;
+      med.doses[j].remindedAt = null; med.doses[j].overdueAt = null;
+    }
+  }
+  med.updatedAt = Date.now();
+  save(); renderAll(); scheduleLocalAlert();
+  toast("Marked given at "+fmtTime(when)+(med.doses[index].givenBy?" by "+med.doses[index].givenBy:""));
+}
+
+function snooze(medId, mins){
+  var med = findMed(medId); if (!med) return;
+  var nd = nextDose(med); if (!nd) return;
+  var shift = (mins||15)*MIN;
+  nd.dose.planned += shift;
+  nd.dose.remindedAt = null; nd.dose.overdueAt = null;
+  if (med.mode === "shift"){
+    for (var j=nd.index+1;j<med.doses.length;j++){
+      med.doses[j].planned += shift; med.doses[j].remindedAt=null; med.doses[j].overdueAt=null;
+    }
+  }
+  med.updatedAt = Date.now();
+  save(); renderAll(); scheduleLocalAlert();
+  toast("Pushed back to "+fmtTime(nd.dose.planned));
+}
+
+function skipDose(medId, index){
+  var med = findMed(medId); if (!med) return;
+  if (index == null){ var nd = nextDose(med); if (!nd) return; index = nd.index; }
+  med.doses[index].skipped = true;
+  med.updatedAt = Date.now();
+  save(); renderAll(); toast("Dose skipped");
+}
+function undoDose(medId, index){
+  var med = findMed(medId); if (!med) return;
+  var d = med.doses[index];
+  if (d.given && med.supplyDoses != null) med.supplyDoses = med.supplyDoses+1;
+  d.given = null; d.givenBy = null; d.skipped = false; d.remindedAt = null; d.overdueAt = null;
+  med.updatedAt = Date.now();
+  save(); renderAll();
+}
+function togglePause(medId){
+  var med = findMed(medId); if (!med) return;
+  med.paused = !med.paused; med.updatedAt = Date.now();
+  save(); renderAll(); toast(med.paused ? med.name+" paused" : med.name+" running again");
+}
+function deleteMed(medId){
+  var med = findMed(medId); if (!med) return;
+  if (!window.confirm("Delete the schedule for "+med.name+"? The dose record goes too.")) return;
+  state.meds = state.meds.filter(function(m){ return m.id!==medId; });
+  state.deletedMedIds[medId] = Date.now();
+  save(); renderAll(); toast("Deleted");
+}
+
+document.addEventListener("click", function(ev){
+  var b = ev.target.closest ? ev.target.closest("[data-act]") : null;
+  if (!b) return;
+  var act = b.getAttribute("data-act");
+  var medId = b.getAttribute("data-med");
+  var i = b.getAttribute("data-i");
+  if (act==="give") markGiven(medId, null);
+  else if (act==="giveat") markGiven(medId, parseInt(i,10));
+  else if (act==="gaveEarlier"){
+    var mins = window.prompt("How many minutes ago was it given?", "20");
+    if (mins===null) return;
+    var n = parseFloat(mins); if (isNaN(n) || n<0) return;
+    markGiven(medId, i==null?null:parseInt(i,10), Date.now()-n*MIN);
+    closePop();
+  }
+  else if (act==="undo"){ undoDose(medId, parseInt(i,10)); closePop(); }
+  else if (act==="skip"){ skipDose(medId, i==null?null:parseInt(i,10)); closePop(); }
+  else if (act==="snooze") snooze(medId, 15);
+  else if (act==="pause") togglePause(medId);
+  else if (act==="delete") deleteMed(medId);
+  else if (act==="edit") startEdit(medId);
+  else if (act==="ics"){ var m1=findMed(medId); if (m1) downloadICS([m1], slug(m1.name)); }
+  else if (act==="expand"){ var m2=findMed(medId); if (m2){ m2.expanded=!m2.expanded; renderMeds(); } }
+  else if (act==="person"){ state.ui.person = b.getAttribute("data-p"); save({push:false}); renderAll(); }
+  else if (act==="jumpAdd"){ scrollTo("addSection"); el("fName").focus(); }
+  else if (act==="dismissTip"){ state.ui.dismissEmailTip = true; save({push:false}); renderBanners(); }
+  else if (act==="delLog"){
+    var id = b.getAttribute("data-id");
+    state.logs = state.logs.filter(function(l){ return l.id!==id; });
+    save(); renderLogs(); renderChart(); renderStats();
+  }
+  else if (act==="closePop") closePop();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   10. Add / edit form
+   ═══════════════════════════════════════════════════════════════════════════ */
+function renderPresets(){
+  el("presetRow").innerHTML = PRESETS.map(function(p,i){
+    return '<button type="button" class="preset" data-preset="'+i+'">'+esc(p.label)+'</button>';
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("[data-preset]"), function(btn){
+    btn.addEventListener("click", function(){
+      var p = PRESETS[parseInt(btn.getAttribute("data-preset"),10)];
+      el("fName").value = p.name; el("fIngredient").value = p.ingredient||"";
+      el("fEvery").value = String(p.every); el("customWrap").hidden = true;
+      el("fMax").value = p.max||"";
+      el("fLength").value = p.days || 3; el("fLengthUnit").value = "days";
+      el("fColour").value = p.colour || "sky";
+      if (p.notes) el("fNotes").value = p.notes;
+      el("fDose").focus();
+      toast("Filled in — now add the amount from the label");
+    });
+  });
+}
+
+function seedStart(){
+  var now = new Date();
+  now.setMinutes(Math.ceil(now.getMinutes()/5)*5, 0, 0);
+  el("fStart").value = localInput(now);
+}
+
+function startEdit(medId){
+  var med = findMed(medId); if (!med) return;
+  state.ui.editing = medId;
+  el("formTitle").textContent = "Edit " + med.name;
+  el("btnCancelEdit").hidden = false;
+  el("btnSave").textContent = "Save changes";
+  el("fPerson").value = med.person||""; el("fWho").value = med.who||"baby";
+  el("fName").value = med.name||""; el("fIngredient").value = med.ingredient||"";
+  el("fDose").value = med.dose||"";
+  el("fStart").value = localInput(new Date(med.doses[0] ? med.doses[0].planned : Date.now()));
+  var std = ["4","6","8","12","24"];
+  if (std.indexOf(String(med.intervalH))>-1){ el("fEvery").value = String(med.intervalH); el("customWrap").hidden = true; }
+  else { el("fEvery").value = "custom"; el("customWrap").hidden = false; el("fEveryCustom").value = med.intervalH; }
+  el("fLength").value = med.doses.length; el("fLengthUnit").value = "doses";
+  el("fMax").value = med.maxPerDay||""; el("fMode").value = med.mode||"fixed";
+  el("fSupply").value = med.supplyDoses==null ? "" : med.supplyDoses;
+  el("fColour").value = med.colour||"sky"; el("fNotes").value = med.notes||"";
+  scrollTo("addSection");
+}
+function cancelEdit(){
+  state.ui.editing = null;
+  el("formTitle").textContent = "Add a medicine";
+  el("btnCancelEdit").hidden = true;
+  el("btnSave").textContent = "Save and build the schedule";
+  clearForm();
+}
+function clearForm(){
+  ["fName","fIngredient","fDose","fNotes","fMax","fSupply"].forEach(function(id){ el(id).value=""; });
+  el("formWarn").innerHTML = "";
+  seedStart();
+}
+
+function saveMed(){
+  var warn = el("formWarn"); warn.innerHTML = "";
+  var name = el("fName").value.trim();
+  var startVal = el("fStart").value;
+  var everySel = el("fEvery").value;
+  var intervalH = everySel==="custom" ? parseFloat(el("fEveryCustom").value) : parseFloat(everySel);
+  var len = parseInt(el("fLength").value,10);
+  var unit = el("fLengthUnit").value;
+  var maxPerDay = parseInt(el("fMax").value,10);
+  var supply = el("fSupply").value === "" ? null : Math.max(0, parseInt(el("fSupply").value,10)||0);
+
+  function bad(msg, focus){
+    warn.innerHTML = '<div class="note bad">'+msg+'</div>';
+    if (focus) el(focus).focus();
+    return false;
+  }
+  if (!name) return bad("Enter the name of the medicine.","fName");
+  if (!startVal) return bad("Set the date and time of the first dose.","fStart");
+  if (!intervalH || intervalH<=0) return bad("Enter how many hours between doses.");
+  if (!len || len<1) return bad("Enter how long the course runs.");
+
+  var startMs = new Date(startVal).getTime();
+  var count = unit==="doses" ? len : Math.max(1, Math.floor((len*24)/intervalH));
+  if (count > 240) count = 240;
+
+  if (maxPerDay && (24/intervalH) > maxPerDay + 0.01){
+    warn.innerHTML = '<div class="note warn">Every '+trimNum(intervalH)+' hours works out to about '+
+      Math.floor(24/intervalH)+' doses a day, which is more than the limit of '+maxPerDay+
+      ' you entered. Check the label — the schedule was still saved.</div>';
+  }
+
+  var editing = state.ui.editing ? findMed(state.ui.editing) : null;
+  var doses = buildDoses(startMs, intervalH, count);
+  if (editing){
+    for (var i=0;i<doses.length && i<editing.doses.length;i++){
+      var o = editing.doses[i];
+      doses[i].given = o.given; doses[i].givenBy = o.givenBy; doses[i].skipped = o.skipped;
+      doses[i].remindedAt = o.remindedAt; doses[i].overdueAt = o.overdueAt;
+      if (o.given) doses[i].planned = o.planned;
+    }
+  }
+  var med = {
+    id: editing ? editing.id : uid(),
+    person: el("fPerson").value.trim(),
+    who: el("fWho").value,
+    name: name,
+    ingredient: el("fIngredient").value.trim(),
+    dose: el("fDose").value.trim(),
+    intervalH: intervalH,
+    maxPerDay: maxPerDay || null,
+    mode: el("fMode").value,
+    supplyDoses: supply,
+    colour: el("fColour").value,
+    notes: el("fNotes").value.trim(),
+    paused: editing ? !!editing.paused : false,
+    archived: false,
+    created: editing ? editing.created : Date.now(),
+    updatedAt: Date.now(),
+    doses: doses
+  };
+  if (editing){
+    state.meds = state.meds.map(function(m){ return m.id===med.id ? med : m; });
+    toast("Changes saved");
+  } else {
+    state.meds.push(med);
+    toast("Schedule created with "+count+" doses");
+  }
+  var dupes = duplicateIngredients();
+  save();
+  cancelEdit();
+  centreView();
+  renderAll();
+  scheduleLocalAlert();
+  if (dupes.length) toast("Careful — two medicines contain "+dupes[0]);
+  scrollTo("medsSection");
+  return true;
+}
+
+el("fEvery").addEventListener("change", function(){
+  el("customWrap").hidden = el("fEvery").value !== "custom";
+});
+el("btnSave").addEventListener("click", saveMed);
+el("btnCancelEdit").addEventListener("click", cancelEdit);
+el("btnAddJump").addEventListener("click", function(){
+  scrollTo("addSection"); el("fName").focus();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   11. Temperature log
+   ═══════════════════════════════════════════════════════════════════════════ */
+el("btnLogAdd").addEventListener("click", function(){
+  var t = el("lTemp").value.trim();
+  var note = el("lNote").value.trim();
+  if (!t && !note){ toast("Add a temperature or a note first"); return; }
+  var temp = t ? parseFloat(t) : null;
+  var unit = el("lUnit").value;
+  if (temp != null){
+    if (unit==="F" && (temp<90 || temp>112)){ toast("That temperature looks off for °F — check it"); return; }
+    if (unit==="C" && (temp<32 || temp>44)){ toast("That temperature looks off for °C — check it"); return; }
+  }
+  state.logs.push({
+    id: uid(), at: Date.now(), person: el("lPerson").value.trim(),
+    temp: temp, unit: unit, note: note, by: state.ui.me || ""
+  });
+  state.ui.unit = unit;
+  save();
+  el("lTemp").value=""; el("lNote").value="";
+  renderLogs(); renderChart(); renderStats();
+  var hot = temp!=null && ((unit==="F"&&temp>=104)||(unit==="C"&&temp>=40));
+  toast(hot ? "Saved — a temperature that high needs a call to your doctor or nurse line" : "Reading saved");
+});
+/* ═══════════════════════════════════════════════════════════════════════════
+   12. Interactive timeline
+   ═══════════════════════════════════════════════════════════════════════════ */
+var chartMarkers = [], chartGeom = null;
+
+function viewSpan(){ return Math.max(1.5*HOUR, Math.min(28*DAY, (state.ui.viewHours||24)*HOUR)); }
+function viewCentre(){
+  if (state.ui.viewCentre == null) return Date.now() + viewSpan()*0.18;
+  return state.ui.viewCentre;
+}
+function centreView(){ state.ui.viewCentre = null; }
+
+function tempToUnit(l, unit){
+  if (l.temp == null) return null;
+  if (l.unit === unit) return l.temp;
+  return unit === "F" ? l.temp*9/5+32 : (l.temp-32)*5/9;
+}
+
+function renderChart(){
+  var meds = visibleMeds().filter(function(m){ return !state.ui.hidden[m.id]; });
+  var allVisible = visibleMeds();
+  el("chartSection").hidden = allVisible.length === 0;
+  if (!allVisible.length) return;
+
+  var host = el("chartHost"), svg = el("chartSvg");
+  var W = Math.max(300, host.clientWidth || 340);
+  var padL = 10, padR = 10, plotW = W - padL - padR;
+  var span = viewSpan(), centre = viewCentre();
+  var vStart = centre - span/2, vEnd = centre + span/2;
+  var x = function(ms){ return padL + ((ms - vStart)/span)*plotW; };
+
+  var unit = state.ui.unit || "F";
+  var temps = state.logs.filter(function(l){
+    if (l.temp == null) return false;
+    if (state.ui.person !== "all" && (l.person||"") && l.person !== state.ui.person) return false;
+    return true;
+  }).sort(function(a,b){ return a.at-b.at; });
+  var showTemp = state.ui.tempOn && temps.length > 0;
+
+  var axisH = 26, laneH = 46, tempH = showTemp ? 92 : 0;
+  var lanesTop = axisH + 6;
+  var H = lanesTop + Math.max(1, meds.length)*laneH + tempH + 12;
+
+  var s = [];
+  s.push('<defs><clipPath id="plotClip"><rect x="'+padL+'" y="0" width="'+plotW+'" height="'+H+'"/></clipPath></defs>');
+  s.push('<g clip-path="url(#plotClip)">');
+
+  // night shading
+  var h0 = new Date(vStart); h0.setMinutes(0,0,0);
+  for (var t=h0.getTime(); t<vEnd; t+=HOUR){
+    if (isNight(t)){
+      s.push('<rect x="'+x(t).toFixed(1)+'" y="0" width="'+((HOUR/span)*plotW).toFixed(2)+'" height="'+H+'" fill="var(--night)" opacity=".75"/>');
+    }
+  }
+
+  // hour / day grid
+  var step = span<=13*HOUR ? HOUR : span<=26*HOUR ? 2*HOUR : span<=4*DAY ? 6*HOUR : 12*HOUR;
+  while ((step/span)*plotW < 42) step *= 2;
+  var g0 = new Date(vStart); g0.setMinutes(0,0,0);
+  g0.setHours(Math.floor(g0.getHours()/(step/HOUR))*(step/HOUR));
+  for (var g=g0.getTime(); g<vEnd+step; g+=step){
+    var gx = x(g);
+    var midnight = new Date(g).getHours()===0;
+    s.push('<line x1="'+gx.toFixed(1)+'" y1="'+axisH+'" x2="'+gx.toFixed(1)+'" y2="'+(H-4)+
+      '" stroke="'+(midnight?"#DCD5C6":"var(--line-2)")+'" stroke-width="1"'+(midnight?'':' ')+'/>');
+    s.push('<text x="'+gx.toFixed(1)+'" y="16" text-anchor="middle" font-family="var(--mono)" font-size="10.5" fill="var(--faint)">'+
+      (midnight ? new Date(g).toLocaleDateString(undefined,{month:"short",day:"numeric"}) : fmtShort(g))+'</text>');
+  }
+
+  // lanes
+  chartMarkers = [];
+  meds.forEach(function(med, li){
+    var top = lanesTop + li*laneH, mid = top + laneH/2 + 4;
+    var colour = COLOURS[med.colour] || COLOURS.sky;
+    s.push('<rect x="'+padL+'" y="'+(top+3)+'" width="'+plotW+'" height="'+(laneH-8)+'" rx="12" fill="#FCFBF7" opacity=".85"/>');
+    s.push('<line x1="'+padL+'" y1="'+mid+'" x2="'+(padL+plotW)+'" y2="'+mid+'" stroke="'+colour+'" stroke-opacity=".28" stroke-width="2" stroke-dasharray="2 5"/>');
+
+    var now = Date.now();
+    med.doses.forEach(function(d, idx){
+      var when = d.given || d.planned;
+      if (when < vStart - HOUR || when > vEnd + HOUR) return;
+      var cx = x(when);
+      var status = d.skipped ? "skipped" : d.given ? "given" : (d.planned < now - 15*MIN ? "missed" : "due");
+      var fill = status==="given" ? "var(--mint)" : status==="missed" ? "var(--rose)" :
+                 status==="skipped" ? "#FFFFFF" : "var(--sun)";
+      var r = status==="given" ? 9 : 8;
+      s.push('<circle cx="'+cx.toFixed(1)+'" cy="'+mid+'" r="'+r+'" fill="'+fill+'" stroke="'+colour+'" stroke-width="2.5"/>');
+      if (status==="given") s.push('<path d="M'+(cx-3.6).toFixed(1)+' '+mid+' l2.6 2.7 l4.4 -5.2" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>');
+      if (status==="skipped") s.push('<line x1="'+(cx-3.5).toFixed(1)+'" y1="'+(mid-3.5)+'" x2="'+(cx+3.5).toFixed(1)+'" y2="'+(mid+3.5)+'" stroke="'+colour+'" stroke-width="2"/>');
+      if (status==="due" && (idx===0 || true)) s.push('<circle cx="'+cx.toFixed(1)+'" cy="'+mid+'" r="'+(r+5)+'" fill="none" stroke="var(--sun)" stroke-opacity=".35" stroke-width="2"/>');
+      chartMarkers.push({ x:cx, y:mid, medId:med.id, index:idx });
+    });
+
+    s.push('<text x="'+(padL+8)+'" y="'+(top+16)+'" font-size="11.5" font-weight="800" fill="'+colour+'">'+
+      esc(med.name)+(med.person?' · '+esc(med.person):'')+(med.paused?' · paused':'')+'</text>');
+  });
+
+  // temperature overlay
+  if (showTemp){
+    var tTop = lanesTop + Math.max(1,meds.length)*laneH + 8, tH = tempH - 20;
+    var vals = temps.map(function(l){ return tempToUnit(l, unit); });
+    var lo = Math.min.apply(null, vals) - 0.6, hi = Math.max.apply(null, vals) + 0.6;
+    if (hi - lo < 2){ var m0=(hi+lo)/2; lo=m0-1; hi=m0+1; }
+    var y = function(v){ return tTop + tH - ((v-lo)/(hi-lo))*tH; };
+    var fever = unit==="F" ? 100.4 : 38;
+    s.push('<rect x="'+padL+'" y="'+tTop+'" width="'+plotW+'" height="'+tH+'" rx="12" fill="#FFF8F5" opacity=".9"/>');
+    if (fever>lo && fever<hi){
+      s.push('<line x1="'+padL+'" y1="'+y(fever).toFixed(1)+'" x2="'+(padL+plotW)+'" y2="'+y(fever).toFixed(1)+
+        '" stroke="var(--rose)" stroke-opacity=".45" stroke-dasharray="4 4" stroke-width="1.5"/>');
+      s.push('<text x="'+(padL+plotW-4)+'" y="'+(y(fever)-4).toFixed(1)+'" text-anchor="end" font-size="10" fill="var(--rose)">fever '+trimNum(fever)+'°'+unit+'</text>');
+    }
+    var pts = [];
+    temps.forEach(function(l){
+      if (l.at < vStart-2*HOUR || l.at > vEnd+2*HOUR) return;
+      pts.push(x(l.at).toFixed(1)+","+y(tempToUnit(l,unit)).toFixed(1));
+    });
+    if (pts.length>1) s.push('<polyline points="'+pts.join(" ")+'" fill="none" stroke="var(--rose)" stroke-width="2.5" stroke-linejoin="round"/>');
+    temps.forEach(function(l){
+      if (l.at < vStart-2*HOUR || l.at > vEnd+2*HOUR) return;
+      var v = tempToUnit(l,unit);
+      s.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="4.5" fill="#fff" stroke="var(--rose)" stroke-width="2.5"/>');
+      s.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(y(v)-9).toFixed(1)+'" text-anchor="middle" font-size="10" font-weight="700" fill="var(--rose)">'+trimNum(v)+'</text>');
+    });
+    s.push('<text x="'+(padL+8)+'" y="'+(tTop+14)+'" font-size="11" font-weight="800" fill="var(--rose)">Temperature °'+unit+'</text>');
+  }
+
+  // now line
+  var nx = x(Date.now());
+  s.push('<line x1="'+nx.toFixed(1)+'" y1="'+(axisH-4)+'" x2="'+nx.toFixed(1)+'" y2="'+(H-4)+'" stroke="var(--ink)" stroke-width="2"/>');
+  s.push('<circle cx="'+nx.toFixed(1)+'" cy="'+(axisH-4)+'" r="3.5" fill="var(--ink)"/>');
+  s.push('<text x="'+(nx+6).toFixed(1)+'" y="'+(axisH+10)+'" font-size="10.5" font-weight="800" fill="var(--ink)">now</text>');
+  s.push('</g>');
+
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width", W);
+  svg.setAttribute("height", H);
+  svg.innerHTML = s.join("");
+  chartGeom = { W:W, H:H, padL:padL, plotW:plotW, span:span, vStart:vStart };
+
+  // legend
+  el("chartLegend").innerHTML = allVisible.map(function(m){
+    var colour = COLOURS[m.colour] || COLOURS.sky;
+    return '<button class="leg'+(state.ui.hidden[m.id]?" off":"")+'" data-leg="'+m.id+'">'+
+      '<i class="sw" style="background:'+colour+'"></i>'+esc(m.name)+'</button>';
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("[data-leg]"), function(b){
+    b.addEventListener("click", function(){
+      var id = b.getAttribute("data-leg");
+      state.ui.hidden[id] = !state.ui.hidden[id];
+      save({push:false}); renderChart();
+    });
+  });
+  el("btnTempToggle").textContent = "Fever line: " + (state.ui.tempOn ? "on" : "off");
+}
+
+/* ── pan / zoom / tap ─────────────────────────────────────── */
+(function chartInput(){
+  var host = el("chartHost");
+  var pointers = {}, dragStartX = null, dragStartCentre = null, moved = 0, pinchStart = null;
+
+  host.addEventListener("pointerdown", function(e){
+    pointers[e.pointerId] = { x:e.clientX, y:e.clientY };
+    var ids = Object.keys(pointers);
+    if (ids.length === 1){
+      dragStartX = e.clientX; dragStartCentre = viewCentre(); moved = 0;
+      host.classList.add("dragging");
+      try { host.setPointerCapture(e.pointerId); } catch(err){}
+    } else if (ids.length === 2){
+      pinchStart = { dist: dist(pointers[ids[0]], pointers[ids[1]]), span: viewSpan() };
+    }
+  });
+  host.addEventListener("pointermove", function(e){
+    if (!pointers[e.pointerId]) return;
+    pointers[e.pointerId] = { x:e.clientX, y:e.clientY };
+    var ids = Object.keys(pointers);
+    if (ids.length === 2 && pinchStart){
+      var d = dist(pointers[ids[0]], pointers[ids[1]]);
+      if (d > 10){
+        setSpan(pinchStart.span * (pinchStart.dist/d));
+        renderChart();
+      }
+      return;
+    }
+    if (dragStartX == null || !chartGeom) return;
+    var dx = e.clientX - dragStartX;
+    moved = Math.max(moved, Math.abs(dx));
+    if (Math.abs(dx) > 3){
+      state.ui.viewCentre = dragStartCentre - dx * (chartGeom.span/chartGeom.plotW);
+      renderChart();
+    }
+  });
+  function endPointer(e){
+    delete pointers[e.pointerId];
+    if (Object.keys(pointers).length < 2) pinchStart = null;
+    if (Object.keys(pointers).length === 0){
+      host.classList.remove("dragging");
+      if (moved < 6) hitTest(e);
+      dragStartX = null;
+      save({push:false});
+    }
+  }
+  host.addEventListener("pointerup", endPointer);
+  host.addEventListener("pointercancel", endPointer);
+  host.addEventListener("wheel", function(e){
+    if (!chartGeom) return;
+    e.preventDefault();
+    setSpan(viewSpan() * (e.deltaY > 0 ? 1.18 : 0.85));
+    renderChart();
+  }, { passive:false });
+
+  function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+  function hitTest(e){
+    var rect = el("chartSvg").getBoundingClientRect();
+    if (!chartGeom) return;
+    var scale = rect.width / chartGeom.W;
+    var px = (e.clientX - rect.left)/scale, py = (e.clientY - rect.top)/scale;
+    var best = null, bestD = 20;
+    chartMarkers.forEach(function(m){
+      var d = Math.hypot(m.x-px, m.y-py);
+      if (d < bestD){ bestD = d; best = m; }
+    });
+    if (best) openPop(best, e.clientX, e.clientY);
+    else closePop();
+  }
+})();
+
+function setSpan(ms){
+  var hours = Math.max(2, Math.min(28*24, ms/HOUR));
+  if (state.ui.viewCentre == null) state.ui.viewCentre = viewCentre();
+  state.ui.viewHours = hours;
+  Array.prototype.forEach.call(document.querySelectorAll("#rangeSeg button"), function(b){
+    b.setAttribute("aria-pressed", String(Math.abs(parseFloat(b.getAttribute("data-hours")) - hours) < 0.5));
+  });
+}
+
+function closePop(){
+  var p = document.querySelector(".pop");
+  if (p) p.parentNode.removeChild(p);
+}
+function openPop(marker, clientX, clientY){
+  closePop();
+  var med = findMed(marker.medId); if (!med) return;
+  var d = med.doses[marker.index]; if (!d) return;
+  var host = el("chartHost"), rect = host.getBoundingClientRect();
+  var when = d.given || d.planned;
+  var status = d.skipped ? "Skipped" : d.given
+    ? ("Given"+(d.givenBy?" by "+esc(d.givenBy):"")+" at "+fmtTime(d.given))
+    : (d.planned < Date.now() ? "Overdue by "+durTxt(Date.now()-d.planned) : "Due in "+durTxt(d.planned-Date.now()));
+
+  var box = document.createElement("div");
+  box.className = "pop";
+  box.innerHTML = '<button class="close" data-act="closePop" aria-label="Close">×</button>'+
+    '<h5>'+esc(med.name)+'</h5>'+
+    '<div class="meta">'+(med.person?esc(med.person)+' · ':'')+'dose '+(marker.index+1)+' of '+med.doses.length+'</div>'+
+    '<div style="margin-top:6px;font-weight:700">'+fmtTime(when)+' '+fmtDay(when)+'</div>'+
+    '<div class="meta">'+status+'</div>'+
+    '<div class="meta" style="margin-top:4px">Give '+esc(med.dose||"per label")+'</div>'+
+    '<div class="btn-row">'+
+      (d.given||d.skipped
+        ? '<button class="btn tiny ghost" data-act="undo" data-med="'+med.id+'" data-i="'+marker.index+'">Undo</button>'
+        : '<button class="btn tiny" data-act="giveat" data-med="'+med.id+'" data-i="'+marker.index+'">✓ Given now</button>'+
+          '<button class="btn tiny ghost" data-act="gaveEarlier" data-med="'+med.id+'" data-i="'+marker.index+'">Given earlier…</button>'+
+          '<button class="btn tiny ghost" data-act="skip" data-med="'+med.id+'" data-i="'+marker.index+'">Skip</button>')+
+    '</div>';
+  host.appendChild(box);
+  var w = 250;
+  var left = Math.max(4, Math.min(rect.width - w - 4, (clientX - rect.left) - w/2));
+  var top = Math.max(4, (clientY - rect.top) + 16);
+  box.style.left = left+"px"; box.style.top = top+"px"; box.style.width = w+"px";
+}
+
+el("rangeSeg").addEventListener("click", function(e){
+  var b = e.target.closest("button[data-hours]"); if (!b) return;
+  setSpan(parseFloat(b.getAttribute("data-hours"))*HOUR);
+  save({push:false}); renderChart();
+});
+el("btnZoomIn").addEventListener("click", function(){ setSpan(viewSpan()*0.6); renderChart(); });
+el("btnZoomOut").addEventListener("click", function(){ setSpan(viewSpan()*1.65); renderChart(); });
+el("btnPanBack").addEventListener("click", function(){ state.ui.viewCentre = viewCentre() - viewSpan()*0.4; renderChart(); });
+el("btnPanFwd").addEventListener("click", function(){ state.ui.viewCentre = viewCentre() + viewSpan()*0.4; renderChart(); });
+el("btnNow").addEventListener("click", function(){ centreView(); renderChart(); });
+el("btnTempToggle").addEventListener("click", function(){
+  state.ui.tempOn = !state.ui.tempOn; save({push:false}); renderChart();
+});
+window.addEventListener("resize", function(){
+  clearTimeout(window.__dcResize);
+  window.__dcResize = setTimeout(renderChart, 160);
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   13. Calendar file, text copy, print
+   ═══════════════════════════════════════════════════════════════════════════ */
+function icsEsc(s){
+  return String(s==null?"":s).replace(/\\/g,"\\\\").replace(/;/g,"\\;").replace(/,/g,"\\,").replace(/\r?\n/g,"\\n");
+}
+function icsStamp(ms){
+  var d=new Date(ms);
+  return d.getUTCFullYear()+pad(d.getUTCMonth()+1)+pad(d.getUTCDate())+"T"+
+         pad(d.getUTCHours())+pad(d.getUTCMinutes())+pad(d.getUTCSeconds())+"Z";
+}
+function fold(line){
+  if (line.length<=74) return line;
+  var out=line.slice(0,74), rest=line.slice(74);
+  while (rest.length>73){ out += "\r\n "+rest.slice(0,73); rest=rest.slice(73); }
+  return out+"\r\n "+rest;
+}
+function buildICS(meds){
+  var L=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//TWC Dose Clock//EN","CALSCALE:GREGORIAN","METHOD:PUBLISH"];
+  L.push("X-WR-CALNAME:"+icsEsc("Medicine schedule"));
+  var stamp = icsStamp(Date.now());
+  meds.forEach(function(med){
+    med.doses.forEach(function(d, idx){
+      if (d.given || d.skipped || med.paused) return;
+      var title = med.name + (med.person?" for "+med.person:"") + " · " + (med.dose||"see label");
+      var desc = "Dose "+(idx+1)+" of "+med.doses.length+". Give "+(med.dose||"the amount on the label")+
+        ". Every "+trimNum(med.intervalH)+" hours."+
+        (med.maxPerDay?" Do not go over "+med.maxPerDay+" doses in 24 hours.":"")+
+        (med.ingredient?" Active ingredient: "+med.ingredient+".":"")+
+        (med.notes?" Note: "+med.notes:"")+
+        " Always follow the label or your clinician.";
+      L.push("BEGIN:VEVENT","UID:"+med.id+"-"+idx+"@doseclock","DTSTAMP:"+stamp,
+        "DTSTART:"+icsStamp(d.planned),"DTEND:"+icsStamp(d.planned+10*MIN),
+        fold("SUMMARY:"+icsEsc(title)), fold("DESCRIPTION:"+icsEsc(desc)));
+      L.push("BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:PT0S",fold("DESCRIPTION:"+icsEsc(title)),"END:VALARM");
+      L.push("BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:-PT5M",fold("DESCRIPTION:"+icsEsc("In 5 minutes: "+title)),"END:VALARM");
+      L.push("END:VEVENT");
+    });
+  });
+  L.push("END:VCALENDAR");
+  return L.join("\r\n");
+}
+function slug(s){
+  return String(s||"schedule").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40) || "schedule";
+}
+function downloadICS(meds, name){
+  var pending=0;
+  meds.forEach(function(m){ m.doses.forEach(function(d){ if(!d.given&&!d.skipped&&!m.paused) pending++; }); });
+  if (!pending){ toast("There are no upcoming doses to add"); return; }
+  var blob = new Blob([buildICS(meds)], { type:"text/calendar;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href=url; a.download=name+"-doses.ics";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+  toast(pending+" doses ready for your calendar");
+}
+function scheduleText(){
+  var lines = ["MEDICINE SCHEDULE"+(state.sync.name?" — "+state.sync.name:""), new Date().toLocaleString(), ""];
+  visibleMeds().forEach(function(med){
+    lines.push(med.name + (med.person?" for "+med.person:"") + (med.paused?" (paused)":""));
+    lines.push("Give "+(med.dose||"per label")+" every "+trimNum(med.intervalH)+" hours"+
+      (med.maxPerDay?", no more than "+med.maxPerDay+" in 24 hours":""));
+    if (med.ingredient) lines.push("Active ingredient: "+med.ingredient);
+    if (med.notes) lines.push("Note: "+med.notes);
+    med.doses.forEach(function(d,i){
+      var t = d.given || d.planned;
+      lines.push("  "+(i+1)+". "+fmtDay(t)+" "+fmtTime(t)+" "+
+        (d.skipped?"[skipped]":d.given?("[given"+(d.givenBy?" by "+d.givenBy:"")+"]"):"[  ]"));
+    });
+    lines.push("");
+  });
+  var temps = state.logs.filter(function(l){ return l.temp; }).slice(-10);
+  if (temps.length){
+    lines.push("TEMPERATURES");
+    temps.forEach(function(l){
+      lines.push("  "+fmtDay(l.at)+" "+fmtTime(l.at)+" — "+trimNum(l.temp)+"°"+l.unit+
+        (l.person?" ("+l.person+")":"")+(l.note?" "+l.note:""));
+    });
+    lines.push("");
+  }
+  lines.push("Dose Clock only keeps time. Follow the label or your doctor, nurse or pharmacist for the amount.");
+  return lines.join("\n");
+}
+el("btnIcsAll").addEventListener("click", function(){ downloadICS(visibleMeds(), "medicine"); });
+el("btnCopyAll").addEventListener("click", function(){
+  var txt = scheduleText();
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(function(){ toast("Schedule copied — paste it into a message"); },
+      function(){ window.prompt("Copy the schedule", txt); });
+  } else window.prompt("Copy the schedule", txt);
+});
+function printSheet(){
+  var temps = state.logs.filter(function(l){ return l.temp; }).slice(-8);
+  el("printHeader").innerHTML =
+    '<h2 style="font-size:22px">Medicine handover sheet'+(state.sync.name?' — '+esc(state.sync.name):'')+'</h2>'+
+    '<p style="font-size:13px">Printed '+new Date().toLocaleString()+
+    '. Tick each dose as it is given and write the time and your name.</p>'+
+    (temps.length? '<p style="font-size:13px"><b>Recent temperatures:</b> '+temps.map(function(l){
+      return trimNum(l.temp)+"°"+l.unit+" at "+fmtTime(l.at);
+    }).join(" · ")+'</p>' : '');
+  window.print();
+}
+el("btnPrint").addEventListener("click", printSheet);
+document.addEventListener("click", function(e){
+  if (e.target && e.target.id === "btnPrint2") printSheet();
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   14. Pop-up alerts while the page is open
+   ═══════════════════════════════════════════════════════════════════════════ */
+var alertTimer = null;
+function notifyState(){
+  if (!("Notification" in window)) return "unsupported";
+  return Notification.permission;
+}
+function renderBell(){
+  var st = notifyState();
+  el("bellTxt").textContent = st==="granted" ? "Alerts on" : st==="unsupported" ? "No alerts here" : "Alerts off";
+  el("bellChip").className = "chip-btn" + (st==="granted" ? " ok" : "");
+}
+el("bellChip").addEventListener("click", function(){
+  if (!("Notification" in window)){ toast("This browser cannot show pop-up alerts. Use the calendar file or emails instead."); return; }
+  if (Notification.permission === "granted"){
+    new Notification("Dose Clock", { body:"Pop-up alerts are already on for this browser." });
+    return;
+  }
+  Notification.requestPermission().then(function(p){
+    renderBell();
+    if (p==="granted"){ toast("Pop-ups on — they fire while this page is open"); scheduleLocalAlert(); }
+    else toast("Pop-ups blocked. The email reminders still work.");
+  });
+});
+function scheduleLocalAlert(){
+  clearTimeout(alertTimer);
+  if (notifyState() !== "granted") return;
+  var next = soonest();
+  if (!next) return;
+  var wait = next.dose.planned - Date.now();
+  if (wait < 0) wait = 0;
+  if (wait > 12*HOUR) return;
+  alertTimer = setTimeout(function(){
+    try {
+      new Notification("Time for "+next.med.name+(next.med.person?" · "+next.med.person:""), {
+        body: "Give "+(next.med.dose||"the amount on the label")+". Tap Given in Dose Clock when it is in.",
+        tag: "dose-"+next.med.id+"-"+next.index
+      });
+    } catch(e){}
+    scheduleLocalAlert();
+  }, wait + 500);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   15. Sync & email panel
+   ═══════════════════════════════════════════════════════════════════════════ */
+function renderSyncPanel(){
+  el("fApi").value = state.sync.apiBase || "";
+  el("fCode").value = state.sync.code || "";
+  var on = canSync() && connected;
+  el("cloudBox").hidden = !on;
+  el("syncStatus").innerHTML = on
+    ? '<div class="note">Connected as <b>'+esc(state.sync.name||"family")+'</b>. The schedule syncs between phones and the server sends the reminder emails.</div>'
+    : (canSync() ? '<div class="note warn">Saved, but the server has not answered yet. Tap Connect to try again.</div>' : "");
+  el("fLead").value = String(state.settings.leadMinutes==null?5:state.settings.leadMinutes);
+  el("fOverdue").value = state.settings.overdueNudge ? String(state.settings.overdueMinutes||30) : "0";
+  el("adminBox").hidden = !state.sync.isAdmin;
+
+  var rows = state.caregivers.length ? state.caregivers : [{ id:uid(), name:"", email:"", notify:true }];
+  el("careList").innerHTML = rows.map(function(c,i){
+    return '<div class="care-row" data-care="'+i+'">'+
+      '<input type="text" placeholder="Name" value="'+esc(c.name)+'" data-f="name" />'+
+      '<input type="email" placeholder="parent@email.com" value="'+esc(c.email)+'" data-f="email" inputmode="email" />'+
+      '<label class="switch"><input type="checkbox" data-f="notify"'+(c.notify!==false?" checked":"")+' /> email</label>'+
+      '<button class="btn tiny danger" data-care-del="'+i+'">✕</button></div>';
+  }).join("");
+  Array.prototype.forEach.call(document.querySelectorAll("[data-care-del]"), function(b){
+    b.addEventListener("click", function(){
+      var idx = parseInt(b.getAttribute("data-care-del"),10);
+      collectCare();
+      state.caregivers.splice(idx,1);
+      renderSyncPanel();
+    });
+  });
+}
+function collectCare(){
+  var out = [];
+  Array.prototype.forEach.call(document.querySelectorAll("[data-care]"), function(row){
+    var name = row.querySelector('[data-f="name"]').value.trim();
+    var email = row.querySelector('[data-f="email"]').value.trim();
+    var notify = row.querySelector('[data-f="notify"]').checked;
+    if (name || email) out.push({ id:uid(), name:name, email:email, notify:notify });
+  });
+  state.caregivers = out;
+  return out;
+}
+el("btnAddCare").addEventListener("click", function(){
+  collectCare();
+  state.caregivers.push({ id:uid(), name:"", email:"", notify:true });
+  renderSyncPanel();
+});
+el("btnSaveCloud").addEventListener("click", function(){
+  collectCare();
+  state.settings.leadMinutes = parseInt(el("fLead").value,10)||0;
+  var ov = parseInt(el("fOverdue").value,10)||0;
+  state.settings.overdueNudge = ov > 0;
+  state.settings.overdueMinutes = ov || 30;
+  save();
+  var bad = state.caregivers.filter(function(c){ return c.notify && (!c.email || c.email.indexOf("@")<0); });
+  pushNow().then(function(){
+    renderSyncPanel();
+    toast(bad.length ? "Saved, but one address looks wrong — check it" : "Email settings saved");
+  });
+});
+el("btnLogin").addEventListener("click", function(){
+  state.sync.apiBase = el("fApi").value.trim();
+  var code = el("fCode").value.trim();
+  if (!state.sync.apiBase){ toast("Paste the worker address first"); return; }
+  if (!code){ toast("Enter your family code"); return; }
+  save({push:false});
+  syncChip("busy","Connecting…");
+  login(code).then(function(){
+    syncChip("ok", state.sync.name || "Synced");
+    renderSyncPanel(); renderAll();
+    toast("Connected as "+(state.sync.name||"family"));
+    loadRooms();
+  }).catch(function(e){
+    connected = false;
+    syncChip("bad","Not connected");
+    renderSyncPanel();
+    toast(e.message);
+  });
+});
+el("btnLogout").addEventListener("click", function(){
+  if (window.confirm("Sign out on this device? The schedule stays on the server and on this phone.")) logout();
+});
+el("btnPull").addEventListener("click", function(){ pull(false).then(renderSyncPanel); });
+el("btnTestEmail").addEventListener("click", function(){
+  collectCare(); save();
+  var target = state.caregivers.filter(function(c){ return c.email; })[0];
+  if (!target){ toast("Add an email address first"); return; }
+  api("/api/test-email", { method:"POST", body:{ to:target.email, name:target.name } })
+    .then(function(){ toast("Test email sent to "+target.email); })
+    .catch(function(e){ toast("Could not send: "+e.message); });
+});
+el("syncChip").addEventListener("click", function(){
+  var f = el("foldSync"); f.open = true;
+  scrollTo(f);
+});
+
+function loadRooms(){
+  if (!state.sync.isAdmin) return;
+  api("/api/admin/rooms").then(function(d){
+    el("roomList").innerHTML = (d.rooms||[]).map(function(r){
+      return '<div class="kv"><span>'+esc(r.name)+' — '+r.medCount+' medicine'+(r.medCount===1?'':'s')+'</span>'+
+        '<span><code>'+esc(r.password)+'</code> <button class="btn tiny danger" data-room-del="'+esc(r.password)+'">Delete</button></span></div>';
+    }).join("") || '<p class="hint">No families yet.</p>';
+    Array.prototype.forEach.call(document.querySelectorAll("[data-room-del]"), function(b){
+      b.addEventListener("click", function(){
+        var p = b.getAttribute("data-room-del");
+        if (!window.confirm("Delete the family with code "+p+"? Their schedule is removed from the server.")) return;
+        api("/api/admin/rooms", { method:"DELETE", body:{ password:p } })
+          .then(function(){ toast("Family removed"); loadRooms(); })
+          .catch(function(e){ toast(e.message); });
+      });
+    });
+  }).catch(function(){});
+}
+el("btnAddRoom").addEventListener("click", function(){
+  var name = el("fNewRoomName").value.trim(), pass = el("fNewRoomPass").value.trim();
+  if (!name || !pass){ toast("Both a family name and a code are needed"); return; }
+  api("/api/admin/rooms", { method:"POST", body:{ password:pass, name:name } })
+    .then(function(){ toast("Family created"); el("fNewRoomName").value=""; el("fNewRoomPass").value=""; loadRooms(); })
+    .catch(function(e){ toast(e.message); });
+});
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   16. Boot
+   ═══════════════════════════════════════════════════════════════════════════ */
+function renderAll(){
+  renderBanners(); renderHero(); renderStats(); renderFilters();
+  renderMeds(); renderLogs(); renderChart();
+}
+
+renderPresets();
+seedStart();
+setSpan((state.ui.viewHours||24)*HOUR);
+renderBell();
+renderSyncPanel();
+renderAll();
+scheduleLocalAlert();
+
+if (canSync()){
+  syncChip("busy","Connecting…");
+  pull(true).then(function(){ renderSyncPanel(); renderAll(); loadRooms(); });
+} else {
+  syncChip("", "On this device");
+}
+
+setInterval(tick, 1000);
+setInterval(function(){ renderBanners(); renderMeds(); renderChart(); renderStats(); }, 60000);
+setInterval(function(){ if (canSync()) pull(true); }, 45000);
+document.addEventListener("visibilitychange", function(){
+  if (!document.hidden){
+    renderAll(); scheduleLocalAlert();
+    if (canSync()) pull(true);
+  }
+});
+window.addEventListener("beforeunload", function(){ if (dirty) pushNow(); });
+})();
+</script>
+</body>
+</html>

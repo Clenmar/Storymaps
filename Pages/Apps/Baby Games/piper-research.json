@@ -1,0 +1,30 @@
+{
+  "library": {
+    "npm_package": "@mintplex-labs/piper-tts-web",
+    "latest_version": "1.0.4",
+    "esm_cdn_url": "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js",
+    "onnxruntime_web_version": "1.18.0 (dist hard-codes ORT WASM to cdnjs 1.18.0; pin the import map to 1.18.0)",
+    "api": {
+      "list_voices": "await tts.voices() -> VoiceMeta[] (fetches voices.json; needs network). Offline-safe: exported PATH_MAP. await tts.stored() -> cached voiceIds[].",
+      "download_model": "await tts.download(voiceId, p => {}) where p = { url, total, loaded } (total from Content-Length; only wired to the .onnx). Also tts.remove(voiceId), tts.flush().",
+      "synthesize_returns": "await tts.predict({text, voiceId}) -> Blob 'audio/x-wav' (mono 16-bit PCM; 22050Hz medium). BASE predict re-parses the 63MB graph EVERY call. Fork adds: const s = await TtsSession.create({voiceId}); const blob = await s.predict(text) — reuses the ONNX session (use this).",
+      "cache_mechanism": "OPFS via navigator.storage.getDirectory() ('piper' dir). Cache write gated on url containing 'https://huggingface.co', so self-hosted files are never cached. Failures are swallowed (console.error only)."
+    },
+    "minimal_example": "importmap for onnxruntime-web@1.18.0 is MANDATORY (bare import). Then import * as tts, download if not stored, s=TtsSession.create({voiceId}), blob=s.predict(text), play. iOS needs a user gesture."
+  },
+  "voices_note": "All English voices ~63MB (low tier gives no size saving; only 16kHz vs 22kHz). Recommended warm defaults: en_US-amy-medium, en_US-hfc_female-medium (README default), en_GB-jenny_dioco-medium (gentlest GB, CC-BY attribution). Models fetched from huggingface.co/diffusionstudio/piper-voices snapshot.",
+  "hosting": {
+    "runtime_cdn_ok": true,
+    "requires_coop_coep": false,
+    "self_host": "No base-path option without editing the dist; runtime CDN is fine. Single-threaded WASM without COOP/COEP (slower but works on any static host)."
+  },
+  "key_gotchas": [
+    "Bare import 'onnxruntime-web' -> requires an import map (top failure cause).",
+    "Use TtsSession (fork) not base predict, or every phrase re-parses 63MB.",
+    "iOS < Safari 26: OPFS createWritable may fail -> model re-downloads each visit (silent).",
+    "Audio autoplay: unlock an AudioContext inside the tap, feed decoded PCM when synth resolves.",
+    "Inference blocks the thread (freezes animation) -> cache generated clips; a Web Worker is the clean fix.",
+    "Some voices carry CC-BY/other licences -> use an explicit allowlist + credit."
+  ],
+  "sources_provided_by": "web-enabled Claude research, saved verbatim by the user"
+}
