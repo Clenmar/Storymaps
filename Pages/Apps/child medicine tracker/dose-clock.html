@@ -877,19 +877,23 @@ details.fold .fold-body{padding:0 18px 18px}
     <details class="fold">
       <summary>📅 Getting the doses into the iPhone calendar</summary>
       <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
-        <p style="margin-top:0">Tap <b>Add to calendar</b> on any medicine (or <b>Add all to calendar</b> below the list)
-        and pick the way that suits the phone:</p>
+        <p style="margin-top:0">Tap <b>Add to calendar</b> on any medicine (or <b>Add all to calendar</b> below the list).
+        On an iPhone the top two buttons are the ones that work:</p>
         <ol class="steps">
-          <li><b style="color:var(--ink)">Google Calendar</b> — opens the Google Calendar app or site with the whole
-          course already filled in as one repeating event. Tap <b>Save</b> and it appears in the iPhone calendar too,
-          as long as the Google account is added under Settings → Calendar → Accounts.</li>
-          <li><b style="color:var(--ink)">Open in Calendar (iPhone)</b> — hands the schedule to iOS through the share
-          sheet. Choose <b>Calendar</b>, then <b>Add All</b>. If iOS shows a preview first, tap the file and then
-          <b>Add All</b>.</li>
-          <li><b style="color:var(--ink)">Download the .ics file</b> — best on a computer or Android. On iPhone the file
-          lands in Files, so use one of the two options above instead.</li>
+          <li><b style="color:var(--ink)">Add to iPhone Calendar</b> — opens the doses in the Calendar app so you can tap
+          <b>Add All</b> and choose a calendar. This is a one-off copy of what is scheduled right now.</li>
+          <li><b style="color:var(--ink)">Subscribe — keeps itself up to date</b> — the better one. Calendar asks to
+          subscribe to your family's schedule, then refreshes on its own: change a medicine and every phone follows.
+          Leave <b>Remove Alarms</b> switched <b>off</b> so the dose alerts come across. iPhone checks subscribed
+          calendars about once an hour by default; Settings → Apps → Calendar → Accounts → the subscription → <b>Refresh</b>
+          can be set to every 15 or even 5 minutes.</li>
+          <li><b style="color:var(--ink)">Google Calendar</b> — one repeating event per medicine, if you keep your diary
+          with Google.</li>
+          <li><b style="color:var(--ink)">Download the .ics file</b> — for a computer or Android. On iPhone a downloaded
+          file just lands in Files with no Calendar option, which is why the buttons above exist.</li>
         </ol>
-        <p>Every dose becomes an event with an alert at dose time and a heads-up 5 minutes before.
+        <p>Every dose carries an alert at dose time plus a heads-up as far ahead as your reminder lead time.
+        The calendar link is a long secret address — treat it like a password and use <b>Make a new link</b> if it leaks.
         <b style="color:var(--ink)">Pop-up alerts</b> — tap 🔔 at the top of this page; those fire while the page is open.</p>
       </div>
     </details>
@@ -953,7 +957,7 @@ var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
 // Bump this whenever the file changes. It is printed on the sign-in card and in
 // Settings, so it is easy to tell whether a phone is running the current build
 // or a copy Safari kept in its cache.
-var APP_VERSION = "3.3 · 25 Jul 2026";
+var APP_VERSION = "3.4 · 25 Jul 2026";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -3044,6 +3048,8 @@ function pendingDoses(meds){
   meds.forEach(function(m){ m.doses.forEach(function(d){ if(!d.given&&!d.skipped&&!m.paused) n++; }); });
   return n;
 }
+// Kept for Android and desktop only. On iOS the share sheet has no Calendar
+// target for an .ics, which is why the hosted feed above exists.
 function shareICS(meds, name){
   if (!pendingDoses(meds)){ toast("There are no upcoming doses to add"); return; }
   var text = buildICS(meds);
@@ -3067,6 +3073,17 @@ function closeSheet(){
   var s = document.getElementById("calSheet");
   if (s) s.parentNode.removeChild(s);
 }
+var feedLinks = null;                 // { url, webcal } — fetched once per session
+
+function getFeed(rotate){
+  if (feedLinks && !rotate) return Promise.resolve(feedLinks);
+  if (!canSync() || !connected) return Promise.reject(new Error("Sign in first"));
+  return api("/api/feed", { method:"POST", body:{ rotate: !!rotate } }).then(function(d){
+    feedLinks = { url:d.url, webcal:d.webcal };
+    return feedLinks;
+  });
+}
+
 function openCalSheet(meds){
   meds = (meds||[]).filter(function(m){ return m && m.doses && m.doses.length; });
   if (!meds.length){ toast("Add a medicine first"); return; }
@@ -3077,24 +3094,74 @@ function openCalSheet(meds){
     '<button class="close" data-cal-close="1" aria-label="Close">×</button>'+
     '<h4>Add to calendar</h4>'+
     '<p class="meta">'+pendingDoses(meds)+' dose'+(pendingDoses(meds)===1?'':'s')+' still to come.</p>'+
+
+    '<button class="btn wide" data-cal-ios="1">📲 Add to iPhone Calendar</button>'+
+    '<button class="btn sky wide" data-cal-sub="1">🔄 Subscribe — keeps itself up to date</button>'+
+    '<p class="meta">The first opens the doses in Calendar so you can tap <b>Add All</b>. The second subscribes to your'+
+    ' family\'s schedule: change a medicine and every phone updates on its own. Leave <b>Remove Alarms</b> switched'+
+    ' <b>off</b> so the dose alerts come with it.</p>'+
+
+    '<div style="border-top:1px solid var(--line-2);margin:14px 0 12px"></div>'+
     meds.map(function(m){
-      return '<button class="btn sky wide" data-cal-g="'+m.id+'">📅 Google Calendar — '+esc(m.name)+'</button>';
+      return '<button class="btn ghost wide" data-cal-g="'+m.id+'">📅 Google Calendar — '+esc(m.name)+'</button>';
     }).join("")+
-    '<button class="btn wide" data-cal-share="1">📲 Open in Calendar (iPhone)</button>'+
-    '<button class="btn ghost wide" data-cal-dl="1">⬇︎ Download .ics file</button>'+
-    '<p class="meta">iPhone: pick <b>Calendar</b> in the share sheet then <b>Add All</b>, and leave “Remove Alarms” switched off so the dose alerts come with it. Google Calendar adds the whole course as one repeating event.</p>'+
+    '<button class="btn ghost wide" data-cal-dl="1">⬇︎ Download the .ics file</button>'+
+    '<button class="btn ghost wide" data-cal-copy="1">🔗 Copy the calendar link</button>'+
+    '<div id="calNote"></div>'+
+    '<p class="meta">Google Calendar adds one repeating event per medicine. The link is a long secret address — anyone'+
+    ' who has it can see the schedule, so only share it with family. <a href="#" data-cal-rotate="1">Make a new link</a>'+
+    ' if it ever gets out.</p>'+
   '</div>';
   document.body.appendChild(back);
 
+  function note(msg, kind){
+    var n = el("calNote");
+    if (n) n.innerHTML = msg ? '<div class="note '+(kind||"")+'">'+msg+'</div>' : "";
+  }
+  function needSignIn(e){
+    note("This needs the family record, so sign in first. You can still use Google Calendar or the .ics file.", "warn");
+  }
+
   back.addEventListener("click", function(e){
     if (e.target === back || e.target.getAttribute("data-cal-close")){ closeSheet(); return; }
+
+    // iOS: a real https URL served as text/calendar is the only thing that makes
+    // Calendar offer "Add All" — a Blob or the share sheet just saves a file.
+    if (e.target.closest("[data-cal-ios]")){
+      note("Opening Calendar…");
+      getFeed(false).then(function(f){
+        window.location.href = f.url;
+      }).catch(needSignIn);
+      return;
+    }
+    if (e.target.closest("[data-cal-sub]")){
+      note("Opening Calendar to subscribe…");
+      getFeed(false).then(function(f){
+        window.location.href = f.webcal;      // webcal:// hands straight to Calendar
+      }).catch(needSignIn);
+      return;
+    }
+    if (e.target.closest("[data-cal-copy]")){
+      getFeed(false).then(function(f){
+        if (navigator.clipboard && navigator.clipboard.writeText){
+          navigator.clipboard.writeText(f.url).then(function(){ note("Link copied. Paste it into any calendar app."); },
+            function(){ window.prompt("Calendar link", f.url); });
+        } else window.prompt("Calendar link", f.url);
+      }).catch(needSignIn);
+      return;
+    }
+    if (e.target.closest("[data-cal-rotate]")){
+      if (!window.confirm("Make a new calendar link? Any phone already subscribed to the old one stops updating.")) return;
+      getFeed(true).then(function(){ note("New link ready. Subscribe again on each phone."); }).catch(needSignIn);
+      return;
+    }
+
     var g = e.target.closest ? e.target.closest("[data-cal-g]") : null;
     if (g){
       var med = findMed(g.getAttribute("data-cal-g"));
       if (med) window.open(googleUrl(med), "_blank", "noopener");
       return;
     }
-    if (e.target.closest("[data-cal-share]")){ shareICS(meds, slug(meds.length===1?meds[0].name:"medicine")); return; }
     if (e.target.closest("[data-cal-dl]")){ downloadICS(meds, slug(meds.length===1?meds[0].name:"medicine")); closeSheet(); }
   });
 }
