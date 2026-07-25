@@ -301,6 +301,10 @@ details.fold .fold-body{padding:0 18px 18px}
   box-shadow:var(--shadow-lift);transition:transform .32s cubic-bezier(.2,.9,.3,1.25)
 }
 .toast.show{transform:translate(-50%,0)}
+.toast-act{
+  margin-left:14px;background:var(--sun);color:#4A2A05;border-radius:9px;padding:6px 12px;
+  font-family:var(--display);font-weight:800;font-size:14px
+}
 .banner{
   display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:var(--rose-l);border:1px solid #F8C7CF;
   color:#A81E36;border-radius:16px;padding:13px 15px;margin-top:14px;font-weight:700;font-size:14.5px
@@ -626,6 +630,8 @@ details.fold .fold-body{padding:0 18px 18px}
       <button class="btn sky wide" id="btnLogAdd">Save reading</button>
       <ul class="log-list" id="logList"></ul>
       <button class="link-btn no-print" id="btnMoreLog" hidden>Show more entries</button>
+      <button class="link-btn no-print" data-act="showBin" id="btnBin" hidden>Recently deleted</button>
+      <ul class="log-list" id="binList"></ul>
     </div>
 
     <div class="card" id="rhythmCard" hidden>
@@ -904,7 +910,7 @@ details.fold .fold-body{padding:0 18px 18px}
         <ul class="steps" style="padding-left:20px">
           <li><b style="color:var(--ink)">Add each medicine once</b> with the amount from the label and how often it repeats. Medicine Tracker builds every dose time.</li>
           <li><b style="color:var(--ink)">Tap Given</b> when the medicine is actually in. It records the time and who gave it, so the other parent can see.</li>
-          <li><b style="color:var(--ink)">Given earlier?</b> Tap <b>🕐</b> next to any dose (or on the Now card) and set the real time — quick chips for "30 minutes ago", or the exact clock time, and who gave it. The same 🕐 on a dose already recorded lets you correct the time. The Baby log has a <b>When</b> box for catching up on a nappy or a reading from earlier.</li>
+          <li><b style="color:var(--ink)">Given earlier?</b> Tap <b>🕐</b> next to any dose (or on the Now card) and set the real time — quick chips for "30 minutes ago", or the exact clock time, and who gave it. The same 🕐 on a dose already recorded lets you correct the time. The Baby log has a <b>When</b> box for catching up on a nappy or a reading from earlier, a <b>🕐</b> on every entry to change its time, reading or note, and <b>Recently deleted</b> to put back anything removed in the last week.</li>
           <li><b style="color:var(--ink)">The timeline</b> shows every medicine on its own row. Drag it sideways, pinch to zoom, tap a dose to mark it given, skip it or undo.</li>
           <li><b style="color:var(--ink)">Safety checks</b> warn you if a dose is early, if the 24 hour limit is reached, or if two medicines share the same active ingredient.</li>
           <li><b style="color:var(--ink)">Fever line</b> — log temperatures and the timeline draws them over the doses, so you can see whether the medicine is helping.</li>
@@ -957,7 +963,7 @@ var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
 // Bump this whenever the file changes. It is printed on the sign-in card and in
 // Settings, so it is easy to tell whether a phone is running the current build
 // or a copy Safari kept in its cache.
-var APP_VERSION = "3.4 · 25 Jul 2026";
+var APP_VERSION = "3.5 · 25 Jul 2026";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -1302,11 +1308,22 @@ function logout(){
    5. Toast
    ═══════════════════════════════════════════════════════════════════════════ */
 var toastTimer;
-function toast(msg){
+function toast(msg, action){
   var t = el("toast");
-  t.textContent = msg; t.classList.add("show");
+  t.textContent = msg;
+  if (action && action.label){
+    var b = document.createElement("button");
+    b.className = "toast-act";
+    b.textContent = action.label;
+    b.addEventListener("click", function(){
+      t.classList.remove("show");
+      try { action.fn(); } catch(e){}
+    });
+    t.appendChild(b);
+  }
+  t.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 3600);
+  toastTimer = setTimeout(function(){ t.classList.remove("show"); }, action ? 7000 : 3600);
 }
 /* ═══════════════════════════════════════════════════════════════════════════
    6. Rendering — banners, hero, stats
@@ -1644,15 +1661,180 @@ function renderLogs(){
     return '<li><span class="log-temp'+(hot?" hot":"")+'">'+esc(big)+'</span>'+
       '<span class="log-when">'+fmtTime(l.at)+' '+fmtDay(l.at)+'</span>'+
       '<span class="log-note">'+esc([isDiaper(t)?LOG_WORD[t]:null, l.person, l.note, l.by?"— "+l.by:null].filter(Boolean).join(" · "))+'</span>'+
+      '<button class="btn tiny ghost no-print" data-act="editLog" data-id="'+l.id+'" title="Change the time or the reading">🕐</button>'+
       '<button class="btn tiny ghost no-print" data-act="delLog" data-id="'+l.id+'">✕</button></li>';
   }).join("");
   var dl = el("personList");
   dl.innerHTML = people().map(function(p){ return '<option>'+esc(p)+'</option>'; }).join("");
 
+  // anything deleted in the last week can be put back
+  var bin = state.logs.filter(function(l){
+    return l && l.deleted && (Date.now() - (l.deletedAt||0)) < 7*DAY;
+  }).sort(function(a,b){ return (b.deletedAt||0)-(a.deletedAt||0); });
+  el("btnBin").hidden = bin.length === 0;
+  el("btnBin").textContent = state.ui.showBin ? "Hide recently deleted" : "Recently deleted ("+bin.length+")";
+  el("binList").innerHTML = (state.ui.showBin ? bin : []).map(function(l){
+    var tt = logType(l);
+    var big = tt==="temp" ? trimNum(l.temp)+"°"+l.unit : tt==="weight" ? showWeight(l) : LOG_ICON[tt];
+    return '<li style="opacity:.7"><span class="log-temp">'+esc(big)+'</span>'+
+      '<span class="log-when">'+fmtTime(l.at)+' '+fmtDay(l.at)+'</span>'+
+      '<span class="log-note">'+esc([LOG_WORD[tt], l.person, l.note].filter(Boolean).join(" · "))+'</span>'+
+      '<button class="btn tiny ghost no-print" data-act="restoreLog" data-id="'+l.id+'">Restore</button></li>';
+  }).join("");
+
   var today = new Date(); today.setHours(0,0,0,0);
   var c = countDiapers(liveLogs(), today.getTime(), today.getTime()+DAY);
   el("logCount").textContent = (c.wet+c.dirty) ? ("today 💧"+c.wet+" 💩"+c.dirty) : "today";
   renderRhythm();
+}
+
+function findLog(id){
+  for (var i=0;i<state.logs.length;i++){ if (state.logs[i].id === id) return state.logs[i]; }
+  return null;
+}
+function deleteLog(id){
+  var l = findLog(id); if (!l) return;
+  // Tombstone rather than drop: the record is merged with the family copy, and an
+  // entry that simply vanished used to be handed straight back.
+  l.deleted = true; l.deletedAt = Date.now(); l.editedAt = Date.now();
+  save(); renderLogs(); renderChart(); renderGlance(); renderStats(); renderTabs();
+  toast(LOG_WORD[logType(l)]+" deleted", { label:"Undo", fn:function(){ restoreLog(id); } });
+}
+function restoreLog(id){
+  var l = findLog(id); if (!l) return;
+  l.deleted = false; l.deletedAt = null; l.editedAt = Date.now();
+  save(); renderLogs(); renderChart(); renderGlance(); renderStats(); renderTabs();
+  toast(LOG_WORD[logType(l)]+" restored");
+}
+
+/* ── change the time or the reading of a log entry ──────────────────────── */
+function openLogSheet(id){
+  var l = findLog(id); if (!l) return;
+  var t = logType(l);
+  closeSheet();
+  var names = carerNames();
+  var by = l.by || state.ui.me || names[0];
+
+  var valueField = "";
+  if (t === "temp"){
+    valueField = '<div class="row"><div class="field" style="flex:1 1 110px">'+
+      '<label for="lgVal">Temperature</label>'+
+      '<input id="lgVal" type="number" step="0.1" inputmode="decimal" value="'+esc(l.temp)+'" /></div>'+
+      '<div class="field" style="flex:0 0 92px"><label for="lgUnit">Unit</label>'+
+      '<select id="lgUnit"><option value="C"'+(l.unit==="C"?" selected":"")+'>°C</option>'+
+      '<option value="F"'+(l.unit==="F"?" selected":"")+'>°F</option></select></div></div>';
+  } else if (t === "weight"){
+    valueField = '<div class="row"><div class="field" style="flex:1 1 110px">'+
+      '<label for="lgVal">Weight</label>'+
+      '<input id="lgVal" type="number" step="0.01" inputmode="decimal" value="'+esc(l.weight)+'" /></div>'+
+      '<div class="field" style="flex:0 0 92px"><label for="lgUnit">Unit</label>'+
+      '<select id="lgUnit"><option value="kg"'+((l.wunit||"kg")==="kg"?" selected":"")+'>kg</option>'+
+      '<option value="lb"'+(l.wunit==="lb"?" selected":"")+'>lb</option></select></div></div>';
+  } else if (isDiaper(t)){
+    valueField = '<div class="field"><label for="lgKind">What it was</label><select id="lgKind">'+
+      '<option value="wet"'+(t==="wet"?" selected":"")+'>💧 Wet</option>'+
+      '<option value="dirty"'+(t==="dirty"?" selected":"")+'>💩 Dirty</option>'+
+      '<option value="both"'+(t==="both"?" selected":"")+'>💧💩 Both</option></select></div>';
+  }
+
+  var back = document.createElement("div");
+  back.className = "sheet-back"; back.id = "calSheet";
+  back.innerHTML = '<div class="sheet" role="dialog" aria-label="Edit the entry">'+
+    '<button class="close" data-lg-close="1" aria-label="Close">×</button>'+
+    '<h4>'+esc(LOG_WORD[t])+'</h4>'+
+    '<p class="meta">Recorded '+fmtTime(l.at)+' '+fmtDay(l.at)+(l.by?' by '+esc(l.by):'')+'</p>'+
+    '<div class="chips" style="margin-bottom:12px">'+
+      '<button class="chip" data-lg-ago="0">Just now</button>'+
+      '<button class="chip" data-lg-ago="15">15 min ago</button>'+
+      '<button class="chip" data-lg-ago="30">30 min ago</button>'+
+      '<button class="chip" data-lg-ago="60">1 hour ago</button>'+
+      '<button class="chip" data-lg-ago="120">2 hours ago</button>'+
+      '<button class="chip" data-lg-ago="240">4 hours ago</button>'+
+    '</div>'+
+    '<div class="field"><label for="lgWhen">Exact time</label>'+
+      '<input id="lgWhen" type="datetime-local" value="'+localInput(new Date(l.at))+'" /></div>'+
+    valueField +
+    '<div class="row">'+
+      '<div class="field"><label for="lgPerson">Who it is for</label>'+
+        '<input id="lgPerson" list="personList" value="'+esc(l.person||"")+'" /></div>'+
+      '<div class="field"><label for="lgBy">Logged by</label><select id="lgBy">'+
+        names.map(function(n){ return '<option'+(n===by?" selected":"")+'>'+esc(n)+'</option>'; }).join("")+
+        '<option value="__other">Someone else…</option></select></div>'+
+    '</div>'+
+    '<div class="field"><label for="lgNote">Note</label>'+
+      '<input id="lgNote" type="text" value="'+esc(l.note||"")+'" placeholder="Optional" /></div>'+
+    '<div id="lgWarn"></div>'+
+    '<button class="btn wide" id="lgSave">Save the change</button>'+
+    '<button class="btn ghost wide danger" id="lgDel" style="margin-top:8px">Delete this entry</button>'+
+  '</div>';
+  document.body.appendChild(back);
+
+  function chosen(){
+    var v = el("lgWhen").value;
+    var ms = v ? new Date(v).getTime() : l.at;
+    return isNaN(ms) ? l.at : ms;
+  }
+  function warn(){
+    var ms = chosen(), box = el("lgWarn");
+    if (ms > Date.now() + 60000) box.innerHTML = '<div class="note warn">That time is in the future.</div>';
+    else if (Date.now() - ms > 30*DAY) box.innerHTML = '<div class="note warn">That is more than a month ago — check the date.</div>';
+    else box.innerHTML = '<div class="note">Recording '+fmtTime(ms)+' '+fmtDay(ms)+'.</div>';
+  }
+  warn();
+  el("lgWhen").addEventListener("change", warn);
+  el("lgWhen").addEventListener("input", warn);
+
+  back.addEventListener("click", function(e){
+    if (e.target === back || e.target.getAttribute("data-lg-close")){ closeSheet(); return; }
+    var ago = e.target.closest ? e.target.closest("[data-lg-ago]") : null;
+    if (ago){
+      el("lgWhen").value = localInput(new Date(Date.now() - (parseInt(ago.getAttribute("data-lg-ago"),10)||0)*MIN));
+      Array.prototype.forEach.call(back.querySelectorAll(".chip"), function(c){ c.setAttribute("aria-pressed", String(c===ago)); });
+      warn();
+      return;
+    }
+    if (e.target.closest("#lgDel")){
+      closeSheet();
+      deleteLog(id);
+      return;
+    }
+    if (e.target.closest("#lgSave")){
+      var ms = chosen();
+      if (ms > Date.now() + 60000){ toast("That time has not happened yet"); return; }
+      l.at = ms;
+      var kind = el("lgKind");
+      if (kind) l.type = kind.value;
+      var val = el("lgVal"), unitSel = el("lgUnit");
+      if (val && logType(l) === "temp"){
+        var tv = parseFloat(val.value);
+        var tu = unitSel.value;
+        if (!isNaN(tv)){
+          if ((tu==="F" && (tv<90||tv>112)) || (tu==="C" && (tv<32||tv>44))){ toast("That temperature looks off — check it"); return; }
+          l.temp = tv; l.unit = tu;
+        }
+      }
+      if (val && logType(l) === "weight"){
+        var wv = parseFloat(val.value), wu = unitSel.value;
+        if (!isNaN(wv)){
+          if (wv<=0 || (wu==="lb"&&wv>400) || (wu==="kg"&&wv>200)){ toast("That weight looks off — check it"); return; }
+          l.weight = wv; l.wunit = wu;
+        }
+      }
+      l.person = el("lgPerson").value.trim();
+      l.note = el("lgNote").value.trim();
+      var who = el("lgBy").value;
+      if (who === "__other"){
+        var v2 = window.prompt("Who logged this?", l.by||"");
+        who = v2 && v2.trim() ? v2.trim() : (l.by||"");
+      }
+      if (who){ l.by = who; state.ui.me = who; }
+      l.editedAt = Date.now();
+      l.deleted = false; l.deletedAt = null;
+      closeSheet();
+      save(); renderLogs(); renderChart(); renderGlance(); renderStats(); renderTabs();
+      toast("Saved · "+fmtTime(l.at)+" "+fmtDay(l.at));
+    }
+  });
 }
 
 /* ── nappies and weight ─────────────────────────────────────────────── */
@@ -2011,16 +2193,12 @@ document.addEventListener("click", function(ev){
   else if (act==="jumpAdd"){ showPanel("meds"); setTimeout(function(){ scrollTo("addSection"); el("fName").focus(); }, 80); }
   else if (act==="retrySave"){ dirty = true; pushNow(); }
   else if (act==="dismissTip"){ state.ui.dismissEmailTip = true; save({push:false}); renderBanners(); }
-  else if (act==="delLog"){
-    var id = b.getAttribute("data-id");
-    // Mark it deleted rather than dropping it: the record is merged with the
-    // server copy, and an entry that simply vanished used to be handed straight
-    // back on the next merge.
-    state.logs.forEach(function(l){
-      if (l.id === id){ l.deleted = true; l.deletedAt = Date.now(); }
-    });
-    save(); renderLogs(); renderChart(); renderGlance(); renderStats();
-    toast("Entry deleted");
+  else if (act==="delLog"){ deleteLog(b.getAttribute("data-id")); }
+  else if (act==="editLog"){ openLogSheet(b.getAttribute("data-id")); }
+  else if (act==="restoreLog"){ restoreLog(b.getAttribute("data-id")); }
+  else if (act==="showBin"){
+    state.ui.showBin = !state.ui.showBin;
+    save({push:false}); renderLogs();
   }
   else if (act==="closePop") closePop();
 });
