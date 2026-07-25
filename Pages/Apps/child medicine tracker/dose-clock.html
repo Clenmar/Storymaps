@@ -319,6 +319,9 @@ details.fold .fold-body{padding:0 18px 18px}
 }
 /* ── sign-in gate ────────────────────────────────────────── */
 .gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+/* display:flex above outranks the plain [hidden] rule, which left the sign-in
+   card sitting at the top of the app after signing in. */
+.gate[hidden],#app[hidden]{display:none!important}
 .gate-card{
   background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:26px 22px;
   box-shadow:var(--shadow-lift);max-width:420px;width:100%;text-align:center
@@ -392,7 +395,8 @@ details.fold .fold-body{padding:0 18px 18px}
       Need a code? Ask Clenmar at TWC and one will be made for you.
     </p>
     <div class="gate-foot">
-      Dose Clock only keeps time. It never works out how much medicine to give.
+      Your family's record is kept in the church's private repository, never on this phone.<br>
+      Medicine Tracker only keeps time. It never works out how much medicine to give.
     </div>
   </div>
 </div>
@@ -414,6 +418,7 @@ details.fold .fold-body{padding:0 18px 18px}
     </span>
     <button class="chip-btn" id="syncChip" title="Account, sync and email settings"><span class="dot"></span><span id="syncChipTxt">Sign in</span></button>
     <button class="chip-btn" id="bellChip" title="Turn on pop-up reminders">🔔 <span id="bellTxt">Alerts off</span></button>
+    <button class="chip-btn" id="outChip" title="Sign out of this device" hidden>Sign out</button>
   </header>
 
   <nav class="tabbar" id="tabbar" role="tablist" aria-label="Sections">
@@ -427,6 +432,29 @@ details.fold .fold-body{padding:0 18px 18px}
   <!-- ══ NOW ══ -->
   <div class="panel on" data-panel="now">
   <div id="banners"></div>
+
+  <!-- ── today at a glance ───────────────────────────────── -->
+  <section id="glanceSection" hidden>
+    <div class="sec-head"><h3>Today at a glance</h3>
+      <span class="spacer"></span>
+      <button class="btn ghost tiny" data-act="gotoChart">Full timeline →</button>
+    </div>
+    <div class="card chart-card">
+      <div id="glanceHost" style="position:relative">
+        <svg id="glanceSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="chart-key">
+        <span><i style="background:var(--mint)"></i>Given</span>
+        <span><i style="background:var(--sun)"></i>Due next</span>
+        <span><i style="background:var(--rose)"></i>Missed</span>
+        <span><i style="background:var(--sky)"></i>Wet</span>
+        <span><i style="background:var(--peach)"></i>Dirty</span>
+        <span><i style="background:var(--rose)"></i>Temp</span>
+        <span><i style="background:var(--grape)"></i>Weight</span>
+        <span>Tap a dose to mark it given</span>
+      </div>
+    </div>
+  </section>
 
   <!-- ── next dose ───────────────────────────────────────── -->
   <div class="hero" id="hero">
@@ -769,7 +797,7 @@ details.fold .fold-body{padding:0 18px 18px}
               <input id="fApi" type="url" placeholder="https://…workers.dev" autocomplete="off" />
             </div>
             <p style="margin:0;font-size:13px;color:var(--soft);font-weight:600">
-              Clear this box and sign out to keep everything on this phone alone.
+              Without an address the app cannot check family codes, so nobody can sign in.
             </p>
           </div>
         </details>
@@ -855,7 +883,8 @@ details.fold .fold-body{padding:0 18px 18px}
           <li><b style="color:var(--ink)">Safety checks</b> warn you if a dose is early, if the 24 hour limit is reached, or if two medicines share the same active ingredient.</li>
           <li><b style="color:var(--ink)">Fever line</b> — log temperatures and the timeline draws them over the doses, so you can see whether the medicine is helping.</li>
           <li><b style="color:var(--ink)">Nappies and weight</b> — tap 💧 or 💩 once each change; the app counts the day, charts the week and warns you if wet nappies drop off, which is the first sign of not drinking enough. Weigh-ins draw a trend line.</li>
-          <li><b style="color:var(--ink)">Both parents, one log</b> — sign in with your family code on each phone under <b>Account &amp; reminders</b>. Everything merges, so Mum marking a dose and Dad logging a nappy at the same time both survive.</li>
+          <li><b style="color:var(--ink)">Both parents, one log</b> — sign in with your family code on each phone. The record lives in the church's private repository, not on the phones, and changes merge: Mum marking a dose and Dad logging a nappy at the same moment both survive.</li>
+          <li><b style="color:var(--ink)">Today at a glance</b> — the strip on the <b>Now</b> tab puts every medicine, nappy, temperature and weight of the last 6 and next 18 hours on one line, with the next dose ringed. Tap any dose to mark it given.</li>
         </ul>
       </div>
     </details>
@@ -871,11 +900,11 @@ details.fold .fold-body{padding:0 18px 18px}
       giving both. If your child is under three months old, is getting worse, will not drink, or you are unsure about
       anything, call your doctor or a nurse line. In an emergency call 911.</p>
       <div class="safety">Never give a dose based on a reminder alone. Check the label, the amount and the child every time.</div>
-      <p style="margin-bottom:0"><b>Where your information lives.</b> Until you sign in, everything you type stays in this
-      browser on this phone. Once you sign in with a family code, the log is kept in the church's own <b>private</b>
-      repository so both parents' phones agree — reachable only with that code, and never shown to another family. The
-      reminder emails go only to the addresses you enter. Use a code you would be happy to treat as a password, and if a
-      phone is lost, sign out or ask the admin to change the family code.</p>
+      <p style="margin-bottom:0"><b>Where your information lives.</b> Nothing about your child is stored on this phone.
+      Medicines, doses, nappies, temperatures and weights live only in the church's own <b>private</b> repository, reached
+      with your family code, so both parents' phones always show the same record and a lost phone gives nothing away.
+      This device only remembers which family is signed in and small display choices. The reminder emails go only to the
+      addresses you enter. If a phone is lost, sign out or ask the admin to change the family code.</p>
     </div>
   </footer>
   </div><!-- /set -->
@@ -924,63 +953,64 @@ var store = {
   set:function(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ mem[k]=v; } },
   del:function(k){ try{ window.localStorage.removeItem(k); }catch(e){ delete mem[k]; } }
 };
-var KEY = "doseclock.v2", OLDKEY = "doseclock.v1";
+/* The family's log is NEVER kept on the phone. Medicines, doses, nappies,
+   temperatures and weights live only in the family's private repository, reached
+   through the worker, and are held in memory while the app is open. The only
+   thing this device remembers is which family is signed in and small display
+   preferences — so signing into a different family can never show, or upload,
+   another family's child. */
+var DEVICE_KEY = "doseclock.device.v1";
+var DEAD_KEYS = ["doseclock.v2", "doseclock.v1"];   // old on-device copies, removed on sight
 
-function blankState(){
+function blankData(){
   return {
     meds:[], logs:[], caregivers:[], deletedMedIds:{},
-    settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30, emailFromDevice:true },
-    sync:{ apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 },
-    ui:{ person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"",
-         unit:"F", wunit:"lb", rhythmDays:7, logExpanded:false, tab:"now" }
+    settings:{ leadMinutes:5, overdueNudge:true, overdueMinutes:30, emailFromDevice:true }
   };
+}
+function blankState(){
+  var d = blankData();
+  d.sync = { apiBase:DEFAULT_API_BASE, code:"", name:"", isAdmin:false, rev:0, lastAt:0 };
+  d.ui = { person:"all", hidden:{}, tempOn:true, viewHours:24, viewCentre:null, editing:null, me:"",
+           unit:"F", wunit:"lb", rhythmDays:7, logExpanded:false, tab:"now" };
+  return d;
 }
 var state = blankState();
 
-(function load(){
-  var raw = store.get(KEY);
-  if (raw){
-    try{
-      var p = JSON.parse(raw);
-      if (p && p.meds){
-        state = Object.assign(blankState(), p);
-        state.settings = Object.assign(blankState().settings, p.settings||{});
-        state.sync     = Object.assign(blankState().sync, p.sync||{});
-        state.ui       = Object.assign(blankState().ui, p.ui||{});
-        if (!state.sync.apiBase) state.sync.apiBase = DEFAULT_API_BASE;
-      }
-    }catch(e){}
-    return;
-  }
-  // migrate the pilot version
-  var old = store.get(OLDKEY);
-  if (old){
-    try{
-      var o = JSON.parse(old);
-      if (o && o.meds){
-        state.meds = o.meds.map(function(m,i){
-          return {
-            id:m.id||uid(), person:m.person||"", who:m.who||"baby", name:m.name||"Medicine",
-            ingredient:"", dose:m.dose||"", intervalH:m.intervalH||6, maxPerDay:m.maxPerDay||null,
-            mode:m.mode||"fixed", notes:m.notes||"", colour:COLOUR_KEYS[i%COLOUR_KEYS.length],
-            supplyDoses:null, paused:false, archived:false, updatedAt:Date.now(),
-            doses:(m.doses||[]).map(function(d){
-              return { planned:d.planned, given:d.given||null, givenBy:d.givenBy||null,
-                       skipped:!!d.skipped, remindedAt:null, overdueAt:null };
-            })
-          };
-        });
-      }
-    }catch(e){}
-  }
+// Wipe every trace of the previous family before another one is loaded.
+function resetData(){
+  var d = blankData();
+  state.meds = d.meds; state.logs = d.logs; state.caregivers = d.caregivers;
+  state.deletedMedIds = d.deletedMedIds; state.settings = d.settings;
+  state.sync.rev = 0; state.sync.name = ""; state.sync.isAdmin = false;
+  dirty = false;
+}
+
+(function loadDevice(){
+  DEAD_KEYS.forEach(function(k){ store.del(k); });     // clear any old local log
+  try {
+    var p = JSON.parse(store.get(DEVICE_KEY) || "{}");
+    if (p.sync){
+      state.sync.apiBase = p.sync.apiBase || DEFAULT_API_BASE;
+      state.sync.code = p.sync.code || "";
+    }
+    if (p.ui) state.ui = Object.assign(state.ui, p.ui);
+  } catch(e){}
 })();
+
+function saveDevice(){
+  store.set(DEVICE_KEY, JSON.stringify({
+    sync: { apiBase: state.sync.apiBase, code: state.sync.code },
+    ui: state.ui
+  }));
+}
 
 var dirty = false, pushTimer = null;
 function save(opts){
-  store.set(KEY, JSON.stringify(state));
+  saveDevice();                                   // preferences only
   if (!opts || opts.push !== false){
     dirty = true;
-    schedulePush();
+    schedulePush();                               // the log itself goes to the repo
   }
 }
 function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -1123,9 +1153,9 @@ function syncChip(kind, txt){
 
 function adoptServer(d){
   if (!d) return;
-  state.meds = Array.isArray(d.meds) ? d.meds : state.meds;
-  state.logs = Array.isArray(d.logs) ? d.logs : state.logs;
-  state.caregivers = Array.isArray(d.caregivers) ? d.caregivers : state.caregivers;
+  state.meds = Array.isArray(d.meds) ? d.meds : [];
+  state.logs = Array.isArray(d.logs) ? d.logs : [];
+  state.caregivers = Array.isArray(d.caregivers) ? d.caregivers : [];
   state.deletedMedIds = d.deletedMedIds || {};
   if (d.settings){
     state.settings.leadMinutes = Number(d.settings.leadMinutes)||0;
@@ -1137,7 +1167,7 @@ function adoptServer(d){
   state.sync.isAdmin = !!d.isAdmin;
   state.sync.lastAt = Date.now();
   dirty = false;
-  save({push:false});
+  saveDevice();                     // preferences only — the log stays off the phone
 }
 
 function payload(){
@@ -1161,16 +1191,23 @@ function schedulePush(){
   clearTimeout(pushTimer);
   pushTimer = setTimeout(pushNow, 1200);
 }
+var saveFailed = false, retryTimer = null;
 function pushNow(){
   if (!canSync() || !connected || !dirty) return Promise.resolve();
   syncChip("busy","Saving…");
   return api("/api/state", { method:"PUT", body:payload() }).then(function(d){
     adoptServer(d);
-    syncChip("ok", "Synced " + fmtTime(new Date()));
+    saveFailed = false;
+    clearTimeout(retryTimer);
+    syncChip("ok", "Saved " + fmtTime(new Date()));
     renderAll();
   }).catch(function(e){
+    saveFailed = true;
     syncChip("bad","Not saved");
-    toast("Could not sync: "+e.message);
+    renderBanners();
+    toast("Could not save to the family record: "+e.message);
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(function(){ dirty = true; pushNow(); }, 15000);   // keep trying
   });
 }
 function pull(silent){
@@ -1191,22 +1228,30 @@ function pull(silent){
 function login(code){
   var base = apiBase();
   if (!base) return Promise.reject(new Error("Enter the worker address first"));
+  // A different family — or any family at all — starts from a clean slate. Nothing
+  // from a previous session is ever uploaded into the room being opened.
+  resetData();
+  clearTimeout(pushTimer);
   state.sync.code = code;
   return api("/api/auth", { method:"POST", body:{ password:code } }).then(function(d){
     state.sync.name = d.name || "Family";
     state.sync.isAdmin = !!d.isAdmin;
     connected = true;
-    save({push:false});
-    // Local edits made offline are pushed up, then the merged result comes back.
-    dirty = true;
-    return pushNow();
+    saveDevice();
+    return api("/api/state");        // read the room; never write on sign-in
+  }).then(function(d){
+    adoptServer(d);
+    return true;
   });
 }
 function logout(){
+  clearTimeout(pushTimer);
+  resetData();
   state.sync.code=""; state.sync.name=""; state.sync.isAdmin=false; state.sync.rev=0;
-  connected=false; save({push:false});
+  connected=false; saveDevice();
   syncChip("", "Sign in");
   renderSyncPanel();
+  renderAll();
   showGate("Signed out on this phone.", "warn");
 }
 
@@ -1249,6 +1294,11 @@ function renderBanners(){
   if (dupes.length){
     out.push('<div class="banner">⚠️ <span>Two medicines on the list contain <b>'+esc(dupes[0])+
       '</b>. Check with your pharmacist before giving both.</span></div>');
+  }
+
+  if (saveFailed){
+    out.unshift('<div class="banner">💾 <span>The last change has not reached the family record yet — still trying. Keep this page open until the chip at the top says <b>Saved</b>.</span>'+
+      '<button class="btn small sun" data-act="retrySave">Try now</button></div>');
   }
 
   if (activeMeds().length && !canSync() && !state.ui.dismissEmailTip){
@@ -1802,7 +1852,9 @@ document.addEventListener("click", function(ev){
   else if (act==="ics"){ var m1=findMed(medId); if (m1) openCalSheet([m1]); }
   else if (act==="expand"){ var m2=findMed(medId); if (m2){ m2.expanded=!m2.expanded; renderMeds(); } }
   else if (act==="person"){ state.ui.person = b.getAttribute("data-p"); save({push:false}); renderAll(); }
+  else if (act==="gotoChart"){ showPanel("chart"); }
   else if (act==="jumpAdd"){ showPanel("meds"); setTimeout(function(){ scrollTo("addSection"); el("fName").focus(); }, 80); }
+  else if (act==="retrySave"){ dirty = true; pushNow(); }
   else if (act==="dismissTip"){ state.ui.dismissEmailTip = true; save({push:false}); renderBanners(); }
   else if (act==="delLog"){
     var id = b.getAttribute("data-id");
@@ -1977,7 +2029,7 @@ function addLog(entry){
   entry.by = state.ui.me || "";
   state.logs.push(entry);
   save();
-  renderLogs(); renderChart(); renderStats(); renderBanners();
+  renderLogs(); renderChart(); renderGlance(); renderStats(); renderBanners();
   return entry;
 }
 
@@ -2194,6 +2246,157 @@ function renderChart(){
   el("btnTempToggle").textContent = "Fever line: " + (state.ui.tempOn ? "on" : "off");
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   12b. Today at a glance — every medicine, nappy, temperature and weight on
+        one 24 hour strip, with the next dose flagged
+   ═══════════════════════════════════════════════════════════════════════════ */
+var glanceMarkers = [], glanceGeom = null;
+
+function renderGlance(){
+  var host = el("glanceHost"), svg = el("glanceSvg"), sec = el("glanceSection");
+  if (!host || !svg) return;
+  var meds = visibleMeds();
+  var logs = logsFor(state.ui.person);
+  if (!meds.length && !logs.length){ sec.hidden = true; return; }
+  sec.hidden = false;
+
+  var now = Date.now();
+  var vStart = now - 6*HOUR, span = 24*HOUR, vEnd = vStart + span;
+  var W = Math.max(300, host.clientWidth || 340);
+  var padL = 10, plotW = W - padL*2;
+  var x = function(ms){ return padL + ((ms - vStart)/span)*plotW; };
+
+  var unit = state.ui.unit || "F";
+  var temps = logs.filter(function(l){ return logType(l)==="temp" && l.temp != null && l.at >= vStart && l.at <= vEnd; })
+                  .sort(function(a,b){ return a.at-b.at; });
+  var naps  = logs.filter(function(l){ return isDiaper(logType(l)) && l.at >= vStart && l.at <= vEnd; });
+  var wts   = logs.filter(function(l){ return logType(l)==="weight" && l.weight != null && l.at >= vStart && l.at <= vEnd; });
+
+  var axisH = 24, laneH = 34, napH = (naps.length ? 30 : 0), tempH = (temps.length ? 66 : 0);
+  var lanesTop = axisH + 4;
+  var H = lanesTop + meds.length*laneH + napH + tempH + 10;
+
+  var s = [];
+  s.push('<defs><clipPath id="gClip"><rect x="'+padL+'" y="0" width="'+plotW+'" height="'+H+'"/></clipPath></defs>');
+  s.push('<g clip-path="url(#gClip)">');
+
+  // night shading + hour ticks
+  var h0 = new Date(vStart); h0.setMinutes(0,0,0);
+  for (var t=h0.getTime(); t<vEnd; t+=HOUR){
+    if (isNight(t)) s.push('<rect x="'+x(t).toFixed(1)+'" y="0" width="'+((HOUR/span)*plotW).toFixed(2)+'" height="'+H+'" fill="var(--night)" opacity=".7"/>');
+  }
+  var step = 3*HOUR;
+  var g0 = new Date(vStart); g0.setMinutes(0,0,0);
+  g0.setHours(Math.floor(g0.getHours()/3)*3);
+  for (var g=g0.getTime(); g<vEnd+step; g+=step){
+    var gx = x(g);
+    s.push('<line x1="'+gx.toFixed(1)+'" y1="'+axisH+'" x2="'+gx.toFixed(1)+'" y2="'+(H-4)+'" stroke="var(--line-2)" stroke-width="1"/>');
+    s.push('<text x="'+gx.toFixed(1)+'" y="15" text-anchor="middle" font-family="var(--mono)" font-size="10" fill="var(--faint)">'+fmtShort(g)+'</text>');
+  }
+
+  // one lane per medicine
+  glanceMarkers = [];
+  var next = soonest();
+  meds.forEach(function(med, li){
+    var top = lanesTop + li*laneH, mid = top + laneH/2 + 3;
+    var colour = COLOURS[med.colour] || COLOURS.sky;
+    s.push('<rect x="'+padL+'" y="'+(top+2)+'" width="'+plotW+'" height="'+(laneH-6)+'" rx="10" fill="#FCFBF7" opacity=".85"/>');
+    s.push('<line x1="'+padL+'" y1="'+mid+'" x2="'+(padL+plotW)+'" y2="'+mid+'" stroke="'+colour+'" stroke-opacity=".25" stroke-width="2" stroke-dasharray="2 5"/>');
+    med.doses.forEach(function(d, idx){
+      var when = d.given || d.planned;
+      if (when < vStart || when > vEnd) return;
+      var cx = x(when);
+      var status = d.skipped ? "skipped" : d.given ? "given" : (d.planned < now - 15*MIN ? "missed" : "due");
+      var fill = status==="given" ? "var(--mint)" : status==="missed" ? "var(--rose)" : status==="skipped" ? "#FFF" : "var(--sun)";
+      s.push('<circle cx="'+cx.toFixed(1)+'" cy="'+mid+'" r="7.5" fill="'+fill+'" stroke="'+colour+'" stroke-width="2.2"/>');
+      if (status==="given") s.push('<path d="M'+(cx-3).toFixed(1)+' '+mid+' l2.2 2.3 l3.8 -4.4" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>');
+      var isNext = next && next.med.id === med.id && next.index === idx;
+      if (isNext){
+        s.push('<circle cx="'+cx.toFixed(1)+'" cy="'+mid+'" r="12" fill="none" stroke="var(--sun)" stroke-width="2"/>');
+        s.push('<text x="'+cx.toFixed(1)+'" y="'+(top-1)+'" text-anchor="middle" font-size="9.5" font-weight="800" fill="#8A5A00">next '+fmtTime(d.planned)+'</text>');
+      }
+      glanceMarkers.push({ x:cx, y:mid, medId:med.id, index:idx });
+    });
+    s.push('<text x="'+(padL+7)+'" y="'+(top+13)+'" font-size="10.5" font-weight="800" fill="'+colour+'">'+
+      esc(med.name)+(med.person?' · '+esc(med.person):'')+'</text>');
+  });
+
+  // nappies
+  if (napH){
+    var nTop = lanesTop + meds.length*laneH, nMid = nTop + napH/2 + 2;
+    s.push('<rect x="'+padL+'" y="'+(nTop+2)+'" width="'+plotW+'" height="'+(napH-6)+'" rx="10" fill="var(--sky-l)" opacity=".55"/>');
+    s.push('<text x="'+(padL+7)+'" y="'+(nTop+12)+'" font-size="10" font-weight="800" fill="#22599F">Nappies</text>');
+    naps.forEach(function(l){
+      var t2 = logType(l), cx = x(l.at);
+      if (t2==="wet" || t2==="both") s.push('<circle cx="'+cx.toFixed(1)+'" cy="'+nMid+'" r="5" fill="var(--sky)"/>');
+      if (t2==="dirty" || t2==="both") s.push('<circle cx="'+(cx+(t2==="both"?7:0)).toFixed(1)+'" cy="'+nMid+'" r="5" fill="var(--peach)"/>');
+    });
+  }
+
+  // fever line and weight dots share the bottom band
+  if (tempH){
+    var tTop = lanesTop + meds.length*laneH + napH, tH = tempH - 16;
+    var vals = temps.map(function(l){ return tempToUnit(l, unit); });
+    var lo = Math.min.apply(null, vals) - .6, hi = Math.max.apply(null, vals) + .6;
+    if (hi - lo < 2){ var m0=(hi+lo)/2; lo=m0-1; hi=m0+1; }
+    var y = function(v){ return tTop + tH - ((v-lo)/(hi-lo))*tH; };
+    s.push('<rect x="'+padL+'" y="'+tTop+'" width="'+plotW+'" height="'+tH+'" rx="10" fill="#FFF8F5" opacity=".9"/>');
+    var fever = unit==="F" ? 100.4 : 38;
+    if (fever>lo && fever<hi){
+      s.push('<line x1="'+padL+'" y1="'+y(fever).toFixed(1)+'" x2="'+(padL+plotW)+'" y2="'+y(fever).toFixed(1)+'" stroke="var(--rose)" stroke-opacity=".4" stroke-dasharray="4 4" stroke-width="1.5"/>');
+    }
+    if (temps.length>1){
+      s.push('<polyline points="'+temps.map(function(l){ return x(l.at).toFixed(1)+","+y(tempToUnit(l,unit)).toFixed(1); }).join(" ")+
+        '" fill="none" stroke="var(--rose)" stroke-width="2.4" stroke-linejoin="round"/>');
+    }
+    temps.forEach(function(l){
+      var v = tempToUnit(l,unit);
+      s.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="4" fill="#fff" stroke="var(--rose)" stroke-width="2.2"/>');
+      s.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(y(v)-8).toFixed(1)+'" text-anchor="middle" font-size="9.5" font-weight="700" fill="var(--rose)">'+trimNum(v)+'</text>');
+    });
+    s.push('<text x="'+(padL+7)+'" y="'+(tTop+12)+'" font-size="10" font-weight="800" fill="var(--rose)">Temp °'+unit+'</text>');
+    wts.forEach(function(l){
+      s.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+(tTop+tH-6)+'" r="5" fill="var(--grape)"/>');
+      s.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(tTop+tH+8)+'" text-anchor="middle" font-size="9.5" font-weight="800" fill="#5B45B8">'+esc(showWeight(l))+'</text>');
+    });
+  } else if (wts.length){
+    var wTop = lanesTop + meds.length*laneH + napH;
+    s.push('<rect x="'+padL+'" y="'+(wTop+2)+'" width="'+plotW+'" height="26" rx="10" fill="var(--grape-l)" opacity=".55"/>');
+    s.push('<text x="'+(padL+7)+'" y="'+(wTop+18)+'" font-size="10" font-weight="800" fill="#5B45B8">Weight</text>');
+    wts.forEach(function(l){
+      s.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+(wTop+15)+'" r="5" fill="var(--grape)"/>');
+    });
+  }
+
+  // now
+  var nx = x(now);
+  s.push('<line x1="'+nx.toFixed(1)+'" y1="'+(axisH-4)+'" x2="'+nx.toFixed(1)+'" y2="'+(H-4)+'" stroke="var(--ink)" stroke-width="2"/>');
+  s.push('<circle cx="'+nx.toFixed(1)+'" cy="'+(axisH-4)+'" r="3.5" fill="var(--ink)"/>');
+  s.push('<text x="'+(nx+5).toFixed(1)+'" y="'+(axisH+9)+'" font-size="10" font-weight="800" fill="var(--ink)">now</text>');
+  s.push('</g>');
+
+  svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  svg.style.width = "100%"; svg.style.height = "auto";
+  svg.innerHTML = s.join("");
+  glanceGeom = { W:W, H:H };
+}
+
+el("glanceHost").addEventListener("click", function(e){
+  if (!glanceGeom) return;
+  var rect = el("glanceSvg").getBoundingClientRect();
+  var scale = rect.width / glanceGeom.W;
+  var px = (e.clientX - rect.left)/scale, py = (e.clientY - rect.top)/scale;
+  var best = null, bestD = 18;
+  glanceMarkers.forEach(function(m){
+    var d = Math.hypot(m.x-px, m.y-py);
+    if (d < bestD){ bestD = d; best = m; }
+  });
+  if (best) openPop(best, e.clientX, e.clientY, "glanceHost");
+  else closePop();
+});
+
 /* ── pan / zoom / tap ─────────────────────────────────────── */
 (function chartInput(){
   var host = el("chartHost");
@@ -2278,11 +2481,11 @@ function closePop(){
   var p = document.querySelector(".pop");
   if (p) p.parentNode.removeChild(p);
 }
-function openPop(marker, clientX, clientY){
+function openPop(marker, clientX, clientY, hostId){
   closePop();
   var med = findMed(marker.medId); if (!med) return;
   var d = med.doses[marker.index]; if (!d) return;
-  var host = el("chartHost"), rect = host.getBoundingClientRect();
+  var host = el(hostId || "chartHost"), rect = host.getBoundingClientRect();
   var when = d.given || d.planned;
   var status = d.skipped ? "Skipped" : d.given
     ? ("Given"+(d.givenBy?" by "+esc(d.givenBy):"")+" at "+fmtTime(d.given))
@@ -2325,7 +2528,7 @@ el("btnTempToggle").addEventListener("click", function(){
 });
 window.addEventListener("resize", function(){
   clearTimeout(window.__dcResize);
-  window.__dcResize = setTimeout(function(){ renderChart(); renderRhythm(); }, 160);
+  window.__dcResize = setTimeout(function(){ renderChart(); renderGlance(); renderRhythm(); }, 160);
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2582,7 +2785,7 @@ function checkDueEmails(){
     if (now - d.planned > 12*HOUR) return;               // far too stale to chase
 
     function fire(kind){
-      save({push:false});
+      save();                                     // remindedAt / overdueAt belong to the record
       sendToAll(med, d, nd.index, kind).then(function(n){
         state.ui.lastEmailAt = Date.now();
         state.ui.lastEmailErr = "";
@@ -2592,7 +2795,7 @@ function checkDueEmails(){
         d.tries = (d.tries||0)+1;
         if (d.tries < 3){ if (kind==="overdue") d.overdueAt = null; else d.remindedAt = null; }
         state.ui.lastEmailErr = e.message;
-        save({push:false}); renderEmailStatus();
+        save(); renderEmailStatus();
       });
     }
     // If the page was closed when the dose came due, say so rather than "next dose".
@@ -2807,9 +3010,11 @@ el("btnLogin").addEventListener("click", function(){
     toast(e.message);
   });
 });
-el("btnLogout").addEventListener("click", function(){
-  if (window.confirm("Sign out on this device? The log stays on the server and a copy stays on this phone.")) logout();
-});
+function confirmLogout(){
+  if (window.confirm("Sign out on this phone? The family record stays safe in the private repository — nothing is kept on this device.")) logout();
+}
+el("btnLogout").addEventListener("click", confirmLogout);
+el("outChip").addEventListener("click", confirmLogout);
 el("btnPull").addEventListener("click", function(){ pull(false).then(renderSyncPanel); });
 el("btnTestEmail").addEventListener("click", function(){
   collectCare(); save();
@@ -2889,6 +3094,7 @@ function showGate(msg, kind){
   appOpen = false;
   el("app").hidden = true;
   el("gate").hidden = false;
+  el("outChip").hidden = true;
   el("gateMsg").innerHTML = msg ? '<div class="note '+(kind||"bad")+'">'+esc(msg)+'</div>' : "";
   setTimeout(function(){ try { el("gateCode").focus(); } catch(e){} }, 120);
 }
@@ -2896,11 +3102,13 @@ function openApp(){
   appOpen = true;
   el("gate").hidden = true;
   el("app").hidden = false;
+  el("outChip").hidden = false;
+  el("gateCode").value = "";
   renderAll();
   scheduleLocalAlert();
   checkDueEmails();
 }
-function hasLocalData(){
+function hasData(){
   return (state.meds && state.meds.length) || (state.logs && state.logs.length);
 }
 
@@ -2922,13 +3130,6 @@ function gateSignIn(){
   }).catch(function(e){
     el("gateBtn").disabled = false;
     connected = false;
-    var offlineOk = hasLocalData() && state.sync.code === code;
-    if (offlineOk){
-      syncChip("bad","Offline");
-      renderSyncPanel(); openApp();
-      toast("Server unreachable — showing the copy saved on this phone");
-      return;
-    }
     el("gateMsg").innerHTML = '<div class="note bad">'+esc(e.message || "That code did not work")+'</div>';
   });
 }
@@ -2950,6 +3151,7 @@ function showPanel(id){
   // charts need a real width, so draw them once their panel is visible
   if (id === "chart") renderChart();
   if (id === "log") renderRhythm();
+  if (id === "now") renderGlance();
   try { window.scrollTo({ top:0, behavior:"smooth" }); } catch(e){ try { window.scrollTo(0,0); } catch(e2){} }
 }
 el("tabbar").addEventListener("click", function(e){
@@ -2991,7 +3193,7 @@ el("whoNow").addEventListener("change", function(){
    ═══════════════════════════════════════════════════════════════════════════ */
 function renderAll(){
   renderBanners(); renderHero(); renderStats(); renderFilters();
-  renderMeds(); renderLogs(); renderChart(); renderTabs(); renderWhoChip();
+  renderMeds(); renderLogs(); renderChart(); renderGlance(); renderTabs(); renderWhoChip();
 }
 
 renderPresets();
@@ -3005,11 +3207,16 @@ showPanel(state.ui.tab || "now");
 if (canSync()){
   // already signed in on this device — verify quietly, but let them in either way
   syncChip("busy","Signing in…");
-  pull(true).then(function(){
+  api("/api/state").then(function(d){
+    adoptServer(d);
+    connected = true;
+    syncChip("ok", state.sync.name || "Signed in");
+    renderSyncPanel(); openApp(); loadRooms();
+  }).catch(function(e){
+    connected = false;
+    syncChip("bad","Offline");
     renderSyncPanel();
-    if (connected){ openApp(); loadRooms(); }
-    else if (hasLocalData()){ openApp(); toast("Offline — showing the copy saved on this phone"); }
-    else showGate("Could not reach the server. Try again in a moment.", "warn");
+    showGate("Could not reach the family record: "+(e.message||"no connection")+". Check the signal and sign in again.", "warn");
   });
 } else {
   syncChip("", "Sign in");
@@ -3017,7 +3224,7 @@ if (canSync()){
 }
 
 setInterval(tick, 1000);
-setInterval(function(){ if (!appOpen) return; renderBanners(); renderMeds(); renderChart(); renderStats(); renderTabs(); }, 60000);
+setInterval(function(){ if (!appOpen) return; renderBanners(); renderMeds(); renderChart(); renderGlance(); renderStats(); renderTabs(); }, 60000);
 setInterval(checkDueEmails, 30000);
 setInterval(function(){ if (canSync()) pull(true); }, 45000);
 document.addEventListener("visibilitychange", function(){
