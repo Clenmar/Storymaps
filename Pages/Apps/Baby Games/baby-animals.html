@@ -16,7 +16,7 @@
   #game { width:100vw; height:100vh; position:relative; display:flex; flex-direction:column;
           background:radial-gradient(ellipse at 20% 20%,#C7F9A8 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,#FFE9A3 0%,transparent 55%),linear-gradient(160deg,#5EEAD4,#60A5FA); }
   #title { text-align:center; color:#fff; font-size:clamp(1.3rem,5vw,2.4rem); text-shadow:0 3px 12px rgba(0,0,0,.3); padding:14px 60px 4px; }
-  #grid { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(8px,2.5vw,20px); padding:clamp(10px,3vw,26px); align-content:center; }
+  #grid { flex:1; display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(8px,2.5vw,20px); padding:clamp(10px,3vw,26px) clamp(10px,3vw,26px) 22vh; align-content:start; overflow-y:auto; -webkit-overflow-scrolling:touch; touch-action:pan-y; }
   .animal { border-radius:26px; background:rgba(255,255,255,.9); display:flex; align-items:center; justify-content:center; flex-direction:column;
             box-shadow:0 10px 26px rgba(0,0,0,.2); cursor:pointer; aspect-ratio:1; transition:transform .12s cubic-bezier(.34,1.56,.64,1); }
   .animal:active { transform:scale(.92); }
@@ -81,7 +81,8 @@ function goFullscreen(){ var el=document.documentElement,r=el.requestFullscreen|
   setTimeout(function(){ var b=document.getElementById('fs-btn'); b.style.opacity='0'; b.style.pointerEvents='none'; },1000); }
 document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement){ var b=document.getElementById('fs-btn'); b.style.opacity='1'; b.style.pointerEvents='auto'; } });
 document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-document.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive:false });
+// Allow vertical scrolling inside the grid; only block page-level rubber-banding.
+document.addEventListener('touchmove', function(e){ if(!e.target.closest('#grid')) e.preventDefault(); }, { passive:false });
 document.addEventListener('touchstart', function(){ try{ctx().resume();}catch(e){} }, { once:true });
 </script>
 </body>

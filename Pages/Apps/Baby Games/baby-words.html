@@ -71,8 +71,9 @@ function show(){
 }
 function next(){ idx++; if(idx>=order.length){ order=shuffle(WORDS); idx=0; } document.getElementById('hint').style.opacity='.4'; show(); }
 document.getElementById('card').addEventListener('click', function(){
-  if(idx<0){ next(); return; }
-  chime(); confetti(); say(order[idx].w + "!");
+  if(idx<0){ next(); return; }         // very first tap: show the first word
+  chime(); confetti();                 // then every tap moves to the next picture
+  next();
 });
 function confetti(){ var g=document.getElementById('game'), ce="🎉🎈⭐🌟✨".split('');
   for(var i=0;i<12;i++){ var el=document.createElement('div'); el.className='confetti'; el.textContent=ce[Math.floor(Math.random()*ce.length)];

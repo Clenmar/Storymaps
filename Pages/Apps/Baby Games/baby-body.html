@@ -14,21 +14,19 @@
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
   html,body { width:100%; height:100%; overflow:hidden; font-family:'Fredoka One','Comic Sans MS',cursive; touch-action:none; }
   #game { width:100vw; height:100vh; position:relative; display:flex; flex-direction:column; align-items:center;
-          background:radial-gradient(ellipse at 25% 20%,#ffd6a0 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,#c8b5ff 0%,transparent 55%),linear-gradient(160deg,#ff9ec7,#59b8ff); }
+          background:radial-gradient(ellipse at 25% 20%,#ffe1b0 0%,transparent 55%),radial-gradient(ellipse at 80% 80%,#c8b5ff 0%,transparent 55%),linear-gradient(160deg,#ffb0d0,#66c0ff); }
   #prompt { margin-top:5vh; font-size:clamp(1.5rem,6vw,3rem); color:#fff; text-shadow:0 4px 14px rgba(0,0,0,.35); text-align:center; padding:0 70px; min-height:2.4em; }
-  #stage { flex:1; width:min(80vw,52vh); position:relative; margin:1vh auto 12vh; }
-  .part { position:absolute; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; }
-  .part.hit { animation:glow .6s; }
-  @keyframes glow { 0%{box-shadow:0 0 0 0 rgba(255,255,100,.9)} 100%{box-shadow:0 0 0 40px rgba(255,255,100,0)} }
-  .wig { animation:wig .4s; }
-  @keyframes wig { 0%,100%{transform:translate(-50%,-50%) rotate(0)} 25%{transform:translate(-50%,-50%) rotate(-8deg)} 75%{transform:translate(-50%,-50%) rotate(8deg)} }
-  /* the friendly face is drawn with divs so parts are tappable */
-  #head { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:70%; aspect-ratio:1; border-radius:50%;
-          background:radial-gradient(circle at 40% 35%,#ffe0b8,#f6c48a); box-shadow:0 16px 40px rgba(0,0,0,.25); }
-  .feat { position:absolute; transform:translate(-50%,-50%); }
+  #stage { flex:1; display:flex; align-items:center; justify-content:center; width:100%; padding:0 6vw 14vh; }
+  svg#face { width:min(84vw,60vh); height:auto; filter:drop-shadow(0 16px 34px rgba(0,0,0,.28)); }
+  svg#face.wig { animation:wig .45s; }
+  @keyframes wig { 0%,100%{transform:rotate(0)} 25%{transform:rotate(-4deg)} 75%{transform:rotate(4deg)} }
+  .tap { fill:transparent; stroke:transparent; cursor:pointer; }
+  .tap.flash { animation:ringflash .6s ease-out; }
+  @keyframes ringflash { 0%{stroke:#ffe45e; stroke-width:2; opacity:1} 100%{stroke:#ffe45e; stroke-width:26; opacity:0} }
   .btn { position:absolute; z-index:100; background:rgba(255,255,255,.22); border:2px solid rgba(255,255,255,.4); color:#fff;
          border-radius:50px; padding:8px 16px; font-family:inherit; font-size:1rem; cursor:pointer; backdrop-filter:blur(6px); text-decoration:none; }
-  #fs-btn{bottom:calc(env(safe-area-inset-bottom,0px) + 18px);right:18px} #sound-btn{top:14px;right:14px;padding:8px 12px;font-size:1.3rem} #back-btn{top:14px;left:14px}
+  #fs-btn{bottom:18px;right:18px} #sound-btn{top:14px;right:14px;padding:8px 12px;font-size:1.3rem} #back-btn{top:14px;left:14px}
+  #voice-btn{bottom:20px;left:50%;transform:translateX(-50%);padding:7px 14px;font-size:.9rem}
   .confetti { position:absolute; font-size:2rem; pointer-events:none; z-index:60; animation:fall 1.1s ease-out forwards; }
   @keyframes fall { 0%{opacity:1;transform:translateY(0) rotate(0)} 100%{opacity:0;transform:translateY(55vh) rotate(280deg)} }
 </style>
@@ -37,25 +35,65 @@
 <div id="game">
   <a id="back-btn" class="btn" href="../index.html">←</a>
   <div id="sound-btn" class="btn" onclick="toggleSound()">🔊</div>
-  <div id="voice-btn" class="btn" onclick="BabyVoice.openPicker()" style="bottom:20px;left:50%;transform:translateX(-50%);padding:7px 14px;font-size:.9rem">🗣️ Voice</div>
+  <div id="voice-btn" class="btn" onclick="BabyVoice.openPicker()">🗣️ Voice</div>
   <div id="prompt">Tap to start! 👆</div>
-  <div id="stage"><div id="head"></div></div>
+  <div id="stage">
+    <!-- Friendly face drawn as original artwork. Invisible .tap zones catch touches. -->
+    <svg id="face" viewBox="0 0 220 250" xmlns="http://www.w3.org/2000/svg">
+      <!-- hair (back) -->
+      <path d="M110 24 C58 24 30 64 30 118 C30 96 44 84 60 84 L160 84 C176 84 190 96 190 118 C190 64 162 24 110 24 Z" fill="#6b4423"/>
+      <!-- neck + shoulders hint -->
+      <rect x="92" y="196" width="36" height="34" rx="14" fill="#f4c39a"/>
+      <!-- head -->
+      <ellipse cx="110" cy="132" rx="84" ry="88" fill="#ffd9b0" stroke="#eeb488" stroke-width="3"/>
+      <!-- ears -->
+      <ellipse class="feat-ear" cx="27" cy="140" rx="15" ry="22" fill="#ffd0a0" stroke="#eeb488" stroke-width="3"/>
+      <ellipse class="feat-ear" cx="193" cy="140" rx="15" ry="22" fill="#ffd0a0" stroke="#eeb488" stroke-width="3"/>
+      <!-- hair fringe (front) -->
+      <path d="M34 116 C34 66 66 40 110 40 C154 40 186 66 186 116 C170 92 150 86 128 92 C120 78 100 78 92 92 C70 86 50 92 34 116 Z" fill="#7a4e28"/>
+      <!-- eyebrows -->
+      <path d="M58 108 Q78 98 98 108" fill="none" stroke="#6b4423" stroke-width="6" stroke-linecap="round"/>
+      <path d="M122 108 Q142 98 162 108" fill="none" stroke="#6b4423" stroke-width="6" stroke-linecap="round"/>
+      <!-- eyes -->
+      <g class="feat-eyes">
+        <ellipse cx="78" cy="126" rx="17" ry="19" fill="#fff" stroke="#e2b892" stroke-width="2"/>
+        <ellipse cx="142" cy="126" rx="17" ry="19" fill="#fff" stroke="#e2b892" stroke-width="2"/>
+        <circle cx="80" cy="128" r="8.5" fill="#5a3b22"/><circle cx="144" cy="128" r="8.5" fill="#5a3b22"/>
+        <circle cx="76.5" cy="124.5" r="2.6" fill="#fff"/><circle cx="140.5" cy="124.5" r="2.6" fill="#fff"/>
+      </g>
+      <!-- cheeks -->
+      <circle class="feat-cheek" cx="64" cy="168" r="14" fill="#ff9ab0" opacity=".55"/>
+      <circle class="feat-cheek" cx="156" cy="168" r="14" fill="#ff9ab0" opacity=".55"/>
+      <!-- nose -->
+      <path class="feat-nose" d="M110 138 Q101 158 110 162 Q119 158 110 138 Z" fill="#f3b483"/>
+      <!-- mouth -->
+      <path class="feat-mouth" d="M84 182 Q110 208 136 182 Q110 196 84 182 Z" fill="#e0556a"/>
+      <path d="M84 182 Q110 196 136 182" fill="none" stroke="#b23b52" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- ── invisible tap targets (on top) ── -->
+      <ellipse class="tap" data-part="hair"   data-cx="110" data-cy="66"  cx="110" cy="66"  rx="88" ry="34"/>
+      <ellipse class="tap" data-part="eyes"   data-cx="110" data-cy="126" cx="110" cy="126" rx="64" ry="24"/>
+      <ellipse class="tap" data-part="nose"   data-cx="110" data-cy="150" cx="110" cy="150" rx="20" ry="20"/>
+      <ellipse class="tap" data-part="mouth"  data-cx="110" data-cy="188" cx="110" cy="188" rx="34" ry="18"/>
+      <ellipse class="tap" data-part="cheeks" data-cx="64"  data-cy="168" cx="64"  cy="168" rx="20" ry="18"/>
+      <ellipse class="tap" data-part="cheeks" data-cx="156" data-cy="168" cx="156" cy="168" rx="20" ry="18"/>
+      <ellipse class="tap" data-part="ears"   data-cx="27"  data-cy="140" cx="27"  cy="140" rx="18" ry="26"/>
+      <ellipse class="tap" data-part="ears"   data-cx="193" data-cy="140" cx="193" cy="140" rx="18" ry="26"/>
+    </svg>
+  </div>
   <button id="fs-btn" class="btn" onclick="goFullscreen()">⛶ Full Screen</button>
 </div>
 <script src="voice.js"></script>
 <script src="photos.js"></script>
 <script src="kit.js"></script>
 <script>
-// Parts positioned in % of the #stage box. r = size in % of stage width.
 var PARTS = [
-  { id:"eyes",  label:"eyes",  say:"the eyes",  emo:"👀", x:50, y:40, r:34 },
-  { id:"nose",  label:"nose",  say:"the nose",  emo:"👃", x:50, y:52, r:16 },
-  { id:"mouth", label:"mouth", say:"the mouth", emo:"👄", x:50, y:63, r:24 },
-  { id:"earL",  label:"ear",   say:"an ear",    emo:"👂", x:16, y:47, r:16 },
-  { id:"earR",  label:"ear",   say:"an ear",    emo:"👂", x:84, y:47, r:16 },
-  { id:"hair",  label:"hair",  say:"the hair",  emo:"💇", x:50, y:15, r:26 },
-  { id:"hand",  label:"hand",  say:"a hand",    emo:"✋", x:12, y:88, r:20 },
-  { id:"foot",  label:"foot",  say:"a foot",    emo:"🦶", x:88, y:88, r:20 }
+  { id:"eyes",   label:"eyes",   say:"the eyes" },
+  { id:"nose",   label:"nose",   say:"the nose" },
+  { id:"mouth",  label:"mouth",  say:"the mouth" },
+  { id:"ears",   label:"ears",   say:"the ears" },
+  { id:"hair",   label:"hair",   say:"the hair" },
+  { id:"cheeks", label:"cheeks", say:"the cheeks" }
 ];
 var soundOn=true, target=null, started=false, actx=null;
 function ctx(){ if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)(); return actx; }
@@ -67,58 +105,37 @@ function boing(){ if(!soundOn) return; try{ var c=ctx(),o=c.createOscillator(),g
   g.gain.setValueAtTime(.3,c.currentTime); g.gain.exponentialRampToValueAtTime(.001,c.currentTime+.3); o.start(); o.stop(c.currentTime+.3);}catch(e){} }
 function say(t,cb){ if(!soundOn){ if(cb)setTimeout(cb,500); return; } BabyVoice.say(t,cb); }
 
-var stage=document.getElementById('stage');
-BabyPhotos.warm(["eyes","nose","mouth","ear","hair","hand","foot"]);
-function buildFace(){
-  stage.querySelectorAll('.part').forEach(function(n){ n.remove(); });
-  PARTS.forEach(function(p){
-    var d=document.createElement('div'); d.className='part'; d.dataset.id=p.id;
-    var size=p.r; // percent of stage width
-    d.style.cssText='left:'+p.x+'%;top:'+p.y+'%;width:'+size+'%;height:'+size+'%;font-size:'+(size*0.7)+'%;';
-    d.style.transform='translate(-50%,-50%)';
-    var span=document.createElement('div'); span.className='feat';
-    span.style.cssText='left:50%;top:50%;font-size:'+(size*0.6)+'cqw;width:86%;height:86%;border-radius:50%;overflow:hidden;';
-    BabyPhotos.fill(span, p.id==='earL'||p.id==='earR' ? 'ear' : p.id, p.emo, {round:true, alt:p.label});
-    d.appendChild(span);
-    d.addEventListener('click', function(){ pick(p, d); });
-    stage.appendChild(d);
-  });
-  stage.style.containerType='inline-size';
-}
-/* One question at a time: the voice callback and the safety timer used to both
-   fire, which flicked through two or three questions in a blink. */
-var advLock = false;
+// One question at a time (voice callback + safety timer must not double-fire).
+var advLock=false;
 function scheduleNext(text, minMs){
-  if (advLock) return;
-  advLock = true;
-  var fired = false;
-  function go(){ if (fired) return; fired = true; advLock = false; round(); }
-  if (text){
-    say(text, function(){ setTimeout(go, minMs || 500); });
-    setTimeout(go, 4500);                 // safety net if the voice never reports back
-  } else {
-    setTimeout(go, minMs || 1200);        // nothing to say — just pause and move on
-  }
+  if(advLock) return; advLock=true; var fired=false;
+  function go(){ if(fired) return; fired=true; advLock=false; round(); }
+  if(text){ say(text, function(){ setTimeout(go, minMs||600); }); setTimeout(go, 4500); }
+  else setTimeout(go, minMs||1200);
 }
-
 function round(){
-  advLock = false;
+  advLock=false;
   target = PARTS[Math.floor(Math.random()*PARTS.length)];
-  document.getElementById('prompt').innerHTML = "Where is the <b>"+target.label+"</b>? 👉";
+  document.getElementById('prompt').innerHTML = "Where " + (target.id==='eyes'||target.id==='ears'||target.id==='cheeks' ? "are" : "is") + " the <b>"+target.label+"</b>? 👉";
   setTimeout(function(){ say("Can you find " + target.say + "?"); }, 250);
 }
-function pick(p, node){
-  var ok = (p.label === target.label);
-  if(ok){
-    node.classList.add('hit'); chime(); confetti();
+function pick(part, node){
+  if(!started) return;
+  if(part === target.id){
+    node.classList.remove('flash'); void node.getBBox; node.classList.add('flash');
+    chime(); confetti();
     document.getElementById('prompt').innerHTML = "Yay! That's the <b>"+target.label+"</b>! 🎉";
-    setTimeout(function(){ node.classList.remove('hit'); }, 600);
+    setTimeout(function(){ node.classList.remove('flash'); }, 650);
     scheduleNext("Yes! That's " + target.say + "!", 900);
   } else {
-    node.classList.add('wig'); boing(); setTimeout(function(){ node.classList.remove('wig'); }, 400);
-    say("Try again. Where is " + target.say + "?");
+    var f=document.getElementById('face'); f.classList.remove('wig'); void f.getBBox; f.classList.add('wig');
+    setTimeout(function(){ f.classList.remove('wig'); }, 450);
+    boing(); say("Try again. Where is " + target.say + "?");
   }
 }
+Array.prototype.forEach.call(document.querySelectorAll('.tap'), function(z){
+  z.addEventListener('click', function(){ pick(z.getAttribute('data-part'), z); });
+});
 function confetti(){ var g=document.getElementById('game'), ce="🎉🎈⭐🌟✨".split('');
   for(var i=0;i<14;i++){ var el=document.createElement('div'); el.className='confetti'; el.textContent=ce[Math.floor(Math.random()*ce.length)];
     el.style.left=(Math.random()*100)+'vw'; el.style.top='-8vh'; el.style.animationDelay=(Math.random()*.3)+'s'; g.appendChild(el);
@@ -129,7 +146,6 @@ function goFullscreen(){ var el=document.documentElement,r=el.requestFullscreen|
 document.addEventListener('fullscreenchange', function(){ if(!document.fullscreenElement){ var b=document.getElementById('fs-btn'); b.style.opacity='1'; b.style.pointerEvents='auto'; } });
 document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
 document.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive:false });
-buildFace();
 document.getElementById('game').addEventListener('click', function(){
   if(started) return; started=true; try{ctx().resume();}catch(e){}
   round();
