@@ -70,6 +70,10 @@ h1,h2,h3,h4{font-family:var(--display);font-weight:700;letter-spacing:-.01em;mar
 .chip-btn.ok .dot{background:var(--mint)}
 .chip-btn.busy .dot{background:var(--sun)}
 .chip-btn.bad .dot{background:var(--rose)}
+.chip-btn.round{padding:8px 12px;font-size:17px;line-height:1}
+.chip-btn:disabled{opacity:.38;cursor:default}
+.chip-btn:disabled:hover{border-color:var(--line);color:var(--ink)}
+.hist{display:inline-flex;gap:6px}
 
 /* ── buttons ─────────────────────────────────────────────── */
 button{font-family:var(--body);cursor:pointer;border:0}
@@ -294,6 +298,43 @@ details.fold .fold-body{padding:0 18px 18px}
 .sheet .close{position:absolute;top:8px;right:12px;background:none;color:var(--faint);font-size:22px;line-height:1;padding:4px}
 @media (min-width:560px){ .sheet-back{align-items:center;padding:12px} }
 
+/* ── doctor's report ─────────────────────────────────────── */
+.rpt-back{position:fixed;inset:0;z-index:80;background:#5C6478;display:flex;flex-direction:column}
+.rpt-bar{
+  display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;
+  background:var(--paper);border-bottom:1px solid var(--line);flex-wrap:wrap
+}
+.rpt-range{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--soft)}
+.rpt-range select{width:auto;padding:8px 10px;font-size:13px;border-radius:10px}
+.rpt-scroll{flex:1;overflow:auto;padding:16px 10px 40px;-webkit-overflow-scrolling:touch}
+.rpt-doc{max-width:820px;margin:0 auto;color:#111}
+.sheet-page{
+  background:#fff;border-radius:6px;box-shadow:0 8px 30px rgba(0,0,0,.28);
+  padding:26px 30px 30px;margin:0 auto 18px;font-family:var(--body);font-size:12.5px;line-height:1.5
+}
+.sheet-page h1{font-family:var(--display);font-size:23px;margin:0 0 2px;color:#111}
+.sheet-page h2{font-family:var(--display);font-size:16px;margin:20px 0 8px;padding-bottom:5px;border-bottom:2px solid #111;color:#111}
+.sheet-page h3{font-family:var(--display);font-size:13.5px;margin:14px 0 5px;color:#111}
+.rpt-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;border-bottom:3px solid #111;padding-bottom:10px}
+.rpt-head .who{font-size:12px;color:#444}
+.rpt-head .who b{font-size:14px;color:#111}
+.rpt-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 4px}
+.rpt-kpi div{border:1px solid #bbb;border-radius:6px;padding:8px 9px}
+.rpt-kpi .v{font-family:var(--display);font-size:19px;font-weight:800;line-height:1.1;color:#111}
+.rpt-kpi .k{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:#555;font-weight:700}
+table.rpt{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:6px}
+table.rpt th{text-align:left;background:#f1f1f1;border:1px solid #bbb;padding:5px 7px;font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:#333}
+table.rpt td{border:1px solid #ddd;padding:5px 7px;vertical-align:top}
+table.rpt tr:nth-child(even) td{background:#fafafa}
+table.rpt td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rpt-flag{border-left:4px solid #111;background:#f5f5f5;padding:8px 11px;margin:10px 0;font-size:12px}
+.rpt-flag b{display:block}
+.rpt-flag.warn{border-left-color:#B4451F;background:#FBF0EC}
+.rpt-note{font-size:10.5px;color:#555;margin-top:6px}
+.rpt-foot{margin-top:18px;padding-top:8px;border-top:1px solid #bbb;font-size:9.5px;color:#666;display:flex;justify-content:space-between}
+.rpt-empty{color:#666;font-style:italic;font-size:11.5px;padding:4px 0}
+@media (max-width:620px){ .rpt-kpi{grid-template-columns:repeat(2,1fr)} .sheet-page{padding:18px 16px 22px} }
+
 /* ── toast + banner ──────────────────────────────────────── */
 .toast{
   position:fixed;left:50%;bottom:20px;transform:translate(-50%,150%);z-index:60;max-width:92vw;
@@ -372,6 +413,19 @@ details.fold .fold-body{padding:0 18px 18px}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{
+  /* Printing the report: nothing else on the page comes with it. */
+  body.printing-report>*{display:none!important}
+  body.printing-report .rpt-back{display:block!important;position:static;background:#fff}
+  body.printing-report .rpt-bar{display:none!important}
+  body.printing-report .rpt-scroll{overflow:visible;padding:0}
+  body.printing-report .rpt-doc{max-width:none;margin:0}
+  body.printing-report .sheet-page{box-shadow:none;border-radius:0;margin:0;padding:0 0 10mm;page-break-after:always}
+  body.printing-report .sheet-page:last-child{page-break-after:auto}
+  body.printing-report table.rpt{page-break-inside:auto}
+  body.printing-report table.rpt tr{page-break-inside:avoid}
+  body.printing-report h2{page-break-after:avoid}
+  @page{size:A4 portrait;margin:14mm 12mm}
+
   body{background:#fff;padding:0}
   .panel{display:block!important}
   .tabbar,.gate,body::before,.topbar,.hero,.chart-card,.chart-tools,.chart-legend,.chart-key,#addSection,
@@ -402,6 +456,7 @@ details.fold .fold-body{padding:0 18px 18px}
     <p class="gate-note">
       Each family has its own code and its own private log — nobody sees another family's child.
       Need a code? Ask Clenmar at TWC and one will be made for you.
+      <br><a href="./tutorial.html">Watch the 2-minute tutorial →</a>
     </p>
     <div class="gate-foot">
       Your family's record is kept in the church's private repository, never on this phone.<br>
@@ -426,6 +481,10 @@ details.fold .fold-body{padding:0 18px 18px}
         <span class="brand-sub">Medicines, nappies, temperature &amp; weight</span>
       </span>
     </div>
+    <span class="hist" id="histBox" hidden>
+      <button class="chip-btn round" id="btnUndo" title="Undo (Ctrl+Z)" disabled>↶</button>
+      <button class="chip-btn round" id="btnRedo" title="Redo (Ctrl+Shift+Z)" disabled>↷</button>
+    </span>
     <span class="who-chip" id="whoChip" hidden>on duty
       <select id="whoNow" aria-label="Who is on duty"></select>
     </span>
@@ -565,6 +624,7 @@ details.fold .fold-body{padding:0 18px 18px}
     <div class="btn-row no-print" id="exportRow" hidden>
       <button class="btn ghost small" id="btnIcsAll">Add all to calendar</button>
       <button class="btn ghost small" id="btnCopyAll">Copy as text</button>
+      <button class="btn ghost small" id="btnReport">🩺 Doctor's report</button>
       <button class="btn ghost small" id="btnPrint">Print handover sheet</button>
     </div>
   </section>
@@ -905,6 +965,18 @@ details.fold .fold-body{padding:0 18px 18px}
     </details>
 
     <details class="fold">
+      <summary>🎬 Watch the tutorial</summary>
+      <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
+        <p style="margin-top:0">A short narrated walkthrough: signing in, adding a medicine, marking a dose given,
+        nappies and temperature, the reminders and the doctor's report.</p>
+        <video controls playsinline preload="none" style="width:100%;border-radius:14px;background:#000"
+               poster="" src="./twc-medicine-tracker-voice-C-male-ryan.mp4"></video>
+        <p style="margin-bottom:0"><a href="./tutorial.html">Open the tutorial page</a> to watch it full size or share it
+        with the other parent.</p>
+      </div>
+    </details>
+
+    <details class="fold">
       <summary>❓ How Medicine Tracker works</summary>
       <div class="fold-body" style="font-size:14px;color:var(--soft);font-weight:600">
         <ul class="steps" style="padding-left:20px">
@@ -916,6 +988,7 @@ details.fold .fold-body{padding:0 18px 18px}
           <li><b style="color:var(--ink)">Fever line</b> — log temperatures and the timeline draws them over the doses, so you can see whether the medicine is helping.</li>
           <li><b style="color:var(--ink)">Nappies and weight</b> — tap 💧 or 💩 once each change; the app counts the day, charts the week and warns you if wet nappies drop off, which is the first sign of not drinking enough. Weigh-ins draw a trend line.</li>
           <li><b style="color:var(--ink)">Both parents, one log</b> — sign in with your family code on each phone. The record lives in the church's private repository, not on the phones, and changes merge: Mum marking a dose and Dad logging a nappy at the same moment both survive.</li>
+          <li><b style="color:var(--ink)">Doctor's report</b> — <b>🩺 Doctor's report</b> under the medicine list builds a proper document: a summary sheet with the numbers a clinician asks for and a temperature chart, then dose-by-dose detail and the nappy, weight and note history. Print it or save it as a PDF to hand over.</li>
           <li><b style="color:var(--ink)">Today at a glance</b> — the strip on the <b>Now</b> tab puts every medicine, nappy, temperature and weight of the last 6 and next 18 hours on one line, with the next dose ringed. Tap any dose to mark it given.</li>
         </ul>
       </div>
@@ -946,6 +1019,25 @@ details.fold .fold-body{padding:0 18px 18px}
   </div><!-- /set -->
 </div>
 
+<!-- ── doctor's report: previewed on screen, printed or saved as PDF ── -->
+<div class="rpt-back" id="rptBack" hidden>
+  <div class="rpt-bar">
+    <button class="btn ghost small" id="rptClose">✕ Close</button>
+    <span class="rpt-range">
+      <label for="rptDays" style="margin:0">Cover</label>
+      <select id="rptDays">
+        <option value="7">last 7 days</option>
+        <option value="14" selected>last 14 days</option>
+        <option value="30">last 30 days</option>
+        <option value="0">everything</option>
+      </select>
+    </span>
+    <span style="flex:1"></span>
+    <button class="btn small" id="rptPrint">🖨 Print / Save as PDF</button>
+  </div>
+  <div class="rpt-scroll"><div id="rptDoc" class="rpt-doc"></div></div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -957,13 +1049,14 @@ details.fold .fold-body{padding:0 18px 18px}
    ═══════════════════════════════════════════════════════════════════════════ */
 // The family worker: signs both parents into one shared log and sends the dose
 // emails on its own. Deploy with:  cd 00_All_Workers\twc-dose-clock && npx wrangler deploy
+// (the folder and URL keep the old name so existing phones and calendar links work)
 // Clear the box in Advanced to keep a phone entirely offline.
 var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
 
 // Bump this whenever the file changes. It is printed on the sign-in card and in
 // Settings, so it is easy to tell whether a phone is running the current build
 // or a copy Safari kept in its cache.
-var APP_VERSION = "3.5 · 25 Jul 2026";
+var APP_VERSION = "3.7 · 25 Jul 2026";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -1000,6 +1093,8 @@ var store = {
    thing this device remembers is which family is signed in and small display
    preferences — so signing into a different family can never show, or upload,
    another family's child. */
+// Storage keys keep the old spelling on purpose: renaming them would sign every
+// phone out. Nothing a parent can read says "dose clock" any more.
 var DEVICE_KEY = "doseclock.device.v2";
 var DEAD_KEYS = ["doseclock.v2", "doseclock.v1", "doseclock.device.v1"];   // old on-device copies, removed on sight
 
@@ -1021,6 +1116,7 @@ var state = blankState();
 // Wipe every trace of the previous family before another one is loaded.
 function resetData(){
   state.dataRoom = "";
+  undoStack.length = 0; redoStack.length = 0; lastSnap = null;
   var d = blankData();
   state.meds = d.meds; state.logs = d.logs; state.caregivers = d.caregivers;
   state.deletedMedIds = d.deletedMedIds; state.settings = d.settings;
@@ -1047,11 +1143,13 @@ function saveDevice(){
   }));
 }
 
-var dirty = false, pushTimer = null;
+var dirty = false, pushTimer = null, editSeq = 0;
 function save(opts){
   saveDevice();                                   // preferences only
   if (!opts || opts.push !== false){
+    noteHistory();                                // remember the step for undo
     dirty = true;
+    editSeq++;                                    // marks this edit as newer than any reply in flight
     schedulePush();                               // the log itself goes to the repo
   }
 }
@@ -1209,8 +1307,10 @@ function adoptServer(d){
   state.sync.isAdmin = !!d.isAdmin;
   state.sync.lastAt = Date.now();
   state.dataRoom = state.sync.code;   // stamp: this log belongs to this family only
+  state.undeleteMedIds = [];
   dirty = false;
   saveDevice();                     // preferences only — the log stays off the phone
+  resetHistoryBaseline();           // the server's copy is the new starting point
 }
 
 function payload(){
@@ -1219,6 +1319,7 @@ function payload(){
     logs: state.logs,
     caregivers: state.caregivers,
     deletedMedIds: state.deletedMedIds,
+    undeleteMedIds: state.undeleteMedIds || [],
     settings: {
       leadMinutes: Number(state.settings.leadMinutes)||0,
       overdueNudge: !!state.settings.overdueNudge,
@@ -1244,10 +1345,20 @@ function pushNow(){
     return Promise.resolve();
   }
   syncChip("busy","Saving…");
+  var sentAt = editSeq;
   return api("/api/state", { method:"PUT", body:payload() }).then(function(d){
-    adoptServer(d);
     saveFailed = false;
     clearTimeout(retryTimer);
+    if (editSeq !== sentAt){
+      // Something changed while this save was in flight — an undo, or a tap on the
+      // other tab. Keep what is on screen and send it, rather than letting the
+      // reply overwrite it.
+      dirty = true;
+      schedulePush();
+      syncChip("busy","Saving…");
+      return;
+    }
+    adoptServer(d);
     syncChip("ok", "Saved " + fmtTime(new Date()));
     renderAll();
   }).catch(function(e){
@@ -1303,6 +1414,133 @@ function logout(){
   renderAll();
   showGate("Signed out on this phone.", "warn");
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   4b. Undo / redo — a Word-style history of every change
+   Each save compares the record with the last snapshot; anything different goes
+   on the undo stack with a label. Stepping back or forward re-stamps only the
+   items that actually changed, so the sync merge treats the undo as the newest
+   decision instead of quietly reverting it.
+   ═══════════════════════════════════════════════════════════════════════════ */
+var undoStack = [], redoStack = [], lastSnap = null, historyBusy = false, pendingLabel = "";
+var HISTORY_MAX = 50;
+
+function markChange(label){ pendingLabel = label || pendingLabel; }
+
+function dataSnapshot(){
+  return JSON.stringify({
+    meds: state.meds, logs: state.logs, caregivers: state.caregivers,
+    settings: state.settings, deletedMedIds: state.deletedMedIds
+  });
+}
+
+function applySnapshot(json){
+  var before = JSON.parse(dataSnapshot());
+  var d = JSON.parse(json);
+  var now = Date.now();
+  var same = function(a,b){ return JSON.stringify(a) === JSON.stringify(b); };
+
+  var beforeMeds = {};
+  before.meds.forEach(function(m){ beforeMeds[m.id] = m; });
+  d.meds.forEach(function(m){
+    var b = beforeMeds[m.id];
+    if (b && same(b, m)) return;                       // untouched, leave its stamps alone
+    m.updatedAt = now;
+    (m.doses||[]).forEach(function(dose, i){
+      var bd = b && b.doses && b.doses[i];
+      if (bd && same(bd, dose)) return;
+      if (dose.given || dose.skipped){ dose.decidedAt = now; dose.clearedAt = null; }
+      else { dose.clearedAt = now; dose.decidedAt = null; }
+    });
+  });
+  // a medicine the step removes gets a tombstone; one it brings back loses its
+  if (!d.deletedMedIds) d.deletedMedIds = {};
+  var undelete = [];
+  before.meds.forEach(function(b){
+    if (!d.meds.some(function(m){ return m.id === b.id; })) d.deletedMedIds[b.id] = now;
+  });
+  // A medicine the step brings back may be tombstoned on the server even though
+  // the snapshot predates the deletion, so check the state we are leaving too.
+  var wasDeleted = before.deletedMedIds || {};
+  d.meds.forEach(function(m){
+    if (d.deletedMedIds[m.id] || wasDeleted[m.id]){
+      delete d.deletedMedIds[m.id];
+      undelete.push(m.id);
+    }
+  });
+
+  var beforeLogs = {};
+  before.logs.forEach(function(l){ beforeLogs[l.id] = l; });
+  d.logs.forEach(function(l){
+    var b = beforeLogs[l.id];
+    if (!b || !same(b, l)) l.editedAt = now;
+  });
+  before.logs.forEach(function(b){
+    if (!d.logs.some(function(l){ return l.id === b.id; })){
+      d.logs.push(Object.assign({}, b, { deleted:true, deletedAt:now, editedAt:now }));
+    }
+  });
+
+  state.meds = d.meds; state.logs = d.logs; state.caregivers = d.caregivers;
+  state.settings = Object.assign(state.settings, d.settings || {});
+  state.deletedMedIds = d.deletedMedIds;
+  state.undeleteMedIds = undelete;                     // tell the server to forget those tombstones
+}
+
+function noteHistory(){
+  if (historyBusy) return;
+  var now = dataSnapshot();
+  if (lastSnap === null){ lastSnap = now; renderHistory(); return; }
+  if (now === lastSnap) return;
+  undoStack.push({ snap: lastSnap, label: pendingLabel || "change" });
+  if (undoStack.length > HISTORY_MAX) undoStack.shift();
+  redoStack.length = 0;
+  lastSnap = now;
+  pendingLabel = "";
+  renderHistory();
+}
+function resetHistoryBaseline(){
+  lastSnap = dataSnapshot();
+  renderHistory();
+}
+
+function stepHistory(back){
+  var from = back ? undoStack : redoStack;
+  var to   = back ? redoStack : undoStack;
+  if (!from.length) return;
+  var entry = from.pop();
+  historyBusy = true;
+  to.push({ snap: dataSnapshot(), label: entry.label });
+  applySnapshot(entry.snap);
+  lastSnap = dataSnapshot();
+  historyBusy = false;
+  save();
+  renderAll();
+  renderHistory();
+  toast((back ? "Undone: " : "Redone: ") + entry.label,
+        { label: back ? "Redo" : "Undo", fn: function(){ stepHistory(!back); } });
+}
+function undoChange(){ stepHistory(true); }
+function redoChange(){ stepHistory(false); }
+
+function renderHistory(){
+  var box = el("histBox"), u = el("btnUndo"), r = el("btnRedo");
+  if (!box) return;
+  box.hidden = !appOpen;
+  u.disabled = !undoStack.length;
+  r.disabled = !redoStack.length;
+  u.title = undoStack.length ? "Undo: " + undoStack[undoStack.length-1].label : "Nothing to undo";
+  r.title = redoStack.length ? "Redo: " + redoStack[redoStack.length-1].label : "Nothing to redo";
+}
+
+document.addEventListener("keydown", function(e){
+  if (!appOpen) return;
+  var meta = e.metaKey || e.ctrlKey;
+  if (!meta) return;
+  var k = (e.key || "").toLowerCase();
+  if (k === "z" && !e.shiftKey){ e.preventDefault(); undoChange(); }
+  else if ((k === "z" && e.shiftKey) || k === "y"){ e.preventDefault(); redoChange(); }
+});
 
 /* ═══════════════════════════════════════════════════════════════════════════
    5. Toast
@@ -1696,12 +1934,14 @@ function deleteLog(id){
   var l = findLog(id); if (!l) return;
   // Tombstone rather than drop: the record is merged with the family copy, and an
   // entry that simply vanished used to be handed straight back.
+  markChange((LOG_WORD[logType(l)] || "entry") + " deleted");
   l.deleted = true; l.deletedAt = Date.now(); l.editedAt = Date.now();
   save(); renderLogs(); renderChart(); renderGlance(); renderStats(); renderTabs();
   toast(LOG_WORD[logType(l)]+" deleted", { label:"Undo", fn:function(){ restoreLog(id); } });
 }
 function restoreLog(id){
   var l = findLog(id); if (!l) return;
+  markChange((LOG_WORD[logType(l)] || "entry") + " restored");
   l.deleted = false; l.deletedAt = null; l.editedAt = Date.now();
   save(); renderLogs(); renderChart(); renderGlance(); renderStats(); renderTabs();
   toast(LOG_WORD[logType(l)]+" restored");
@@ -1828,6 +2068,7 @@ function openLogSheet(id){
         who = v2 && v2.trim() ? v2.trim() : (l.by||"");
       }
       if (who){ l.by = who; state.ui.me = who; }
+      markChange((LOG_WORD[logType(l)] || "entry") + " edited");
       l.editedAt = Date.now();
       l.deleted = false; l.deletedAt = null;
       closeSheet();
@@ -2004,6 +2245,7 @@ function markGiven(medId, index, atMs, opts){
         " ago. Giving both can be an overdose. Are you sure you want to record this dose?")) return;
   }
 
+  markChange("dose marked given");
   med.doses[index].given = when;
   med.doses[index].givenBy = opts.by || whoIsGiving();
   med.doses[index].skipped = false;
@@ -2124,6 +2366,7 @@ function snooze(medId, mins){
   var med = findMed(medId); if (!med) return;
   var nd = nextDose(med); if (!nd) return;
   var shift = (mins||15)*MIN;
+  markChange("dose snoozed");
   nd.dose.planned += shift;
   nd.dose.remindedAt = null; nd.dose.overdueAt = null;
   if (med.mode === "shift"){
@@ -2139,6 +2382,7 @@ function snooze(medId, mins){
 function skipDose(medId, index){
   var med = findMed(medId); if (!med) return;
   if (index == null){ var nd = nextDose(med); if (!nd) return; index = nd.index; }
+  markChange("dose skipped");
   med.doses[index].skipped = true;
   med.doses[index].decidedAt = Date.now();
   med.doses[index].clearedAt = null;
@@ -2149,6 +2393,7 @@ function undoDose(medId, index){
   var med = findMed(medId); if (!med) return;
   var d = med.doses[index];
   if (d.given && med.supplyDoses != null) med.supplyDoses = med.supplyDoses+1;
+  markChange("dose cleared");
   d.given = null; d.givenBy = null; d.skipped = false; d.remindedAt = null; d.overdueAt = null;
   d.clearedAt = Date.now();                    // an undo must beat the copy on the server
   d.decidedAt = null;
@@ -2157,12 +2402,14 @@ function undoDose(medId, index){
 }
 function togglePause(medId){
   var med = findMed(medId); if (!med) return;
+  markChange("medicine paused");
   med.paused = !med.paused; med.updatedAt = Date.now();
   save(); renderAll(); toast(med.paused ? med.name+" paused" : med.name+" running again");
 }
 function deleteMed(medId){
   var med = findMed(medId); if (!med) return;
   if (!window.confirm("Delete the schedule for "+med.name+"? The dose record goes too.")) return;
+  markChange("medicine deleted");
   state.meds = state.meds.filter(function(m){ return m.id!==medId; });
   state.deletedMedIds[medId] = Date.now();
   save(); renderAll(); toast("Deleted");
@@ -2325,9 +2572,11 @@ function saveMed(){
     doses: doses
   };
   if (editing){
+    markChange("medicine edited");
     state.meds = state.meds.map(function(m){ return m.id===med.id ? med : m; });
     toast("Changes saved");
   } else {
+    markChange("medicine added");
     state.meds.push(med);
     toast("Schedule created with "+count+" doses");
   }
@@ -2377,6 +2626,7 @@ function resetLogWhen(){
   if (box) box.value = localInput(new Date());
 }
 function addLog(entry){
+  markChange((LOG_WORD[entry.type] || "entry") + " logged");
   entry.id = uid();
   if (entry.at == null) entry.at = logWhen();
   entry.by = state.ui.me || "";
@@ -2925,7 +3175,7 @@ function buildICS(meds){
         (med.ingredient?" Active ingredient: "+med.ingredient+".":"")+
         (med.notes?" Note: "+med.notes:"")+
         " Always follow the label or your clinician.";
-      L.push("BEGIN:VEVENT","UID:"+med.id+"-"+idx+"@doseclock","DTSTAMP:"+stamp,
+      L.push("BEGIN:VEVENT","UID:"+med.id+"-"+idx+"@twc-medicine-tracker","DTSTAMP:"+stamp,
         "DTSTART:"+icsStamp(d.planned),"DTEND:"+icsStamp(d.planned+10*MIN),
         fold("SUMMARY:"+icsEsc(title)), fold("DESCRIPTION:"+icsEsc(desc)));
       L.push("BEGIN:VALARM","ACTION:DISPLAY","TRIGGER:PT0S",fold("DESCRIPTION:"+icsEsc(title)),"END:VALARM");
@@ -3022,8 +3272,358 @@ function printSheet(){
   window.print();
 }
 el("btnPrint").addEventListener("click", printSheet);
+el("btnReport").addEventListener("click", openReport);
 document.addEventListener("click", function(e){
   if (e.target && e.target.id === "btnPrint2") printSheet();
+});
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   13b. The doctor's report
+   Not a screenshot of the app: a summary sheet a busy clinician can read in
+   thirty seconds, followed by the detail behind every number. Printed through
+   the browser, so "Save as PDF" gives a proper document.
+   ═══════════════════════════════════════════════════════════════════════════ */
+function rptRange(days){
+  var to = Date.now();
+  var from = days ? to - days*DAY : 0;
+  if (!days){
+    var first = to;
+    activeMedsAll().forEach(function(m){ (m.doses||[]).forEach(function(d){ first = Math.min(first, d.given || d.planned); }); });
+    liveLogs().forEach(function(l){ first = Math.min(first, l.at); });
+    from = Math.min(first, to - DAY);
+  }
+  return { from:from, to:to };
+}
+function activeMedsAll(){ return state.meds.filter(function(m){ return !m.archived; }); }
+function shortDate(ms){
+  var d = new Date(ms);
+  return d.getDate()+" "+["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()];
+}
+function rptTemps(from,to){
+  return liveLogs().filter(function(l){ return logType(l)==="temp" && l.temp!=null && l.at>=from && l.at<=to; })
+                   .sort(function(a,b){ return a.at-b.at; });
+}
+function rptWeights(from,to){
+  return liveLogs().filter(function(l){ return logType(l)==="weight" && l.weight!=null && l.at>=from && l.at<=to; })
+                   .sort(function(a,b){ return a.at-b.at; });
+}
+function rptGiven(from,to){
+  var out=[];
+  activeMedsAll().forEach(function(m){
+    (m.doses||[]).forEach(function(d,i){
+      if (d.given && d.given>=from && d.given<=to) out.push({ med:m, dose:d, i:i });
+    });
+  });
+  return out.sort(function(a,b){ return a.dose.given-b.dose.given; });
+}
+function people2(){
+  var names = {};
+  state.meds.forEach(function(m){ if (m.person) names[m.person]=1; });
+  liveLogs().forEach(function(l){ if (l.person) names[l.person]=1; });
+  return Object.keys(names);
+}
+
+/* ── little print-friendly charts ──────────────────────────────────────── */
+function svgFever(temps, from, to, doses, unit){
+  var W=740, H=190, padL=38, padR=12, padT=14, padB=40;
+  if (!temps.length) return '<p class="rpt-empty">No temperatures recorded in this period.</p>';
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var vals = temps.map(function(l){ return tempToUnit(l,unit); });
+  var fever = unit==="F" ? 100.4 : 38, high = unit==="F" ? 102.2 : 39;
+  var lo = Math.min.apply(null, vals.concat([fever-0.6])) - 0.4;
+  var hi = Math.max.apply(null, vals.concat([fever+0.6])) + 0.4;
+  var span = Math.max(1, to-from);
+  var x=function(ms){ return padL + ((ms-from)/span)*pw; };
+  var y=function(v){ return padT + ph - ((v-lo)/(hi-lo))*ph; };
+  var o=[];
+  o.push('<rect x="'+padL+'" y="'+padT+'" width="'+pw+'" height="'+ph+'" fill="#fff" stroke="#bbb"/>');
+  // gridlines every degree-ish
+  var stepY = (hi-lo) > 6 ? 2 : 1;
+  for (var v=Math.ceil(lo); v<=hi; v+=stepY){
+    o.push('<line x1="'+padL+'" y1="'+y(v).toFixed(1)+'" x2="'+(padL+pw)+'" y2="'+y(v).toFixed(1)+'" stroke="#eee"/>');
+    o.push('<text x="'+(padL-5)+'" y="'+(y(v)+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="#555">'+trimNum(v)+'</text>');
+  }
+  [[fever,"#B4451F","fever "+trimNum(fever)+"°"+unit],[high,"#7A1F1F","high "+trimNum(high)+"°"+unit]].forEach(function(t){
+    if (t[0]>lo && t[0]<hi){
+      o.push('<line x1="'+padL+'" y1="'+y(t[0]).toFixed(1)+'" x2="'+(padL+pw)+'" y2="'+y(t[0]).toFixed(1)+'" stroke="'+t[1]+'" stroke-dasharray="5 3"/>');
+      o.push('<text x="'+(padL+pw-3)+'" y="'+(y(t[0])-3).toFixed(1)+'" text-anchor="end" font-size="8.5" fill="'+t[1]+'">'+t[2]+'</text>');
+    }
+  });
+  // day ticks
+  var d0=new Date(from); d0.setHours(0,0,0,0);
+  for (var t2=d0.getTime(); t2<=to; t2+=DAY){
+    if (t2<from) continue;
+    o.push('<line x1="'+x(t2).toFixed(1)+'" y1="'+padT+'" x2="'+x(t2).toFixed(1)+'" y2="'+(padT+ph)+'" stroke="#e8e8e8"/>');
+    o.push('<text x="'+x(t2).toFixed(1)+'" y="'+(padT+ph+12)+'" text-anchor="middle" font-size="8.5" fill="#555">'+shortDate(t2)+'</text>');
+  }
+  o.push('<polyline points="'+temps.map(function(l){ return x(l.at).toFixed(1)+","+y(tempToUnit(l,unit)).toFixed(1); }).join(" ")+
+    '" fill="none" stroke="#111" stroke-width="1.6"/>');
+  temps.forEach(function(l){
+    var v=tempToUnit(l,unit);
+    o.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+y(v).toFixed(1)+'" r="2.8" fill="'+(v>=fever?"#B4451F":"#111")+'"/>');
+  });
+  // doses as ticks under the axis, so the effect of a dose is readable
+  doses.forEach(function(g){
+    var gx=x(g.dose.given);
+    if (gx<padL-2 || gx>padL+pw+2) return;
+    o.push('<path d="M'+gx.toFixed(1)+' '+(padT+ph+16)+' l-3.4 6 h6.8 z" fill="#333"/>');
+  });
+  o.push('<text x="'+padL+'" y="'+(padT+ph+34)+'" font-size="8.5" fill="#555">▲ = dose given · line = temperature (°'+unit+')</text>');
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" xmlns="http://www.w3.org/2000/svg">'+o.join("")+'</svg>';
+}
+
+function svgNappies(from, to){
+  var W=740, H=170, padL=32, padR=12, padT=12, padB=34;
+  var days=[], d0=new Date(from); d0.setHours(0,0,0,0);
+  for (var t=d0.getTime(); t<=to; t+=DAY) days.push(t);
+  if (days.length>31) days = days.slice(-31);
+  var rows = days.map(function(t){ return { at:t, c:countDiapers(liveLogs(), t, t+DAY) }; });
+  var any = rows.some(function(r){ return r.c.wet+r.c.dirty>0; });
+  if (!any) return '<p class="rpt-empty">No nappies recorded in this period.</p>';
+  var pw=W-padL-padR, ph=H-padT-padB;
+  var max = Math.max(8, rows.reduce(function(m,r){ return Math.max(m, r.c.wet+r.c.dirty); },0));
+  var bw = Math.max(5, Math.min(30, pw/rows.length - 5));
+  var o=[];
+  o.push('<rect x="'+padL+'" y="'+padT+'" width="'+pw+'" height="'+ph+'" fill="#fff" stroke="#bbb"/>');
+  [0, Math.round(max/2), max].forEach(function(v){
+    var yy = padT + ph - (v/max)*ph;
+    o.push('<line x1="'+padL+'" y1="'+yy.toFixed(1)+'" x2="'+(padL+pw)+'" y2="'+yy.toFixed(1)+'" stroke="#eee"/>');
+    o.push('<text x="'+(padL-5)+'" y="'+(yy+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="#555">'+v+'</text>');
+  });
+  // six wet nappies a day is the usual reassurance line
+  var sixY = padT + ph - (6/max)*ph;
+  o.push('<line x1="'+padL+'" y1="'+sixY.toFixed(1)+'" x2="'+(padL+pw)+'" y2="'+sixY.toFixed(1)+'" stroke="#2A6FB0" stroke-dasharray="5 3"/>');
+  o.push('<text x="'+(padL+pw-3)+'" y="'+(sixY-3).toFixed(1)+'" text-anchor="end" font-size="8.5" fill="#2A6FB0">6 wet/day</text>');
+  rows.forEach(function(r,i){
+    var cx = padL + (i+0.5)*(pw/rows.length);
+    var hW=(r.c.wet/max)*ph, hD=(r.c.dirty/max)*ph;
+    var yW=padT+ph-hW, yD=yW-hD;
+    if (hW>0) o.push('<rect x="'+(cx-bw/2).toFixed(1)+'" y="'+yW.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hW.toFixed(1)+'" fill="#5B8FC7"/>');
+    if (hD>0) o.push('<rect x="'+(cx-bw/2).toFixed(1)+'" y="'+yD.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+hD.toFixed(1)+'" fill="#C08A4A"/>');
+    if (rows.length<=16 || i%3===0)
+      o.push('<text x="'+cx.toFixed(1)+'" y="'+(padT+ph+12)+'" text-anchor="middle" font-size="8.5" fill="#555">'+shortDate(r.at)+'</text>');
+  });
+  o.push('<rect x="'+padL+'" y="'+(padT+ph+20)+'" width="9" height="9" fill="#5B8FC7"/><text x="'+(padL+13)+'" y="'+(padT+ph+28)+'" font-size="9" fill="#333">wet</text>');
+  o.push('<rect x="'+(padL+48)+'" y="'+(padT+ph+20)+'" width="9" height="9" fill="#C08A4A"/><text x="'+(padL+61)+'" y="'+(padT+ph+28)+'" font-size="9" fill="#333">dirty</text>');
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" xmlns="http://www.w3.org/2000/svg">'+o.join("")+'</svg>';
+}
+
+function svgWeight(ws){
+  if (ws.length<2) return ws.length ? '<p class="rpt-empty">One weight recorded: '+esc(showWeight(ws[0]))+' on '+fmtDay(ws[0].at)+'.</p>'
+                                    : '<p class="rpt-empty">No weights recorded in this period.</p>';
+  var W=740,H=150,padL=42,padR=12,padT=12,padB=28, pw=W-padL-padR, ph=H-padT-padB;
+  var vals=ws.map(toLb), lo=Math.min.apply(null,vals)-0.3, hi=Math.max.apply(null,vals)+0.3;
+  var t0=ws[0].at, t1=ws[ws.length-1].at, span=Math.max(1,t1-t0);
+  var x=function(ms){ return padL+((ms-t0)/span)*pw; }, y=function(v){ return padT+ph-((v-lo)/(hi-lo))*ph; };
+  var u=state.ui.wunit||"kg";
+  var o=['<rect x="'+padL+'" y="'+padT+'" width="'+pw+'" height="'+ph+'" fill="#fff" stroke="#bbb"/>'];
+  [lo+(hi-lo)*0.1, (lo+hi)/2, hi-(hi-lo)*0.1].forEach(function(v){
+    var lbl = u==="kg" ? v/2.20462 : v;
+    o.push('<line x1="'+padL+'" y1="'+y(v).toFixed(1)+'" x2="'+(padL+pw)+'" y2="'+y(v).toFixed(1)+'" stroke="#eee"/>');
+    o.push('<text x="'+(padL-5)+'" y="'+(y(v)+3.5).toFixed(1)+'" text-anchor="end" font-size="9" fill="#555">'+trimNum(Math.round(lbl*10)/10)+'</text>');
+  });
+  o.push('<polyline points="'+ws.map(function(l){ return x(l.at).toFixed(1)+","+y(toLb(l)).toFixed(1); }).join(" ")+'" fill="none" stroke="#111" stroke-width="1.6"/>');
+  ws.forEach(function(l,i){
+    o.push('<circle cx="'+x(l.at).toFixed(1)+'" cy="'+y(toLb(l)).toFixed(1)+'" r="3" fill="#111"/>');
+    if (i===0 || i===ws.length-1){
+      o.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(y(toLb(l))-7).toFixed(1)+'" text-anchor="middle" font-size="9" fill="#111">'+esc(showWeight(l))+'</text>');
+      o.push('<text x="'+x(l.at).toFixed(1)+'" y="'+(padT+ph+13)+'" text-anchor="'+(i?"end":"start")+'" font-size="8.5" fill="#555">'+shortDate(l.at)+'</text>');
+    }
+  });
+  o.push('<text x="'+padL+'" y="'+(padT+ph+25)+'" font-size="8.5" fill="#555">weight in '+u+'</text>');
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" xmlns="http://www.w3.org/2000/svg">'+o.join("")+'</svg>';
+}
+
+function svgAdherence(rows){
+  if (!rows.length) return "";
+  var W=740, rowH=22, H=rows.length*rowH+16, padL=170, padR=52, pw=W-padL-padR;
+  var o=[];
+  rows.forEach(function(r,i){
+    var yy=10+i*rowH, pct = r.planned ? r.given/r.planned : 0;
+    o.push('<text x="0" y="'+(yy+11)+'" font-size="10.5" fill="#111">'+esc(r.name.slice(0,30))+'</text>');
+    o.push('<rect x="'+padL+'" y="'+yy+'" width="'+pw+'" height="13" fill="#f0f0f0" stroke="#ddd"/>');
+    o.push('<rect x="'+padL+'" y="'+yy+'" width="'+(pw*Math.min(1,pct)).toFixed(1)+'" height="13" fill="#3B6E4B"/>');
+    o.push('<text x="'+(padL+pw+5)+'" y="'+(yy+11)+'" font-size="10" fill="#111">'+r.given+'/'+r.planned+'</text>');
+  });
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" xmlns="http://www.w3.org/2000/svg">'+o.join("")+'</svg>';
+}
+
+/* ── the document itself ───────────────────────────────────────────────── */
+function buildReport(days){
+  var R = rptRange(days), from=R.from, to=R.to;
+  var unit = state.ui.unit || "C";
+  var kids = people2();
+  var temps = rptTemps(from,to), ws = rptWeights(from,to), given = rptGiven(from,to);
+  var meds = activeMedsAll();
+  var periodTxt = days ? "the last "+days+" days" : "the whole record";
+  var pages = [];
+
+  function head(sub){
+    return '<div class="rpt-head"><div>'+
+      '<h1>Medicine &amp; symptom record</h1>'+
+      '<div class="who"><b>'+esc(kids.join(", ") || "Child")+'</b>'+
+        (state.sync.name ? ' · '+esc(state.sync.name) : '')+'</div>'+
+      '<div class="who">'+shortDate(from)+' – '+shortDate(to)+' ('+esc(periodTxt)+')</div>'+
+      '</div><div class="who" style="text-align:right">'+
+      '<b>'+esc(sub)+'</b><br>Prepared '+new Date().toLocaleString()+
+      '<br>by '+esc(state.ui.me || (state.caregivers[0]&&state.caregivers[0].name) || "parent")+
+      '</div></div>';
+  }
+  function foot(n, total){
+    return '<div class="rpt-foot"><span>Kept by parents in TWC Medicine Tracker · times are as recorded on the phone</span>'+
+      '<span>Page '+n+' of '+total+'</span></div>';
+  }
+
+  /* ── page 1: the summary ─────────────────────────────────────────── */
+  var onTime=0, late=0, missed=0, limitHits=[];
+  meds.forEach(function(m){
+    (m.doses||[]).forEach(function(d){
+      if (d.given && d.given>=from && d.given<=to){
+        if (Math.abs(d.given-d.planned) <= 45*MIN) onTime++; else late++;
+        if (m.maxPerDay){
+          var n = (m.doses||[]).filter(function(o){ return o.given && o.given>d.given-DAY && o.given<=d.given; }).length;
+          if (n > m.maxPerDay) limitHits.push({ med:m, at:d.given, n:n });
+        }
+      } else if (!d.given && !d.skipped && d.planned>=from && d.planned < Date.now()-2*HOUR) missed++;
+    });
+  });
+  var adherence = (onTime+late) ? Math.round(onTime*100/(onTime+late)) : null;
+  var hottest = temps.reduce(function(a,l){ return (!a || tempToUnit(l,unit)>tempToUnit(a,unit)) ? l : a; }, null);
+  var dayCount = Math.max(1, Math.round((to-from)/DAY));
+  var napTot = countDiapers(liveLogs(), from, to);
+  var wetPerDay = Math.round(napTot.wet/dayCount*10)/10, dirtyPerDay = Math.round(napTot.dirty/dayCount*10)/10;
+  var wDelta = ws.length>1 ? toLb(ws[ws.length-1])-toLb(ws[0]) : null;
+  var wu = state.ui.wunit || "kg";
+
+  var kpi = '<div class="rpt-kpi">'+
+    '<div><div class="v">'+given.length+'</div><div class="k">doses given</div></div>'+
+    '<div><div class="v">'+(adherence==null?"—":adherence+"%")+'</div><div class="k">within 45 min of plan</div></div>'+
+    '<div><div class="v">'+(hottest?trimNum(tempToUnit(hottest,unit))+"°"+unit:"—")+'</div><div class="k">highest temperature</div></div>'+
+    '<div><div class="v">'+wetPerDay+' / '+dirtyPerDay+'</div><div class="k">wet / dirty per day</div></div>'+
+    '</div>';
+
+  var flags = [];
+  if (missed) flags.push({ warn:true, t:"Doses not recorded as given", b:missed+" scheduled dose"+(missed===1?"":"s")+" in this period were never marked given or skipped." });
+  if (limitHits.length) flags.push({ warn:true, t:"24-hour limit exceeded", b:limitHits.map(function(h){ return esc(h.med.name)+": "+h.n+" doses in the 24 h to "+fmtTime(h.at)+" "+fmtDay(h.at)+" (label limit "+h.med.maxPerDay+")"; }).join("; ")+"." });
+  var dupes = duplicateIngredients();
+  if (dupes.length) flags.push({ warn:true, t:"Same active ingredient in two medicines", b:"Currently on the list: "+esc(dupes.join(", "))+"." });
+  var worstDay = null;
+  for (var t3=from; t3<to; t3+=DAY){
+    var c = countDiapers(liveLogs(), t3, t3+DAY);
+    if (c.wet+c.dirty === 0) continue;
+    if (!worstDay || c.wet < worstDay.wet) worstDay = { at:t3, wet:c.wet };
+  }
+  if (worstDay && worstDay.wet < 6) flags.push({ warn:true, t:"Low wet nappies on one day", b:"Only "+worstDay.wet+" wet nappies on "+shortDate(worstDay.at)+"." });
+  if (hottest && tempToUnit(hottest,unit) >= (unit==="F"?102.2:39))
+    flags.push({ warn:true, t:"Temperature at or above "+(unit==="F"?"102.2°F":"39°C"), b:trimNum(tempToUnit(hottest,unit))+"°"+unit+" at "+fmtTime(hottest.at)+" "+fmtDay(hottest.at)+"." });
+  if (wDelta != null){
+    var shown = wu==="kg" ? wDelta/2.20462 : wDelta;
+    flags.push({ warn:false, t:"Weight", b:(wDelta>=0?"Up ":"Down ")+trimNum(Math.abs(Math.round(shown*100)/100))+" "+wu+" over "+dayCount+" days ("+esc(showWeight(ws[0]))+" → "+esc(showWeight(ws[ws.length-1]))+")." });
+  }
+  if (!flags.length) flags.push({ warn:false, t:"Nothing unusual", b:"No missed doses, no limit breaches and no duplicated ingredients in this period." });
+
+  var medRows = meds.map(function(m){
+    var g = (m.doses||[]).filter(function(d){ return d.given && d.given>=from && d.given<=to; }).length;
+    var planned = (m.doses||[]).filter(function(d){ return d.planned>=from && d.planned<=Math.min(to,Date.now()); }).length;
+    var lg = lastGiven(m), nd = nextDose(m);
+    var started = (m.doses||[])[0] ? (m.doses[0].given || m.doses[0].planned) : m.created;
+    return { name:m.name, given:g, planned:planned, html:'<tr>'+
+      '<td><b>'+esc(m.name)+'</b>'+(m.person?'<br><span style="color:#666">'+esc(m.person)+'</span>':'')+'</td>'+
+      '<td>'+esc(m.ingredient||"—")+'</td>'+
+      '<td>'+esc(m.dose||"per label")+'</td>'+
+      '<td class="num">'+trimNum(m.intervalH)+' h</td>'+
+      '<td class="num">'+(m.maxPerDay||"—")+'</td>'+
+      '<td class="num">'+shortDate(started)+'</td>'+
+      '<td class="num">'+g+' / '+planned+'</td>'+
+      '<td class="num">'+(lg?fmtTime(lg)+" "+shortDate(lg):"—")+'</td>'+
+      '<td class="num">'+(m.paused?"paused":(nd?fmtTime(nd.dose.planned)+" "+shortDate(nd.dose.planned):"course done"))+'</td>'+
+      '</tr>' };
+  });
+
+  pages.push(head("Summary sheet") + kpi +
+    '<h2>Medicines in this period</h2>'+
+    (meds.length ? '<table class="rpt"><thead><tr><th>Medicine</th><th>Ingredient</th><th>Dose</th><th>Every</th><th>Max/24h</th><th>Started</th><th>Given</th><th>Last given</th><th>Next due</th></tr></thead><tbody>'+
+      medRows.map(function(r){ return r.html; }).join("")+'</tbody></table>'
+      : '<p class="rpt-empty">No medicines recorded.</p>')+
+    (medRows.length ? '<h3>Doses given against doses scheduled</h3>'+svgAdherence(medRows) : '')+
+    '<h2>Points a clinician usually asks</h2>'+
+    flags.map(function(f){ return '<div class="rpt-flag'+(f.warn?' warn':'')+'"><b>'+esc(f.t)+'</b>'+f.b+'</div>'; }).join("")+
+    '<h2>Temperature, with doses marked</h2>'+
+    svgFever(temps, from, to, given, unit));
+
+  /* ── page 2: every dose ──────────────────────────────────────────── */
+  var detail = head("Dose detail");
+  if (!meds.length) detail += '<p class="rpt-empty">No medicines recorded.</p>';
+  meds.forEach(function(m){
+    var rows = (m.doses||[]).map(function(d,i){ return { d:d, i:i }; })
+      .filter(function(r){ return (r.d.given||r.d.planned) >= from && (r.d.given||r.d.planned) <= to + DAY; });
+    detail += '<h3>'+esc(m.name)+(m.person?' — '+esc(m.person):'')+' · '+esc(m.dose||"per label")+' every '+trimNum(m.intervalH)+' h'+
+      (m.notes?' · <span style="color:#555">'+esc(m.notes)+'</span>':'')+'</h3>';
+    if (!rows.length){ detail += '<p class="rpt-empty">No doses in this period.</p>'; return; }
+    detail += '<table class="rpt"><thead><tr><th>#</th><th>Planned</th><th>Given</th><th class="num">Difference</th><th>By</th><th>Status</th></tr></thead><tbody>'+
+      rows.map(function(r){
+        var d=r.d, diff = d.given ? d.given-d.planned : null;
+        var status = d.skipped ? "skipped" : d.given ? (Math.abs(diff)<=45*MIN?"on time":(diff>0?"late":"early"))
+                   : (d.planned < Date.now()-2*HOUR ? "not recorded" : "scheduled");
+        return '<tr><td class="num">'+(r.i+1)+'</td>'+
+          '<td>'+fmtTime(d.planned)+' '+shortDate(d.planned)+'</td>'+
+          '<td>'+(d.given?fmtTime(d.given)+' '+shortDate(d.given):'—')+'</td>'+
+          '<td class="num">'+(diff==null?'—':(diff>0?'+':'−')+durTxt(diff))+'</td>'+
+          '<td>'+esc(d.givenBy||'—')+'</td>'+
+          '<td>'+status+'</td></tr>';
+      }).join("")+'</tbody></table>';
+  });
+  pages.push(detail);
+
+  /* ── page 3: observations ────────────────────────────────────────── */
+  var obs = head("Observations");
+  obs += '<h2>Nappies per day</h2>'+svgNappies(from,to);
+  obs += '<h2>Weight</h2>'+svgWeight(ws);
+  obs += '<h2>Temperature readings</h2>';
+  obs += temps.length ? '<table class="rpt"><thead><tr><th>When</th><th class="num">Reading</th><th>Person</th><th>Note</th><th>By</th></tr></thead><tbody>'+
+      temps.slice().reverse().map(function(l){
+        var v = tempToUnit(l,unit), hot = v >= (unit==="F"?100.4:38);
+        return '<tr><td>'+fmtTime(l.at)+' '+shortDate(l.at)+'</td>'+
+          '<td class="num"'+(hot?' style="font-weight:700"':'')+'>'+trimNum(v)+'°'+unit+'</td>'+
+          '<td>'+esc(l.person||'—')+'</td><td>'+esc(l.note||'')+'</td><td>'+esc(l.by||'')+'</td></tr>';
+      }).join("")+'</tbody></table>'
+    : '<p class="rpt-empty">No temperatures recorded in this period.</p>';
+
+  var notes = liveLogs().filter(function(l){ return l.at>=from && l.at<=to && l.note && logType(l)!=="temp"; })
+                        .sort(function(a,b){ return b.at-a.at; });
+  obs += '<h2>Notes</h2>';
+  obs += notes.length ? '<table class="rpt"><thead><tr><th>When</th><th>Entry</th><th>Note</th><th>By</th></tr></thead><tbody>'+
+      notes.map(function(l){
+        return '<tr><td>'+fmtTime(l.at)+' '+shortDate(l.at)+'</td><td>'+esc(LOG_WORD[logType(l)])+'</td>'+
+          '<td>'+esc(l.note)+'</td><td>'+esc(l.by||'')+'</td></tr>';
+      }).join("")+'</tbody></table>'
+    : '<p class="rpt-empty">No notes in this period.</p>';
+  obs += '<div class="rpt-flag"><b>How this record was kept</b>Parents tapped each dose, nappy, temperature and weight into the '+
+    'TWC Medicine Tracker as it happened, or entered the real time afterwards. Amounts are copied from the medicine label; '+
+    'the app never calculates a dose.</div>';
+  pages.push(obs);
+
+  var total = pages.length;
+  return pages.map(function(html,i){ return '<section class="sheet-page">'+html+foot(i+1,total)+'</section>'; }).join("");
+}
+
+function openReport(){
+  var sel = el("rptDays");
+  var days = parseInt(sel.value,10);
+  el("rptDoc").innerHTML = buildReport(isNaN(days)?14:days);
+  el("rptBack").hidden = false;
+  el("rptScrollTop") && null;
+  var sc = document.querySelector(".rpt-scroll");
+  if (sc) sc.scrollTop = 0;
+}
+el("rptDays").addEventListener("change", openReport);
+el("rptClose").addEventListener("click", function(){ el("rptBack").hidden = true; });
+el("rptPrint").addEventListener("click", function(){
+  document.body.classList.add("printing-report");
+  var done = function(){ document.body.classList.remove("printing-report"); };
+  if (window.onafterprint !== undefined) window.addEventListener("afterprint", done, { once:true });
+  setTimeout(function(){ try { window.print(); } catch(e){} setTimeout(done, 1200); }, 60);
 });
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -3253,12 +3853,18 @@ function closeSheet(){
 }
 var feedLinks = null;                 // { url, webcal } — fetched once per session
 
-function getFeed(rotate){
-  if (feedLinks && !rotate) return Promise.resolve(feedLinks);
+function getFeed(rotate, medId){
+  function scope(links){
+    // One medicine, or the whole family: same token, different query.
+    if (!medId) return links;
+    var q = "?med=" + encodeURIComponent(medId);
+    return { url: links.url + q, webcal: links.webcal + q };
+  }
+  if (feedLinks && !rotate) return Promise.resolve(scope(feedLinks));
   if (!canSync() || !connected) return Promise.reject(new Error("Sign in first"));
   return api("/api/feed", { method:"POST", body:{ rotate: !!rotate } }).then(function(d){
     feedLinks = { url:d.url, webcal:d.webcal };
-    return feedLinks;
+    return scope(feedLinks);
   });
 }
 
@@ -3266,16 +3872,20 @@ function openCalSheet(meds){
   meds = (meds||[]).filter(function(m){ return m && m.doses && m.doses.length; });
   if (!meds.length){ toast("Add a medicine first"); return; }
   closeSheet();
+  // Tapped on one medicine? Then the calendar gets that medicine only.
+  var onlyId = meds.length === 1 ? meds[0].id : "";
+  var scopeTxt = onlyId ? esc(meds[0].name) : "all " + meds.length + " medicines";
   var back = document.createElement("div");
   back.className = "sheet-back"; back.id = "calSheet";
   back.innerHTML = '<div class="sheet" role="dialog" aria-label="Add to calendar">'+
     '<button class="close" data-cal-close="1" aria-label="Close">×</button>'+
     '<h4>Add to calendar</h4>'+
-    '<p class="meta">'+pendingDoses(meds)+' dose'+(pendingDoses(meds)===1?'':'s')+' still to come.</p>'+
+    '<p class="meta">'+scopeTxt+' · '+pendingDoses(meds)+' dose'+(pendingDoses(meds)===1?'':'s')+' still to come.</p>'+
 
     '<button class="btn wide" data-cal-ios="1">📲 Add to iPhone Calendar</button>'+
     '<button class="btn sky wide" data-cal-sub="1">🔄 Subscribe — keeps itself up to date</button>'+
-    '<p class="meta">The first opens the doses in Calendar so you can tap <b>Add All</b>. The second subscribes to your'+
+    '<p class="meta">'+(onlyId ? 'Just this medicine. ' : 'Every medicine on the list. ')+
+    'The first opens the doses in Calendar so you can tap <b>Add All</b>. The second subscribes to your'+
     ' family\'s schedule: change a medicine and every phone updates on its own. Leave <b>Remove Alarms</b> switched'+
     ' <b>off</b> so the dose alerts come with it.</p>'+
 
@@ -3307,20 +3917,20 @@ function openCalSheet(meds){
     // Calendar offer "Add All" — a Blob or the share sheet just saves a file.
     if (e.target.closest("[data-cal-ios]")){
       note("Opening Calendar…");
-      getFeed(false).then(function(f){
+      getFeed(false, onlyId).then(function(f){
         window.location.href = f.url;
       }).catch(needSignIn);
       return;
     }
     if (e.target.closest("[data-cal-sub]")){
       note("Opening Calendar to subscribe…");
-      getFeed(false).then(function(f){
+      getFeed(false, onlyId).then(function(f){
         window.location.href = f.webcal;      // webcal:// hands straight to Calendar
       }).catch(needSignIn);
       return;
     }
     if (e.target.closest("[data-cal-copy]")){
-      getFeed(false).then(function(f){
+      getFeed(false, onlyId).then(function(f){
         if (navigator.clipboard && navigator.clipboard.writeText){
           navigator.clipboard.writeText(f.url).then(function(){ note("Link copied. Paste it into any calendar app."); },
             function(){ window.prompt("Calendar link", f.url); });
@@ -3330,7 +3940,7 @@ function openCalSheet(meds){
     }
     if (e.target.closest("[data-cal-rotate]")){
       if (!window.confirm("Make a new calendar link? Any phone already subscribed to the old one stops updating.")) return;
-      getFeed(true).then(function(){ note("New link ready. Subscribe again on each phone."); }).catch(needSignIn);
+      getFeed(true, onlyId).then(function(){ note("New link ready. Subscribe again on each phone."); }).catch(needSignIn);
       return;
     }
 
@@ -3403,6 +4013,7 @@ el("btnAddCare").addEventListener("click", function(){
   renderSyncPanel();
 });
 el("btnSaveCloud").addEventListener("click", function(){
+  markChange("reminder settings");
   collectCare();
   state.settings.leadMinutes = parseInt(el("fLead").value,10)||0;
   var ov = parseInt(el("fOverdue").value,10)||0;
@@ -3445,6 +4056,8 @@ function confirmLogout(){
 }
 el("btnLogout").addEventListener("click", confirmLogout);
 el("outChip").addEventListener("click", confirmLogout);
+el("btnUndo").addEventListener("click", undoChange);
+el("btnRedo").addEventListener("click", redoChange);
 el("btnPull").addEventListener("click", function(){ pull(false).then(renderSyncPanel); });
 el("btnTestEmail").addEventListener("click", function(){
   collectCare(); save();
@@ -3552,6 +4165,7 @@ function openApp(){
   }
   el("app").hidden = false;
   el("outChip").hidden = false;
+  resetHistoryBaseline();
   renderAll();
   scheduleLocalAlert();
   checkDueEmails();
@@ -3658,6 +4272,7 @@ el("whoNow").addEventListener("change", function(){
 function renderAll(){
   renderBanners(); renderHero(); renderStats(); renderFilters();
   renderMeds(); renderLogs(); renderChart(); renderGlance(); renderTabs(); renderWhoChip();
+  renderHistory();
 }
 
 renderPresets();
