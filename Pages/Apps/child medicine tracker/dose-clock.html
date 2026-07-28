@@ -35,6 +35,7 @@
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
+[hidden]{display:none!important}
 body{
   background:var(--cream);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;
   -webkit-text-size-adjust:100%;padding:0 0 90px;position:relative;overflow-x:hidden;
@@ -299,7 +300,8 @@ details.fold .fold-body{padding:0 18px 18px}
 @media (min-width:560px){ .sheet-back{align-items:center;padding:12px} }
 
 /* ── doctor's report ─────────────────────────────────────── */
-.rpt-back{position:fixed;inset:0;z-index:80;background:#5C6478;display:flex;flex-direction:column}
+.rpt-back{position:fixed;inset:0;z-index:80;background:#5C6478;display:none;flex-direction:column}
+.rpt-back.on{display:flex}
 .rpt-bar{
   display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 12px 10px;
   background:var(--paper);border-bottom:1px solid var(--line);flex-wrap:wrap
@@ -369,8 +371,7 @@ table.rpt td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:
 }
 /* ── sign-in gate ────────────────────────────────────────── */
 .gate{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
-/* display:flex above outranks the plain [hidden] rule, which left the sign-in
-   card sitting at the top of the app after signing in. */
+/* belt and braces alongside the global [hidden] rule above */
 .gate[hidden],#app[hidden]{display:none!important}
 .gate-card{
   background:var(--paper);border:1px solid var(--line);border-radius:26px;padding:26px 22px;
@@ -415,7 +416,7 @@ table.rpt td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:
 @media print{
   /* Printing the report: nothing else on the page comes with it. */
   body.printing-report>*{display:none!important}
-  body.printing-report .rpt-back{display:block!important;position:static;background:#fff}
+  body.printing-report .rpt-back,body.printing-report .rpt-back.on{display:block!important;position:static;background:#fff}
   body.printing-report .rpt-bar{display:none!important}
   body.printing-report .rpt-scroll{overflow:visible;padding:0}
   body.printing-report .rpt-doc{max-width:none;margin:0}
@@ -1056,7 +1057,7 @@ var DEFAULT_API_BASE = "https://twc-dose-clock.kd7bgn7q2z.workers.dev";
 // Bump this whenever the file changes. It is printed on the sign-in card and in
 // Settings, so it is easy to tell whether a phone is running the current build
 // or a copy Safari kept in its cache.
-var APP_VERSION = "3.7 · 25 Jul 2026";
+var APP_VERSION = "3.8 · 25 Jul 2026";
 
 // EmailJS — same service and template the Family Tasks app uses. The public key
 // is safe to ship in a page; it can only send through this one template.
@@ -3613,12 +3614,20 @@ function openReport(){
   var days = parseInt(sel.value,10);
   el("rptDoc").innerHTML = buildReport(isNaN(days)?14:days);
   el("rptBack").hidden = false;
+  el("rptBack").classList.add("on");
   el("rptScrollTop") && null;
   var sc = document.querySelector(".rpt-scroll");
   if (sc) sc.scrollTop = 0;
 }
 el("rptDays").addEventListener("change", openReport);
-el("rptClose").addEventListener("click", function(){ el("rptBack").hidden = true; });
+function closeReport(){
+  var b = el("rptBack");
+  b.classList.remove("on");
+  b.hidden = true;
+  document.body.classList.remove("printing-report");
+}
+el("rptClose").addEventListener("click", closeReport);
+el("rptBack").addEventListener("click", function(e){ if (e.target === el("rptBack")) closeReport(); });
 el("rptPrint").addEventListener("click", function(){
   document.body.classList.add("printing-report");
   var done = function(){ document.body.classList.remove("printing-report"); };
@@ -3953,7 +3962,9 @@ function openCalSheet(meds){
     if (e.target.closest("[data-cal-dl]")){ downloadICS(meds, slug(meds.length===1?meds[0].name:"medicine")); closeSheet(); }
   });
 }
-document.addEventListener("keydown", function(e){ if (e.key === "Escape"){ closeSheet(); closePop(); } });
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape"){ closeSheet(); closePop(); if (el("rptBack") && !el("rptBack").hidden) closeReport(); }
+});
 
 /* ═══════════════════════════════════════════════════════════════════════════
    15. Sync & email panel
