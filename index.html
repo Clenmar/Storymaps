@@ -360,6 +360,20 @@
       .hfc-msg{font-size:1.45rem}
     }
   </style>
+  <script>
+    /* ---- 2026 HEALTH FAIR AUTO-EXPIRY ----
+       3 days after the fair ends the homepage promo removes itself.
+       Fair ends Sun 9 Aug 2026 3:00 PM Jamaica (UTC-5) -> hide from
+       Wed 12 Aug 2026 3:00 PM Jamaica = 12 Aug 2026 20:00 UTC.
+       Done here in <head> so it is never painted at all.
+       NOTE: the countdown script at the bottom uses the same cutoff. */
+    (function(){
+      if (Date.now() < Date.UTC(2026, 7, 12, 20, 0, 0)) return;
+      var s = document.createElement('style');
+      s.textContent = '#healthfair-bar,#healthfair,.nav-hf,#hfDrawerLink{display:none !important}';
+      document.head.appendChild(s);
+    })();
+  </script>
 </head>
 <body>
   <div id="banner">
@@ -406,7 +420,7 @@
     <a href="/Pages/About/"              class="drawer-link">About</a>
     <a href="/Pages/Connect/"          class="drawer-link">Connect</a>
     <a href="/Pages/Charities/"      class="drawer-link">Charities</a>
-    <a href="/Pages/Charities/health-fair/" class="drawer-link" style="color:#f5c518">&#127973; 2026 Health Fair Map</a>
+    <a href="/Pages/Charities/health-fair/" class="drawer-link" id="hfDrawerLink" style="color:#f5c518">&#127973; 2026 Health Fair Map</a>
     <a href="/Pages/Events/"            class="drawer-link">Events</a>
     <a href="/Pages/Live/"                class="drawer-link">Watch Live</a>
     <a href="https://spurropen.com/twcministries"                           class="drawer-donate">&#9829; Donate &rarr;</a>
@@ -887,7 +901,10 @@
     (function () {
       var START_UTC = Date.UTC(2026, 7, 9, 15, 0, 0);  /* 10:00 AM JA = 15:00 UTC */
       var END_UTC   = Date.UTC(2026, 7, 9, 20, 0, 0);  /*  3:00 PM JA = 20:00 UTC */
-      var MAP_URL   = '/Pages/Charities/health-fair/';
+      /* Everything Health-Fair related removes itself from the homepage
+         3 days after the fair ends (Wed 12 Aug 2026, 3:00 PM Jamaica time).
+         The /Pages/Charities/health-fair/ page itself stays online. */
+      var HIDE_UTC  = END_UTC + 3 * 24 * 60 * 60 * 1000;
 
       var box    = document.getElementById('hfCountdown');
       var clock  = document.getElementById('hfcClock');
@@ -944,8 +961,20 @@
         }
       }
 
+      /* Pull every Health Fair element off the homepage once it is stale. */
+      function hideEverything(){
+        ['healthfair-bar','healthfair','hfDrawerLink'].forEach(function(id){
+          var el = document.getElementById(id);
+          if (el) el.style.display = 'none';
+        });
+        var navLink = document.querySelector('.nav-hf');
+        if (navLink) navLink.style.display = 'none';
+        if (typeof syncNav === 'function') syncNav();   /* re-seat the fixed topbar */
+      }
+
       function tick(){
         var now = Date.now();
+        if (now >= HIDE_UTC){ hideEverything(); clearInterval(timer); return; }
         var target, p;
         if (now < START_UTC)    { target = START_UTC; p = 'before'; }
         else if (now < END_UTC) { target = END_UTC;   p = 'live';   }
@@ -971,8 +1000,8 @@
         }
       }
 
+      var timer = setInterval(tick, 1000);
       tick();
-      setInterval(tick, 1000);
       /* re-sync if the tab was asleep */
       document.addEventListener('visibilitychange', function(){ if (!document.hidden) tick(); });
     })();
