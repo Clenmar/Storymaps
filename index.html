@@ -371,10 +371,10 @@
   <!-- ===================== HEALTH FAIR 2026 ANNOUNCEMENT BAR ===================== -->
   <div id="healthfair-bar">
     <div class="hfb-in">
-      <span class="hfb-text">&#127973; <b>Sunday, August 9</b> &mdash; TWC Annual Health Fair at Innswood High School &bull; <b>FREE Admission</b></span>
+      <span class="hfb-text">&#127973; <b>Sunday, August 9</b>: TWC Annual Health Fair at Innswood High School &bull; <b>FREE Admission</b></span>
       <a href="/Pages/Charities/health-fair/" class="hfb-btn">
         <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-        <span id="hfbBtnText">2026 Health Fair &mdash; Map &amp; Info</span>
+        <span id="hfbBtnText">2026 Health Fair Map &amp; Info</span>
       </a>
     </div>
   </div>
@@ -406,7 +406,7 @@
     <a href="/Pages/About/"              class="drawer-link">About</a>
     <a href="/Pages/Connect/"          class="drawer-link">Connect</a>
     <a href="/Pages/Charities/"      class="drawer-link">Charities</a>
-    <a href="/Pages/Charities/health-fair/" class="drawer-link" style="color:#f5c518">&#127973; 2026 Health Fair &mdash; Map</a>
+    <a href="/Pages/Charities/health-fair/" class="drawer-link" style="color:#f5c518">&#127973; 2026 Health Fair Map</a>
     <a href="/Pages/Events/"            class="drawer-link">Events</a>
     <a href="/Pages/Live/"                class="drawer-link">Watch Live</a>
     <a href="https://spurropen.com/twcministries"                           class="drawer-donate">&#9829; Donate &rarr;</a>
@@ -435,7 +435,7 @@
           <div>
             <span class="hf-eyebrow" id="hfEyebrow">TWC Ministries &bull; Community Outreach</span>
             <h2 class="hf-h2" id="hf-h">Annual Health Fair<em>2026</em></h2>
-            <p class="hf-p">Caring for Your Health, Caring for Your Future. Free medical checkups, dental services, back&#8209;to&#8209;school medicals, blood pressure checks and free eye testing &mdash; all in one day at Innswood High School.</p>
+            <p class="hf-p">Caring for Your Health, Caring for Your Future. Free medical checkups, dental services, back&#8209;to&#8209;school medicals, blood pressure checks and free eye testing, all in one day at Innswood High School.</p>
 
             <!-- COUNTDOWN -->
             <div id="hfCountdown" aria-live="polite">
@@ -461,7 +461,7 @@
             <div class="hf-cta-row">
               <a href="/Pages/Charities/health-fair/" class="hf-cta" id="hfCta">
                 <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-                <span id="hfCtaText">2026 Health Fair &mdash; Interactive Map</span>
+                <span id="hfCtaText">2026 Health Fair Interactive Map</span>
               </a>
               <a href="tel:+18764190595" class="hf-cta2">&#128222; Book: 876&#8209;419&#8209;0595</a>
             </div>
@@ -472,7 +472,7 @@
             <span class="hf-tag">Free Admission</span>
             <a href="/Pages/Charities/health-fair/" aria-label="Open the Health Fair 2026 interactive map">
               <img src="/Pages/Charities/health-fair/health-fair-flier.jpeg"
-                   alt="TWC Ministries Annual Health Fair 2026 flier — August 9 2026 at Innswood High School, 10AM to 3PM, free admission"
+                   alt="TWC Ministries Annual Health Fair 2026 flier for August 9 2026 at Innswood High School, 10AM to 3PM, free admission"
                    loading="lazy"
                    onerror="this.closest('.hf-flier').style.display='none'">
             </a>
@@ -880,7 +880,7 @@
     /* ===================== END SLIDER ===================== */
 
     /* ===================== HEALTH FAIR COUNTDOWN =====================
-       Jamaica has no daylight saving — it is UTC-5 all year round.
+       Jamaica has no daylight saving; it is UTC-5 all year round.
        Fair: Sunday 9 August 2026, 10:00 AM – 3:00 PM Jamaica time.
        To reuse this next year, just change START_UTC / END_UTC below.
     ================================================================= */
@@ -921,10 +921,10 @@
         else if (p === 'live') {
           box.classList.add('live');
           clock.style.display = '';
-          label.innerHTML = '&#128308; Happening right now &mdash; closes in';
+          label.innerHTML = '&#128308; Happening right now, closes in';
           note.textContent = 'Open until 3:00 PM Jamaica time';
           if (eyeb) eyeb.innerHTML = '&#128308; Live today &bull; Innswood High School';
-          if (barTxt) barTxt.innerHTML = '<span class="hfb-live"><i></i>Happening now</span> &nbsp;TWC Health Fair &mdash; Innswood High School until <b>3:00 PM</b>';
+          if (barTxt) barTxt.innerHTML = '<span class="hfb-live"><i></i>Happening now</span> &nbsp;TWC Health Fair at Innswood High School until <b>3:00 PM</b>';
           /* button text is set every second by tick() */
         }
 
@@ -935,8 +935,8 @@
           box.querySelector('.hfc-msg') ||
             clock.insertAdjacentHTML('afterend',
               '<span class="hfc-msg">Thank you, <em>Innswood!</em></span>');
-          note.innerHTML = 'The 2026 Health Fair has ended &mdash; see you next year.';
-          if (eyeb)   eyeb.innerHTML   = 'TWC Ministries &bull; 2026 Health Fair &mdash; Completed';
+          note.innerHTML = 'The 2026 Health Fair has ended. See you next year.';
+          if (eyeb)   eyeb.innerHTML   = 'TWC Ministries &bull; 2026 Health Fair Completed';
           if (ctaTxt) ctaTxt.innerHTML = 'See the Health Fair Recap';
           if (cta)    cta.style.animation = 'none';
           if (barTxt) barTxt.innerHTML = '&#127973; Thank you to everyone who came out to the <b>2026 TWC Health Fair</b>!';
@@ -963,11 +963,11 @@
                   : h > 0 ? (h + 'h ' + pad(mi) + 'm ' + pad(se) + 's')
                           : (mi + 'm ' + pad(se) + 's');
         if (p === 'before') {
-          if (ctaTxt) ctaTxt.innerHTML = 'Health Fair Map &mdash; opens in ' + short;
+          if (ctaTxt) ctaTxt.innerHTML = 'Health Fair Map opens in ' + short;
           if (barBtn) barBtn.textContent = 'Health Fair in ' + short;
         } else {
-          if (ctaTxt) ctaTxt.innerHTML = 'Open the Live Map &mdash; ' + short + ' left';
-          if (barBtn) barBtn.textContent = short + ' left — open map';
+          if (ctaTxt) ctaTxt.innerHTML = 'Open the Live Map, ' + short + ' left';
+          if (barBtn) barBtn.textContent = short + ' left, open map';
         }
       }
 
