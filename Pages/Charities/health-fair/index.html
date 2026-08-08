@@ -10,7 +10,8 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="TWC Annual Health Fair 2026 — Interactive Map">
 <meta property="og:description" content="Find your way around the Health Fair. Free admission • Aug 9, 2026 • 10AM–3PM • Innswood High School.">
-<meta property="og:image" content="https://www.twcministries.net/Pages/Charities/Health%20fair/health%20fair%20flier.jpeg">
+<meta property="og:image" content="https://www.twcministries.net/Pages/Charities/health-fair/health-fair-flier.jpeg">
+<meta property="og:url" content="https://www.twcministries.net/Pages/Charities/health-fair/">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -422,7 +423,7 @@ footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-
   <div class="wrap">
     <div class="sec-head"><span class="sec-num">&#128196;</span><h2>The official flier</h2><p>Tap the flier to make it big, then share it.</p></div>
     <div class="flier-box" id="flierBox">
-      <img src="health%20fair%20flier.jpeg" alt="TWC Ministries Annual Health Fair 2026 flier — August 9 2026, Innswood High School, 10AM to 3PM, free admission. Medical checkups, dental services and basic eye testing." loading="lazy">
+      <img src="health-fair-flier.jpeg" alt="TWC Ministries Annual Health Fair 2026 flier — August 9 2026, Innswood High School, 10AM to 3PM, free admission. Medical checkups, dental services and basic eye testing." loading="lazy">
     </div>
     <p class="flier-hint">&#128072; Tap to enlarge &nbsp;&bull;&nbsp; Press and hold to save or share</p>
   </div>
@@ -478,7 +479,7 @@ footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-
 <!-- LIGHTBOX -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Health fair flier, enlarged">
   <button id="lb-close" aria-label="Close">&times;</button>
-  <img src="health%20fair%20flier.jpeg" alt="TWC Ministries Annual Health Fair 2026 flier, enlarged">
+  <img src="health-fair-flier.jpeg" alt="TWC Ministries Annual Health Fair 2026 flier, enlarged">
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -488,7 +489,7 @@ footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-
 'use strict';
 
 /* ============================================================
-   STOP DATA — mirrors "Health fair locations.kml".
+   STOP DATA — mirrors "health-fair-locations.kml".
    Embedded so the page always works (even offline / file://),
    then refreshed from the live KML if it can be fetched.
    ============================================================ */
@@ -517,7 +518,7 @@ var STOPS = [
 ];
 var byId = {}; STOPS.forEach(function(s){ byId[s.id]=s; });
 
-/* ---- Journeys (from "Pathway and definition of location.txt") ---- */
+/* ---- Journeys (from "pathway-and-locations.txt") ---- */
 var JOURNEYS = {
   medical: {
     label:'Medical / Back-to-School Medical', cost:'$1,000',
@@ -761,12 +762,12 @@ function buildLists(){
 buildLists();
 
 /* ============================================================
-   KML SYNC — if "Health fair locations.kml" is edited later,
+   KML SYNC — if "health-fair-locations.kml" is edited later,
    the map picks up new coordinates automatically.
    ============================================================ */
 function syncKml(){
   if (location.protocol === 'file:') return;   /* fetch blocked on file:// */
-  fetch('Health%20fair%20locations.kml', { cache:'no-cache' })
+  fetch('health-fair-locations.kml', { cache:'no-cache' })
     .then(function(r){ return r.ok ? r.text() : Promise.reject(r.status); })
     .then(function(txt){
       var doc = new DOMParser().parseFromString(txt,'application/xml');
