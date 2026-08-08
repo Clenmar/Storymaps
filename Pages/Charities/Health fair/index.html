@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>TWC Annual Health Fair 2026 &mdash; Find Your Way | Innswood High School</title>
+<link rel="icon" type="image/x-icon" href="https://www.twcministries.net/favicon.ico">
+<meta name="description" content="Interactive campus map for the TWC Ministries Annual Health Fair 2026 at Innswood High School. Find general registration, medical, dental, eye testing and exhibitors. Free admission, August 9 2026, 10AM-3PM.">
+<meta name="theme-color" content="#0e5a6e">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TWC Annual Health Fair 2026 — Interactive Map">
+<meta property="og:description" content="Find your way around the Health Fair. Free admission • Aug 9, 2026 • 10AM–3PM • Innswood High School.">
+<meta property="og:image" content="https://www.twcministries.net/Pages/Charities/Health%20fair/health%20fair%20flier.jpeg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+<style>
+:root{
+  --teal:#0e5a6e; --teal-dark:#093f4e; --teal-light:#1a7f9c;
+  --navy:#241a6b; --purple:#3b1a86;
+  --red:#e02020; --red-dark:#b81717;
+  --gold:#f5c518; --gold-dark:#d9a800;
+  --green:#1a8a4a;
+  --ink:#16202b; --muted:#5b6b7a;
+  --paper:#f4f8fa; --white:#fff;
+  --line:#d7e3e9;
+  --shadow:0 6px 22px rgba(14,90,110,.14);
+  --shadow-lg:0 14px 44px rgba(14,90,110,.24);
+  --r:18px;
+  --fs:1;           /* text-size multiplier, changed by A+ / A- buttons */
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{
+  font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;
+  background:var(--paper); color:var(--ink);
+  font-size:calc(1.05rem * var(--fs)); line-height:1.6;
+  overflow-x:hidden; -webkit-tap-highlight-color:transparent;
+}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.wrap{width:min(1180px,100% - 1.6rem);margin-inline:auto}
+:focus-visible{outline:4px solid var(--gold);outline-offset:3px;border-radius:8px}
+
+/* ---------- TOP BAR ---------- */
+#topbar{background:var(--teal-dark);color:#fff;padding:.55rem 0}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.tb-home{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;font-size:calc(.85rem*var(--fs));letter-spacing:.04em}
+.tb-home svg{width:16px;height:16px;fill:var(--gold)}
+.textsize{display:flex;align-items:center;gap:.4rem}
+.textsize span{font-size:calc(.72rem*var(--fs));font-weight:700;opacity:.75;letter-spacing:.08em;text-transform:uppercase}
+.ts-btn{min-width:44px;height:38px;border:2px solid rgba(255,255,255,.35);background:transparent;color:#fff;
+  font-family:inherit;font-weight:900;border-radius:10px;cursor:pointer;font-size:.95rem}
+.ts-btn:hover,.ts-btn:active{background:var(--gold);color:var(--teal-dark);border-color:var(--gold)}
+
+/* ---------- HERO ---------- */
+#hero{background:linear-gradient(150deg,var(--teal) 0%,var(--navy) 55%,var(--purple) 100%);color:#fff;
+  padding:2.4rem 0 2.8rem;position:relative;overflow:hidden}
+#hero::after{content:'';position:absolute;right:-90px;top:-90px;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,rgba(245,197,24,.22) 0%,transparent 70%)}
+.hero-in{position:relative;z-index:2;text-align:center}
+.hero-kicker{display:inline-block;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.28);
+  padding:.35rem 1.1rem;border-radius:999px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  font-size:calc(.72rem*var(--fs));margin-bottom:.9rem}
+.hero-h1{font-size:calc(2.5rem*var(--fs));font-weight:900;line-height:1.02;letter-spacing:-.02em}
+.hero-h1 em{font-style:normal;color:var(--gold);display:block}
+.hero-tag{margin-top:.7rem;font-size:calc(1.05rem*var(--fs));font-weight:600;color:rgba(255,255,255,.9)}
+.hero-facts{display:flex;justify-content:center;gap:.6rem;flex-wrap:wrap;margin-top:1.4rem}
+.hf{background:rgba(255,255,255,.13);border:2px solid rgba(255,255,255,.22);border-radius:14px;
+  padding:.6rem 1rem;min-width:132px}
+.hf b{display:block;font-size:calc(.68rem*var(--fs));letter-spacing:.15em;text-transform:uppercase;color:var(--gold)}
+.hf span{font-weight:800;font-size:calc(1rem*var(--fs))}
+.free-pill{display:inline-block;margin-top:1.2rem;background:var(--gold);color:#2b1d00;font-weight:900;
+  padding:.6rem 1.6rem;border-radius:999px;font-size:calc(1.05rem*var(--fs));box-shadow:0 6px 0 var(--gold-dark)}
+
+/* ---- COUNTDOWN ---- */
+#hfCountdown{display:inline-block;margin-top:1.3rem;background:rgba(0,0,0,.3);
+  border:2px solid rgba(245,197,24,.45);border-radius:16px;padding:.85rem 1.3rem}
+.hfc-label{display:block;font-size:calc(.68rem*var(--fs));font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;color:rgba(255,255,255,.72);margin-bottom:.5rem}
+.hfc-clock{display:flex;align-items:flex-start;justify-content:center;gap:.5rem}
+.hfc-unit{display:flex;flex-direction:column;align-items:center;min-width:56px}
+.hfc-unit b{font-size:calc(2.1rem*var(--fs));font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.hfc-unit i{font-style:normal;font-size:calc(.6rem*var(--fs));font-weight:800;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(255,255,255,.55);margin-top:.3rem}
+.hfc-sep{font-size:calc(1.7rem*var(--fs));font-weight:900;color:rgba(245,197,24,.45);line-height:1.15}
+.hfc-note{display:block;margin-top:.55rem;font-size:calc(.75rem*var(--fs));font-weight:800;
+  letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.55)}
+#hfCountdown.live{border-color:rgba(255,90,90,.85);background:rgba(224,32,32,.2);animation:hfLive 1.6s ease-in-out infinite}
+@keyframes hfLive{0%,100%{box-shadow:0 0 0 0 rgba(224,32,32,.5)}50%{box-shadow:0 0 0 16px rgba(224,32,32,0)}}
+#hfCountdown.live .hfc-unit b,#hfCountdown.live .hfc-label{color:#fff}
+#hfCountdown.over{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.1)}
+.hfc-msg{display:block;font-size:calc(1.5rem*var(--fs));font-weight:900;color:#fff;line-height:1.2}
+.hfc-msg em{font-style:normal;color:var(--gold)}
+
+/* ---------- BIG STEP-1 CALLOUT ---------- */
+#startcard{margin:-1.4rem auto 0;position:relative;z-index:5}
+.startcard-in{background:var(--gold);border-radius:var(--r);padding:1.1rem 1.3rem;display:flex;
+  align-items:center;gap:1rem;box-shadow:var(--shadow-lg);flex-wrap:wrap;justify-content:center;text-align:center}
+.startcard-in .big{font-size:calc(1.25rem*var(--fs));font-weight:900;color:#2b1d00;line-height:1.25}
+.startcard-in .sm{font-size:calc(.95rem*var(--fs));font-weight:700;color:#5a4300}
+
+/* ---------- SECTION SHELL ---------- */
+section.block{padding:2.2rem 0}
+.sec-head{text-align:center;margin-bottom:1.3rem}
+.sec-head h2{font-size:calc(1.75rem*var(--fs));font-weight:900;color:var(--teal-dark);line-height:1.15}
+.sec-head p{color:var(--muted);font-weight:600;margin-top:.35rem;font-size:calc(1rem*var(--fs))}
+.sec-num{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:50%;
+  background:var(--teal);color:#fff;font-weight:900;font-size:1.15rem;margin-bottom:.5rem}
+
+/* ---------- JOURNEY PICKER ---------- */
+.journeys{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.9rem}
+.jbtn{background:#fff;border:3px solid var(--line);border-radius:var(--r);padding:1.15rem .9rem;
+  cursor:pointer;text-align:center;font-family:inherit;transition:transform .15s,border-color .15s,box-shadow .15s;
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;min-height:150px;justify-content:center}
+.jbtn:hover{border-color:var(--teal-light);box-shadow:var(--shadow);transform:translateY(-3px)}
+.jbtn.active{border-color:var(--teal);background:var(--teal);color:#fff;box-shadow:var(--shadow-lg)}
+.jbtn .ico{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.jbtn .ico svg{width:28px;height:28px;fill:#fff}
+.jbtn h3{font-size:calc(1.12rem*var(--fs));font-weight:900;line-height:1.2}
+.jbtn small{font-size:calc(.88rem*var(--fs));font-weight:700;color:var(--muted)}
+.jbtn.active small{color:rgba(255,255,255,.85)}
+.j-med .ico{background:var(--teal-light)} .j-den .ico{background:var(--red)}
+.j-eye .ico{background:var(--purple)}    .j-exh .ico{background:var(--green)}
+
+/* ---------- STEP LIST ---------- */
+#steps{margin-top:1.3rem;display:none}
+#steps.show{display:block;animation:pop .3s ease}
+@keyframes pop{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.steps-title{background:var(--teal-dark);color:#fff;border-radius:var(--r) var(--r) 0 0;padding:.9rem 1.2rem;
+  font-weight:900;font-size:calc(1.15rem*var(--fs));display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap}
+.steps-title .cost{background:var(--gold);color:#2b1d00;padding:.25rem .85rem;border-radius:999px;font-size:calc(.9rem*var(--fs))}
+.steps-body{background:#fff;border:3px solid var(--teal-dark);border-top:none;border-radius:0 0 var(--r) var(--r);padding:.7rem}
+.step{display:flex;gap:.85rem;align-items:flex-start;padding:.85rem .7rem;border-radius:14px;cursor:pointer;
+  border:2px solid transparent;transition:background .15s,border-color .15s;width:100%;text-align:left;
+  font-family:inherit;background:transparent}
+.step:hover{background:#eef7fa;border-color:var(--teal-light)}
+.step + .step{border-top:2px dashed var(--line)}
+.step-n{width:44px;height:44px;border-radius:50%;background:var(--teal);color:#fff;font-weight:900;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.15rem}
+.step-x{flex:1;min-width:0}
+.step-x b{display:block;font-size:calc(1.08rem*var(--fs));font-weight:900;color:var(--teal-dark);line-height:1.3}
+.step-x span{display:block;color:var(--muted);font-weight:600;font-size:calc(.95rem*var(--fs));margin-top:.15rem}
+.step-x .dist{display:inline-block;margin-top:.35rem;background:#e8f4f8;color:var(--teal-dark);font-weight:800;
+  padding:.14rem .6rem;border-radius:999px;font-size:calc(.85rem*var(--fs))}
+.step-go{align-self:center;background:var(--teal);color:#fff;border-radius:12px;padding:.55rem .8rem;font-weight:900;
+  font-size:calc(.85rem*var(--fs));white-space:nowrap;flex-shrink:0}
+.note{background:#fff8dc;border-left:6px solid var(--gold);padding:.8rem 1rem;border-radius:0 12px 12px 0;
+  margin:.6rem .2rem .2rem;font-weight:700;color:#5a4300;font-size:calc(.95rem*var(--fs))}
+
+/* ---------- MAP ---------- */
+#mapcard{background:#fff;border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;border:3px solid var(--line)}
+.map-tools{display:flex;gap:.55rem;padding:.7rem;flex-wrap:wrap;background:#fff;border-bottom:3px solid var(--line)}
+.tool{flex:1 1 auto;min-width:130px;min-height:52px;border:3px solid var(--teal);background:#fff;color:var(--teal-dark);
+  border-radius:14px;font-family:inherit;font-weight:900;font-size:calc(.95rem*var(--fs));cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:.45rem;transition:background .15s,color .15s}
+.tool svg{width:20px;height:20px;fill:currentColor;flex-shrink:0}
+.tool:hover{background:#eef7fa}
+.tool.primary{background:var(--teal);color:#fff}
+.tool.primary:hover{background:var(--teal-dark)}
+.tool.locating{background:var(--gold);border-color:var(--gold-dark);color:#2b1d00}
+#map{height:min(62vh,540px);min-height:380px;width:100%;background:#c9dbe3;z-index:1}
+.map-legend{padding:.75rem .85rem;background:#fff;border-top:3px solid var(--line);
+  display:flex;gap:.5rem .95rem;flex-wrap:wrap;align-items:center}
+.lg{display:inline-flex;align-items:center;gap:.42rem;font-weight:800;font-size:calc(.86rem*var(--fs));color:var(--ink)}
+.lg i{width:18px;height:18px;border-radius:50%;display:block;border:3px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.16)}
+#geo-msg{padding:.7rem .9rem;font-weight:700;font-size:calc(.92rem*var(--fs));display:none;text-align:center}
+#geo-msg.show{display:block}
+#geo-msg.ok{background:#e6f6ec;color:#0f5f33} #geo-msg.warn{background:#fff2e0;color:#8a4b00}
+
+/* Leaflet marker pins */
+.pin{display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:50% 50% 50% 6px;
+  transform:rotate(-45deg);border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.35);font-weight:900;color:#fff;font-size:1rem}
+.pin span{transform:rotate(45deg)}
+.pin.dim{opacity:.42}
+.pin.pulse{animation:pinPulse 1.4s ease-in-out infinite}
+@keyframes pinPulse{0%,100%{box-shadow:0 4px 10px rgba(0,0,0,.35)}50%{box-shadow:0 4px 10px rgba(0,0,0,.35),0 0 0 12px rgba(245,197,24,.35)}}
+.me-dot{width:22px;height:22px;border-radius:50%;background:#1a73e8;border:4px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.45)}
+.leaflet-popup-content-wrapper{border-radius:14px}
+.leaflet-popup-content{margin:.85rem .95rem;font-family:'Nunito',sans-serif;font-size:calc(1rem*var(--fs));line-height:1.45}
+.pop b{display:block;font-size:calc(1.1rem*var(--fs));font-weight:900;color:var(--teal-dark);margin-bottom:.2rem}
+.pop p{color:var(--muted);font-weight:600;margin-bottom:.55rem}
+.pop a{display:block;text-align:center;background:var(--teal);color:#fff;font-weight:900;padding:.55rem .8rem;border-radius:12px}
+.leaflet-control-zoom a{width:40px !important;height:40px !important;line-height:40px !important;font-size:1.4rem !important}
+
+/* ---------- ALL STOPS GRID ---------- */
+.stops{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:.85rem}
+.stop{background:#fff;border:3px solid var(--line);border-radius:var(--r);padding:1rem;display:flex;gap:.8rem;
+  align-items:flex-start;cursor:pointer;font-family:inherit;text-align:left;transition:border-color .15s,transform .15s}
+.stop:hover{border-color:var(--teal-light);transform:translateY(-2px)}
+.stop-dot{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:900;font-size:1rem}
+.stop b{display:block;font-size:calc(1.05rem*var(--fs));font-weight:900;color:var(--teal-dark);line-height:1.3}
+.stop span{display:block;color:var(--muted);font-weight:600;font-size:calc(.92rem*var(--fs));margin-top:.15rem}
+
+/* ---------- FLIER ---------- */
+#flier-sec{background:linear-gradient(160deg,var(--teal-dark),var(--navy));color:#fff}
+#flier-sec .sec-head h2{color:#fff} #flier-sec .sec-head p{color:rgba(255,255,255,.8)}
+#flier-sec .sec-num{background:var(--gold);color:#2b1d00}
+.flier-box{max-width:520px;margin-inline:auto;background:#fff;padding:.55rem;border-radius:var(--r);
+  box-shadow:var(--shadow-lg);cursor:zoom-in}
+.flier-box img{border-radius:12px;width:100%}
+.flier-hint{text-align:center;margin-top:.75rem;font-weight:700;color:rgba(255,255,255,.8);font-size:calc(.92rem*var(--fs))}
+#lightbox{position:fixed;inset:0;background:rgba(6,18,24,.94);z-index:9999;display:none;align-items:center;
+  justify-content:center;padding:1rem;cursor:zoom-out;overflow:auto}
+#lightbox.show{display:flex}
+#lightbox img{max-width:100%;max-height:92vh;border-radius:12px;margin:auto}
+#lb-close{position:fixed;top:.9rem;right:.9rem;width:52px;height:52px;border-radius:50%;background:#fff;color:var(--ink);
+  border:none;font-size:1.8rem;font-weight:900;cursor:pointer;line-height:1;z-index:10000}
+
+/* ---------- PRICES ---------- */
+.prices{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:.85rem}
+.price{background:#fff;border:3px solid var(--line);border-radius:var(--r);padding:1.1rem;text-align:center}
+.price b{display:block;font-weight:900;color:var(--teal-dark);font-size:calc(1.05rem*var(--fs))}
+.price .amt{display:block;font-weight:900;font-size:calc(1.6rem*var(--fs));color:var(--red);margin-top:.25rem;line-height:1.1}
+.price .amt.free{color:var(--green)}
+.price small{display:block;color:var(--muted);font-weight:700;margin-top:.2rem;font-size:calc(.88rem*var(--fs))}
+
+/* ---------- HELP ---------- */
+#help{background:var(--gold)}
+.help-in{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:.85rem}
+.help-card{background:#fff;border-radius:var(--r);padding:1.15rem;text-align:center;box-shadow:var(--shadow)}
+.help-card .ico{width:52px;height:52px;border-radius:50%;background:var(--teal);display:flex;align-items:center;
+  justify-content:center;margin:0 auto .6rem}
+.help-card .ico svg{width:24px;height:24px;fill:#fff}
+.help-card b{display:block;font-weight:900;color:var(--teal-dark);font-size:calc(1.05rem*var(--fs))}
+.help-card a,.help-card p{display:block;font-weight:800;color:var(--ink);margin-top:.25rem;word-break:break-word;
+  font-size:calc(1rem*var(--fs))}
+.help-card a:hover{color:var(--red)}
+.help-h{text-align:center;font-size:calc(1.75rem*var(--fs));font-weight:900;color:#2b1d00;margin-bottom:1.1rem}
+
+/* ---------- FOOTER ---------- */
+footer{background:var(--teal-dark);color:rgba(255,255,255,.72);padding:2.2rem 0 1.5rem;text-align:center}
+footer .fh{font-weight:900;color:#fff;font-size:calc(1.2rem*var(--fs))}
+footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-size:calc(.92rem*var(--fs))}
+.flinks{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;margin:1rem 0}
+.flink{border:2px solid rgba(255,255,255,.3);border-radius:12px;padding:.55rem 1.1rem;font-weight:800;
+  font-size:calc(.9rem*var(--fs));color:#fff}
+.flink:hover{background:var(--gold);color:#2b1d00;border-color:var(--gold)}
+.fcopy{font-size:calc(.82rem*var(--fs));color:rgba(255,255,255,.42);margin-top:.8rem}
+
+/* ---------- STICKY MOBILE BAR ---------- */
+#stickybar{position:fixed;left:0;right:0;bottom:0;z-index:900;background:rgba(255,255,255,.97);
+  border-top:3px solid var(--teal);padding:.5rem .6rem calc(.5rem + env(safe-area-inset-bottom));
+  display:none;gap:.5rem;box-shadow:0 -6px 20px rgba(0,0,0,.13)}
+#stickybar a{flex:1;text-align:center;background:var(--teal);color:#fff;font-weight:900;padding:.75rem .4rem;
+  border-radius:12px;font-size:calc(.92rem*var(--fs))}
+#stickybar a.alt{background:var(--red)}
+@media(max-width:700px){
+  #stickybar{display:flex}
+  body{padding-bottom:78px}
+  .hero-h1{font-size:calc(2rem*var(--fs))}
+  #map{height:58vh;min-height:340px}
+  .journeys{grid-template-columns:1fr 1fr}
+  .jbtn{min-height:132px;padding:.9rem .5rem}
+  .jbtn h3{font-size:calc(1rem*var(--fs))}
+  .jbtn .ico{width:46px;height:46px}
+  .step-go{display:none}
+}
+@media(max-width:400px){ .journeys{grid-template-columns:1fr} }
+@media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+
+<!-- ============ TOP BAR ============ -->
+<div id="topbar">
+  <div class="wrap topbar-in">
+    <a class="tb-home" href="https://www.twcministries.net">
+      <svg viewBox="0 0 576 512"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>
+      TWC Ministries
+    </a>
+    <div class="textsize">
+      <span>Text size</span>
+      <button class="ts-btn" id="tsDown" aria-label="Make text smaller">A&minus;</button>
+      <button class="ts-btn" id="tsUp" aria-label="Make text bigger">A+</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<header id="hero">
+  <div class="wrap hero-in">
+    <span class="hero-kicker">TWC Ministries &bull; Together for a healthier community</span>
+    <h1 class="hero-h1">Annual Health Fair<em>2026</em></h1>
+    <p class="hero-tag">Caring for Your Health, Caring for Your Future</p>
+    <div class="hero-facts">
+      <div class="hf"><b>Date</b><span>Sun, Aug 9, 2026</span></div>
+      <div class="hf"><b>Time</b><span>10:00 AM &ndash; 3:00 PM</span></div>
+      <div class="hf"><b>Venue</b><span>Innswood High</span></div>
+    </div>
+    <div><span class="free-pill">&#10003; FREE Admission</span></div>
+
+    <div id="hfCountdown" aria-live="polite">
+      <span class="hfc-label" id="hfcLabel">Doors open in</span>
+      <div class="hfc-clock" id="hfcClock">
+        <span class="hfc-unit"><b id="hfcD">00</b><i>Days</i></span><span class="hfc-sep">:</span>
+        <span class="hfc-unit"><b id="hfcH">00</b><i>Hours</i></span><span class="hfc-sep">:</span>
+        <span class="hfc-unit"><b id="hfcM">00</b><i>Mins</i></span><span class="hfc-sep">:</span>
+        <span class="hfc-unit"><b id="hfcS">00</b><i>Secs</i></span>
+      </div>
+      <span class="hfc-note" id="hfcNote">10:00 AM Jamaica time</span>
+    </div>
+  </div>
+</header>
+
+<!-- ============ START HERE ============ -->
+<div id="startcard"><div class="wrap"><div class="startcard-in">
+  <div>
+    <div class="big">&#128681; Everyone starts at GENERAL REGISTRATION</div>
+    <div class="sm">Register first &mdash; then follow your own path below.</div>
+  </div>
+</div></div></div>
+
+<!-- ============ 1. PICK YOUR VISIT ============ -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">1</span>
+      <h2>What did you come for?</h2>
+      <p>Tap a big button. We&rsquo;ll show you exactly where to go, in order.</p>
+    </div>
+
+    <div class="journeys" id="journeys">
+      <button class="jbtn j-med" data-j="medical">
+        <span class="ico"><svg viewBox="0 0 448 512"><path d="M96 128V70.2c0-13.3 9.1-24.8 22-27.9l72-17.4c13.6-3.3 27 7 27 21v82.3h64V45.9c0-14-13.4-24.3-27-21l-72 17.4C142.4 47.2 128 65.7 128 86.7V128H96zm128 32H64C28.7 160 0 188.7 0 224V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V224c0-35.3-28.7-64-64-64H224zm24 96v40h40c13.3 0 24 10.7 24 24s-10.7 24-24 24H248v40c0 13.3-10.7 24-24 24s-24-10.7-24-24V344H160c-13.3 0-24-10.7-24-24s10.7-24 24-24h40V256c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg></span>
+        <h3>Medical / Back&#8209;to&#8209;School</h3>
+        <small>Checkup &amp; school forms</small>
+      </button>
+
+      <button class="jbtn j-den" data-j="dental">
+        <span class="ico"><svg viewBox="0 0 448 512"><path d="M186.1 52.1C169.3 39.1 148.7 32 127.5 32C74.7 32 32 74.7 32 127.5v6.2c0 15.8 3.7 31.3 10.7 45.5l23.5 47.1c4.5 8.9 7.6 18.4 9.4 28.2l36.7 205.8c2 11.2 11.6 19.4 23 19.4c10.9 0 20.3-7.6 22.6-18.3l31.2-146c2.3-10.7 11.7-18.3 22.6-18.3s20.3 7.6 22.6 18.3l31.2 146c2.3 10.7 11.7 18.3 22.6 18.3c11.4 0 21.1-8.2 23-19.4l36.7-205.8c1.8-9.8 4.9-19.3 9.4-28.2l23.5-47.1c7-14.1 10.7-29.7 10.7-45.5v-2.1c0-55-44.6-99.6-99.6-99.6c-24.1 0-47.4 8.8-65.6 24.6l-3.2 2.8 3.2-2.8z"/></svg></span>
+        <h3>Dental</h3>
+        <small>Cleaning &amp; extractions</small>
+      </button>
+
+      <button class="jbtn j-eye" data-j="eye">
+        <span class="ico"><svg viewBox="0 0 576 512"><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.2-3.3c-5.5-1.8-11.9 1.6-11.6 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.6c2.1 6.3 3.3 13.1 3.3 20.2z"/></svg></span>
+        <h3>Eye Testing</h3>
+        <small>Vision screening</small>
+      </button>
+
+      <button class="jbtn j-exh" data-j="exhibitors">
+        <span class="ico"><svg viewBox="0 0 576 512"><path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0H109.6C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9l-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3V384H128V250.6c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3V384v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V384 252.6c-4 1-8 1.8-12.3 2.3z"/></svg></span>
+        <h3>Exhibitors</h3>
+        <small>Browse the booths</small>
+      </button>
+    </div>
+
+    <!-- STEP LIST -->
+    <div id="steps" aria-live="polite">
+      <div class="steps-title"><span id="steps-name">Your route</span><span class="cost" id="steps-cost"></span></div>
+      <div class="steps-body" id="steps-body"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. MAP ============ -->
+<section class="block" id="map-sec" style="padding-top:.4rem">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">2</span>
+      <h2>Find it on the map</h2>
+      <p>Press <b>&ldquo;Where am I?&rdquo;</b> to see your blue dot, then tap any pin.</p>
+    </div>
+
+    <div id="mapcard">
+      <div class="map-tools">
+        <button class="tool primary" id="btnLocate">
+          <svg viewBox="0 0 512 512"><path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/></svg>
+          Where am I?
+        </button>
+        <button class="tool" id="btnBase">
+          <svg viewBox="0 0 576 512"><path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/></svg>
+          <span id="baseLabel">Street view</span>
+        </button>
+        <button class="tool" id="btnAll">
+          <svg viewBox="0 0 512 512"><path d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>
+          Show all stops
+        </button>
+      </div>
+      <div id="map" role="application" aria-label="Interactive map of the health fair stops"></div>
+      <div id="geo-msg" role="status"></div>
+      <div class="map-legend" id="legend"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. ALL STOPS ============ -->
+<section class="block" style="padding-top:.4rem">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">3</span>
+      <h2>All the stops</h2>
+      <p>Tap any card to jump to it on the map.</p>
+    </div>
+    <div class="stops" id="stopsGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PRICES ============ -->
+<section class="block" style="padding-top:.4rem">
+  <div class="wrap">
+    <div class="sec-head"><h2>What it costs</h2><p>Entry to the fair is completely free.</p></div>
+    <div class="prices">
+      <div class="price"><b>Back-to-School Medical</b><span class="amt">$1,000</span><small>Per student</small></div>
+      <div class="price"><b>Dental &mdash; Adults</b><span class="amt">$3,000</span><small>Cleaning &amp; extractions</small></div>
+      <div class="price"><b>Dental &mdash; Children</b><span class="amt">$2,000</span><small>Cleaning &amp; extractions</small></div>
+      <div class="price"><b>Basic Eye Testing</b><span class="amt free">FREE</span><small>Vision screening, all ages</small></div>
+      <div class="price"><b>Blood Pressure Check</b><span class="amt free">FREE</span><small>Walk up any time</small></div>
+      <div class="price"><b>General Health Assessment</b><span class="amt free">FREE</span><small>With our doctors</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FLIER ============ -->
+<section class="block" id="flier-sec">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">&#128196;</span><h2>The official flier</h2><p>Tap the flier to make it big, then share it.</p></div>
+    <div class="flier-box" id="flierBox">
+      <img src="health%20fair%20flier.jpeg" alt="TWC Ministries Annual Health Fair 2026 flier — August 9 2026, Innswood High School, 10AM to 3PM, free admission. Medical checkups, dental services and basic eye testing." loading="lazy">
+    </div>
+    <p class="flier-hint">&#128072; Tap to enlarge &nbsp;&bull;&nbsp; Press and hold to save or share</p>
+  </div>
+</section>
+
+<!-- ============ HELP ============ -->
+<section class="block" id="help">
+  <div class="wrap">
+    <h2 class="help-h">Need help? We&rsquo;re here.</h2>
+    <div class="help-in">
+      <div class="help-card">
+        <span class="ico"><svg viewBox="0 0 512 512"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg></span>
+        <b>Call us</b><a href="tel:+18764190595">876&#8209;419&#8209;0595</a>
+      </div>
+      <div class="help-card">
+        <span class="ico"><svg viewBox="0 0 512 512"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48L48 64zM0 176L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-208L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg></span>
+        <b>Email us</b><a href="mailto:twccenter@gmail.com">twccenter@gmail.com</a>
+      </div>
+      <div class="help-card">
+        <span class="ico"><svg viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg></span>
+        <b>Getting here</b>
+        <a href="https://www.google.com/maps/dir/?api=1&amp;destination=17.98207357479932,-76.9999163667034" target="_blank" rel="noopener">Innswood High School<br>Spanish Town, St. Catherine</a>
+      </div>
+      <div class="help-card">
+        <span class="ico"><svg viewBox="0 0 448 512"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg></span>
+        <b>On the day</b><p>Look for our volunteers in <b>yellow shirts</b> &mdash; just ask!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p class="fh">Transformational Worship Centre &mdash; TWC Ministries</p>
+    <p class="partners">Hosted by TWC Ministries &nbsp;&bull;&nbsp; In partnership with INFINITI Co&#8209;operative Credit Union Jamaica Limited &amp; Lions Club International</p>
+    <div class="flinks">
+      <a class="flink" href="https://www.twcministries.net">Home</a>
+      <a class="flink" href="/Pages/Charities/">Charities</a>
+      <a class="flink" href="/Pages/Events/">Events</a>
+      <a class="flink" href="/Pages/Live/">Watch Live</a>
+      <a class="flink" href="tel:+18764190595">Call 876-419-0595</a>
+    </div>
+    <p class="fcopy">&copy; 2026 Transformational Worship Centre &mdash; TWC Ministries. Together for a healthier community.</p>
+  </div>
+</footer>
+
+<!-- STICKY MOBILE BAR -->
+<div id="stickybar">
+  <a href="#map-sec" id="sbLocate">&#128205; Where am I?</a>
+  <a class="alt" href="tel:+18764190595">&#128222; Call for help</a>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Health fair flier, enlarged">
+  <button id="lb-close" aria-label="Close">&times;</button>
+  <img src="health%20fair%20flier.jpeg" alt="TWC Ministries Annual Health Fair 2026 flier, enlarged">
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   STOP DATA — mirrors "Health fair locations.kml".
+   Embedded so the page always works (even offline / file://),
+   then refreshed from the live KML if it can be fetched.
+   ============================================================ */
+var STOPS = [
+  { id:'reg',    name:'General Registration',   lat:17.98207357479932, lng:-76.9999163667034,
+    color:'#f5c518', txt:'#2b1d00',
+    blurb:'START HERE. Everyone signs in at general registration first.' },
+  { id:'medreg', name:'Medical Registration',   lat:17.98164747362142, lng:-77.00035010854641,
+    color:'#1a7f9c', txt:'#fff',
+    blurb:'Back-to-school medical forms + a simple eye test with the nurses.',
+    kml:'Medical Registration and forms completion' },
+  { id:'doc',    name:'Doctors Quarters',       lat:17.98196396995198, lng:-76.99969755396482,
+    color:'#241a6b', txt:'#fff',
+    blurb:'The doctors finish your check-up and stamp your medical forms.' },
+  { id:'dent',   name:'Dentist Office',         lat:17.98191471014607, lng:-76.99983479738545,
+    color:'#e02020', txt:'#fff',
+    blurb:'Dental cleaning and extractions. Line up here after registration.',
+    kml:'Dentist office' },
+  { id:'eye',    name:'Eye Testing',            lat:17.98207726944103, lng:-77.00021674846117,
+    color:'#3b1a86', txt:'#fff',
+    blurb:'Advanced eye testing by the Lions Club.',
+    kml:'Eye Testing' },
+  { id:'exh',    name:'Exhibitors',             lat:17.98218564101102, lng:-76.9997584064585,
+    color:'#1a8a4a', txt:'#fff',
+    blurb:'Booths and displays — browse any time once your main task is done.' }
+];
+var byId = {}; STOPS.forEach(function(s){ byId[s.id]=s; });
+
+/* ---- Journeys (from "Pathway and definition of location.txt") ---- */
+var JOURNEYS = {
+  medical: {
+    label:'Medical / Back-to-School Medical', cost:'$1,000',
+    steps:[
+      { id:'reg',    do:'Sign in at general registration. This is where everybody starts.' },
+      { id:'medreg', do:'Medical registration, fill out the back-to-school medical forms, and do a simple eye test with the nurses.' },
+      { id:'doc',    do:'The doctors complete your check-up and stamp your medical forms. You are done!' }
+    ],
+    note:'Bring the child’s school medical form with you if you already have one.'
+  },
+  dental: {
+    label:'Dental Visit', cost:'Adults $3,000 · Children $2,000',
+    steps:[
+      { id:'reg',  do:'Sign in at general registration first.' },
+      { id:'dent', do:'Go to the dental office and join the line for cleaning or extraction.' }
+    ],
+    note:'Dental lines can be long — join the line early.'
+  },
+  eye: {
+    label:'Eye Testing', cost:'FREE',
+    steps:[
+      { id:'reg', do:'Sign in at general registration first.' },
+      { id:'eye', do:'Advanced eye test performed by the Lions Club.' }
+    ],
+    note:'Doing a back-to-school medical too? You also get a simple eye test with the nurses at medical registration.'
+  },
+  exhibitors: {
+    label:'Visit the Exhibitors', cost:'FREE',
+    steps:[
+      { id:'reg', do:'Sign in at general registration first.' },
+      { id:'exh', do:'Browse the exhibitor booths at your own pace.' }
+    ],
+    note:'Feel free to spend time browsing once your main task is finished.'
+  }
+};
+
+/* ============================================================
+   MAP
+   ============================================================ */
+var CENTER = [17.981937, -76.999998];
+var map = L.map('map', { center:CENTER, zoom:19, zoomControl:true, scrollWheelZoom:false, tap:true });
+map.on('click', function(){ map.scrollWheelZoom.enable(); });
+
+var satellite = L.tileLayer(
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  { maxZoom:21, maxNativeZoom:19, attribution:'Imagery &copy; Esri, Maxar, Earthstar Geographics' });
+var street = L.tileLayer(
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  { maxZoom:21, maxNativeZoom:19, attribution:'&copy; OpenStreetMap contributors' });
+
+satellite.addTo(map);            /* satellite is the default */
+var isSat = true;
+document.getElementById('btnBase').addEventListener('click', function(){
+  if (isSat){ map.removeLayer(satellite); street.addTo(map);   document.getElementById('baseLabel').textContent='Satellite view'; }
+  else      { map.removeLayer(street);    satellite.addTo(map); document.getElementById('baseLabel').textContent='Street view'; }
+  isSat = !isSat;
+});
+
+/* ---- markers ---- */
+function pinIcon(stop, label, dim, pulse){
+  var cls = 'pin' + (dim?' dim':'') + (pulse?' pulse':'');
+  return L.divIcon({
+    className:'', iconSize:[38,38], iconAnchor:[19,36], popupAnchor:[0,-32],
+    html:'<div class="'+cls+'" style="background:'+stop.color+';color:'+stop.txt+'"><span>'+label+'</span></div>'
+  });
+}
+function popupHtml(stop){
+  return '<div class="pop"><b>'+stop.name+'</b><p>'+stop.blurb+'</p>'
+    + '<a href="https://www.google.com/maps/dir/?api=1&destination='+stop.lat+','+stop.lng
+    + '" target="_blank" rel="noopener">&#128506; Walking directions</a></div>';
+}
+var markers = {};
+STOPS.forEach(function(s){
+  var m = L.marker([s.lat,s.lng],{ icon:pinIcon(s,'●',false,false), title:s.name, riseOnHover:true })
+           .addTo(map).bindPopup(popupHtml(s));
+  markers[s.id]=m;
+});
+var routeLine = null;
+
+function showAll(){
+  if (routeLine){ map.removeLayer(routeLine); routeLine=null; }
+  STOPS.forEach(function(s){ markers[s.id].setIcon(pinIcon(s, s.id==='reg'?'★':'●', false, s.id==='reg')); });
+  fitAll();
+}
+function fitAll(){
+  var g = L.featureGroup(STOPS.map(function(s){ return markers[s.id]; }));
+  map.fitBounds(g.getBounds().pad(0.35), { maxZoom:19 });
+}
+document.getElementById('btnAll').addEventListener('click', showAll);
+
+function showRoute(key){
+  var j = JOURNEYS[key]; if(!j) return;
+  var ids = j.steps.map(function(s){ return s.id; });
+  STOPS.forEach(function(s){
+    var i = ids.indexOf(s.id);
+    markers[s.id].setIcon(pinIcon(s, i>=0 ? String(i+1) : '●', i<0, i===0));
+  });
+  if (routeLine) map.removeLayer(routeLine);
+  var pts = j.steps.map(function(s){ return [byId[s.id].lat, byId[s.id].lng]; });
+  routeLine = L.polyline(pts,{ color:'#f5c518', weight:6, opacity:.95, dashArray:'12,10', lineCap:'round' }).addTo(map);
+  map.fitBounds(L.latLngBounds(pts).pad(0.5), { maxZoom:19 });
+}
+
+function goTo(id){
+  var s = byId[id]; if(!s) return;
+  map.setView([s.lat,s.lng], 20, { animate:true });
+  markers[id].openPopup();
+  document.getElementById('map-sec').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ============================================================
+   GEOLOCATION
+   ============================================================ */
+var meMarker=null, meCircle=null, mePos=null, watchId=null;
+var geoMsg = document.getElementById('geo-msg');
+var btnLocate = document.getElementById('btnLocate');
+
+function setMsg(text, kind){ geoMsg.textContent = text; geoMsg.className = 'show ' + (kind||'ok'); }
+
+function distM(a,b,c,d){
+  var R=6371000, t=Math.PI/180;
+  var dLat=(c-a)*t, dLng=(d-b)*t;
+  var x=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(a*t)*Math.cos(c*t)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return Math.round(R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x)));
+}
+function walkText(m){
+  if (m > 3000) return 'far away';
+  var mins = Math.max(1, Math.round(m/75));
+  return m + ' m away · about ' + mins + ' min walk';
+}
+function refreshDistances(){
+  if(!mePos) return;
+  document.querySelectorAll('[data-dist-for]').forEach(function(el){
+    var s = byId[el.getAttribute('data-dist-for')];
+    if(s) el.textContent = '🚶 ' + walkText(distM(mePos.lat,mePos.lng,s.lat,s.lng));
+  });
+}
+function onPos(p){
+  mePos = { lat:p.coords.latitude, lng:p.coords.longitude };
+  var acc = Math.round(p.coords.accuracy||0);
+  if(!meMarker){
+    meMarker = L.marker([mePos.lat,mePos.lng],{
+      icon:L.divIcon({ className:'', iconSize:[22,22], iconAnchor:[11,11], html:'<div class="me-dot"></div>' }),
+      zIndexOffset:1000
+    }).addTo(map).bindPopup('<div class="pop"><b>You are here</b><p>Accurate to about '+acc+' m.</p></div>');
+    meCircle = L.circle([mePos.lat,mePos.lng],{ radius:acc, color:'#1a73e8', weight:1, fillOpacity:.12 }).addTo(map);
+  } else {
+    meMarker.setLatLng([mePos.lat,mePos.lng]);
+    meCircle.setLatLng([mePos.lat,mePos.lng]).setRadius(acc);
+  }
+  btnLocate.classList.remove('locating');
+  var nearest=null, nd=Infinity;
+  STOPS.forEach(function(s){ var d=distM(mePos.lat,mePos.lng,s.lat,s.lng); if(d<nd){nd=d;nearest=s;} });
+  if (nd > 2000) setMsg('📍 Found you — but you are still ' + (nd/1000).toFixed(1) + ' km from Innswood High School. Head over and press this again when you arrive.', 'warn');
+  else           setMsg('📍 Found you! Nearest stop: ' + nearest.name + ' — ' + walkText(nd), 'ok');
+  refreshDistances();
+}
+function onErr(e){
+  btnLocate.classList.remove('locating');
+  var m = 'We could not find your location. ';
+  if (e && e.code === 1) m += 'Please allow location access for this page in your browser, then press the button again.';
+  else if (e && e.code === 3) m += 'It took too long. Move outside where the sky is clear, then try again.';
+  else m += 'Turn on your phone’s location (GPS) and try again.';
+  setMsg('⚠️ ' + m, 'warn');
+}
+function locate(){
+  if(!navigator.geolocation){ setMsg('⚠️ This browser cannot show your location. Use the map pins instead.','warn'); return; }
+  btnLocate.classList.add('locating');
+  setMsg('⏳ Looking for you… please allow location access if asked.','ok');
+  navigator.geolocation.getCurrentPosition(onPos,onErr,{ enableHighAccuracy:true, timeout:15000, maximumAge:0 });
+  if(watchId===null){
+    watchId = navigator.geolocation.watchPosition(function(p){
+      mePos={lat:p.coords.latitude,lng:p.coords.longitude};
+      var acc=Math.round(p.coords.accuracy||0);
+      if(meMarker){ meMarker.setLatLng([mePos.lat,mePos.lng]); meCircle.setLatLng([mePos.lat,mePos.lng]).setRadius(acc); }
+      refreshDistances();
+    }, function(){}, { enableHighAccuracy:true, maximumAge:5000, timeout:20000 });
+  }
+}
+btnLocate.addEventListener('click', locate);
+document.getElementById('sbLocate').addEventListener('click', function(){ setTimeout(locate,350); });
+
+/* ============================================================
+   JOURNEY PICKER + STEP LIST
+   ============================================================ */
+var stepsBox = document.getElementById('steps');
+var stepsBody = document.getElementById('steps-body');
+
+function renderSteps(key){
+  var j = JOURNEYS[key];
+  document.getElementById('steps-name').textContent = j.label;
+  document.getElementById('steps-cost').textContent = j.cost;
+  var html = '';
+  j.steps.forEach(function(st, i){
+    var s = byId[st.id];
+    html += '<button class="step" data-go="'+s.id+'">'
+      +  '<span class="step-n" style="background:'+s.color+';color:'+s.txt+'">'+(i+1)+'</span>'
+      +  '<span class="step-x"><b>'+s.name+'</b><span>'+st.do+'</span>'
+      +    '<span class="dist" data-dist-for="'+s.id+'">Tap &ldquo;Where am I?&rdquo; for distance</span></span>'
+      +  '<span class="step-go">Show me &rarr;</span>'
+      + '</button>';
+  });
+  if (j.note) html += '<div class="note">💡 ' + j.note + '</div>';
+  stepsBody.innerHTML = html;
+  stepsBox.classList.add('show');
+  refreshDistances();
+}
+
+document.querySelectorAll('.jbtn').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('.jbtn').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('active');
+    var key = b.getAttribute('data-j');
+    renderSteps(key);
+    showRoute(key);
+    stepsBox.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  });
+});
+
+/* delegated: step rows + stop cards jump to the map */
+document.body.addEventListener('click', function(e){
+  var t = e.target.closest('[data-go]');
+  if (t) goTo(t.getAttribute('data-go'));
+});
+
+/* ============================================================
+   STOP CARDS + LEGEND
+   ============================================================ */
+function buildLists(){
+  document.getElementById('stopsGrid').innerHTML = STOPS.map(function(s,i){
+    return '<button class="stop" data-go="'+s.id+'">'
+      + '<span class="stop-dot" style="background:'+s.color+';color:'+s.txt+'">'+(s.id==='reg'?'★':(i+1))+'</span>'
+      + '<span><b>'+s.name+'</b><span>'+s.blurb+'</span>'
+      +   '<span class="dist" data-dist-for="'+s.id+'" style="display:inline-block;margin-top:.4rem;background:#e8f4f8;color:#093f4e;font-weight:800;padding:.14rem .6rem;border-radius:999px"></span>'
+      + '</span></button>';
+  }).join('');
+  document.getElementById('legend').innerHTML =
+    STOPS.map(function(s){ return '<span class="lg"><i style="background:'+s.color+'"></i>'+s.name+'</span>'; }).join('')
+    + '<span class="lg"><i style="background:#1a73e8"></i>You</span>';
+}
+buildLists();
+
+/* ============================================================
+   KML SYNC — if "Health fair locations.kml" is edited later,
+   the map picks up new coordinates automatically.
+   ============================================================ */
+function syncKml(){
+  if (location.protocol === 'file:') return;   /* fetch blocked on file:// */
+  fetch('Health%20fair%20locations.kml', { cache:'no-cache' })
+    .then(function(r){ return r.ok ? r.text() : Promise.reject(r.status); })
+    .then(function(txt){
+      var doc = new DOMParser().parseFromString(txt,'application/xml');
+      if (doc.querySelector('parsererror')) throw 'bad xml';
+      var moved = false;
+      Array.prototype.forEach.call(doc.getElementsByTagName('Placemark'), function(pm){
+        var nEl = pm.getElementsByTagName('name')[0];
+        var cEl = pm.getElementsByTagName('coordinates')[0];
+        if (!nEl || !cEl) return;
+        var nm = nEl.textContent.trim().toLowerCase();
+        var parts = cEl.textContent.trim().split(',');
+        var lng = parseFloat(parts[0]), lat = parseFloat(parts[1]);
+        if (isNaN(lat) || isNaN(lng)) return;
+        var s = STOPS.filter(function(x){
+          var a = x.name.toLowerCase(), b = (x.kml||'').toLowerCase();
+          return nm === a || nm === b || nm.indexOf(a) === 0 || (b && nm.indexOf(b) === 0);
+        })[0];
+        if (!s) return;
+        if (Math.abs(s.lat-lat) > 1e-9 || Math.abs(s.lng-lng) > 1e-9){
+          s.lat = lat; s.lng = lng;
+          markers[s.id].setLatLng([lat,lng]).setPopupContent(popupHtml(s));
+          moved = true;
+        }
+      });
+      if (moved){ buildLists(); refreshDistances(); }
+    })
+    .catch(function(){ /* embedded coordinates already loaded — nothing to do */ });
+}
+syncKml();
+
+/* ============================================================
+   TEXT SIZE / FLIER LIGHTBOX / MISC
+   ============================================================ */
+var fs = 1;
+function applyFs(){ document.documentElement.style.setProperty('--fs', fs.toFixed(2)); map.invalidateSize(); }
+document.getElementById('tsUp').addEventListener('click', function(){ fs = Math.min(1.6, fs+0.12); applyFs(); });
+document.getElementById('tsDown').addEventListener('click', function(){ fs = Math.max(0.9, fs-0.12); applyFs(); });
+
+var lb = document.getElementById('lightbox');
+function closeLb(){ lb.classList.remove('show'); document.body.style.overflow=''; }
+document.getElementById('flierBox').addEventListener('click', function(){ lb.classList.add('show'); document.body.style.overflow='hidden'; });
+lb.addEventListener('click', closeLb);
+document.getElementById('lb-close').addEventListener('click', closeLb);
+document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLb(); });
+
+/* ============================================================
+   COUNTDOWN — Jamaica is UTC-5 all year (no daylight saving).
+   Fair: Sunday 9 August 2026, 10:00 AM – 3:00 PM Jamaica time.
+   Change the two lines below to reuse this page next year.
+   ============================================================ */
+(function(){
+  var START_UTC = Date.UTC(2026,7,9,15,0,0);   /* 10:00 AM JA */
+  var END_UTC   = Date.UTC(2026,7,9,20,0,0);   /*  3:00 PM JA */
+  var box=document.getElementById('hfCountdown');
+  if(!box) return;
+  var clock=document.getElementById('hfcClock'), label=document.getElementById('hfcLabel'),
+      note=document.getElementById('hfcNote'),
+      dEl=document.getElementById('hfcD'), hEl=document.getElementById('hfcH'),
+      mEl=document.getElementById('hfcM'), sEl=document.getElementById('hfcS');
+  var phase='', start=document.querySelector('#startcard .startcard-in');
+  function pad(n){ return (n<10?'0':'')+n; }
+  function setPhase(p){
+    if(phase===p) return; phase=p;
+    box.classList.remove('live','over');
+    if(p==='before'){
+      label.textContent='Doors open in';
+      note.textContent='10:00 AM Jamaica time';
+    } else if(p==='live'){
+      box.classList.add('live'); clock.style.display='';
+      label.innerHTML='🔴 Happening right now — closes in';
+      note.textContent='Open until 3:00 PM Jamaica time';
+    } else {
+      box.classList.add('over'); clock.style.display='none'; label.textContent='';
+      if(!box.querySelector('.hfc-msg'))
+        clock.insertAdjacentHTML('afterend','<span class="hfc-msg">Thank you, <em>Innswood!</em></span>');
+      note.innerHTML='The 2026 Health Fair has ended — see you next year.';
+      if(start) start.innerHTML='<div><div class="big">💛 Thank you for coming out!</div>'
+        + '<div class="sm">The 2026 Health Fair is over. The map below stays up for reference.</div></div>';
+    }
+  }
+  function tick(){
+    var now=Date.now(), target, p;
+    if(now<START_UTC){ target=START_UTC; p='before'; }
+    else if(now<END_UTC){ target=END_UTC; p='live'; }
+    else { setPhase('over'); return; }
+    setPhase(p);
+    var s=Math.max(0,Math.floor((target-now)/1000));
+    dEl.textContent=pad(Math.floor(s/86400));
+    hEl.textContent=pad(Math.floor(s/3600)%24);
+    mEl.textContent=pad(Math.floor(s/60)%60);
+    sEl.textContent=pad(s%60);
+  }
+  tick(); setInterval(tick,1000);
+  document.addEventListener('visibilitychange',function(){ if(!document.hidden) tick(); });
+})();
+
+/* start with everything visible and General Registration pulsing */
+showAll();
+window.addEventListener('resize', function(){ map.invalidateSize(); });
+setTimeout(function(){ map.invalidateSize(); fitAll(); }, 400);
+
+})();
+</script>
+</body>
+</html>

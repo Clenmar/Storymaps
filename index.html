@@ -266,6 +266,98 @@
       .slide-item:hover img{transform:none;filter:none}
       a:hover{opacity:1}
     }
+
+    /* ===================== HEALTH FAIR 2026 CTA ===================== */
+    #healthfair-bar{background:linear-gradient(90deg,#0e5a6e 0%,#1a7f9c 50%,#0e5a6e 100%);color:#fff;position:relative;z-index:1090}
+    .hfb-in{display:flex;align-items:center;justify-content:center;gap:1rem;flex-wrap:wrap;padding:.75rem 1rem;text-align:center}
+    .hfb-text{font-size:.9rem;font-weight:700;letter-spacing:.02em}
+    .hfb-text b{color:#f5c518}
+    .hfb-btn{display:inline-flex;align-items:center;gap:.5rem;background:#f5c518;color:#2b1d00 !important;
+      font-weight:800;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem 1.5rem;
+      border-radius:999px;box-shadow:0 4px 0 #d9a800;transition:transform .18s,box-shadow .18s;white-space:nowrap}
+    .hfb-btn:hover{opacity:1;transform:translateY(-2px);box-shadow:0 6px 0 #d9a800}
+    .hfb-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #d9a800}
+    .hfb-btn svg{width:15px;height:15px;fill:#2b1d00}
+
+    #healthfair{background:linear-gradient(150deg,#0e5a6e 0%,#241a6b 55%,#3b1a86 100%);padding:3.5rem 0;position:relative;overflow:hidden}
+    #healthfair::after{content:'';position:absolute;right:-100px;top:-100px;width:340px;height:340px;border-radius:50%;
+      background:radial-gradient(circle,rgba(245,197,24,.2) 0%,transparent 70%);pointer-events:none}
+    .hf-grid{position:relative;z-index:2;display:grid;grid-template-columns:1.25fr 1fr;gap:3rem;align-items:center}
+    .hf-eyebrow{display:inline-block;background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.28);
+      padding:.32rem 1rem;border-radius:999px;font-size:.63rem;font-weight:800;letter-spacing:.2em;
+      text-transform:uppercase;color:#f5c518;margin-bottom:1rem}
+    .hf-h2{font-family:var(--font-display);font-size:clamp(2.2rem,5.5vw,3.4rem);font-weight:700;color:#fff;line-height:1.04;text-transform:uppercase}
+    .hf-h2 em{font-style:normal;color:#f5c518;display:block}
+    .hf-p{margin-top:1rem;font-size:.95rem;color:rgba(255,255,255,.82);line-height:1.8;max-width:520px}
+    .hf-meta{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1.6rem}
+    .hf-chip{background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.22);border-radius:12px;padding:.55rem .95rem;min-width:126px}
+    .hf-chip b{display:block;font-size:.58rem;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#f5c518;margin-bottom:.1rem}
+    .hf-chip span{font-size:.9rem;font-weight:700;color:#fff}
+    .hf-cta-row{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center;margin-top:2rem}
+    .hf-cta{display:inline-flex;align-items:center;gap:.6rem;background:#f5c518;color:#2b1d00 !important;
+      font-weight:800;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;padding:1rem 2.2rem;
+      border-radius:999px;box-shadow:0 5px 0 #d9a800;transition:transform .18s,box-shadow .18s;
+      animation:hfPulse 2.4s ease-in-out infinite}
+    .hf-cta:hover{opacity:1;transform:translateY(-2px);box-shadow:0 7px 0 #d9a800;animation:none}
+    .hf-cta:active{transform:translateY(3px);box-shadow:0 2px 0 #d9a800}
+    .hf-cta svg{width:17px;height:17px;fill:#2b1d00}
+    @keyframes hfPulse{0%,100%{box-shadow:0 5px 0 #d9a800,0 0 0 0 rgba(245,197,24,.5)}50%{box-shadow:0 5px 0 #d9a800,0 0 0 16px rgba(245,197,24,0)}}
+    .hf-cta2{display:inline-flex;align-items:center;gap:.5rem;border:1.5px solid rgba(255,255,255,.4);color:#fff;
+      font-weight:700;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;padding:.95rem 1.7rem;border-radius:999px;transition:background .2s}
+    .hf-cta2:hover{opacity:1;background:rgba(255,255,255,.14)}
+    .hf-free{display:inline-block;margin-top:1.2rem;font-size:.78rem;font-weight:800;letter-spacing:.14em;
+      text-transform:uppercase;color:rgba(255,255,255,.62)}
+    .hf-flier{position:relative}
+    .hf-flier a{display:block;background:#fff;padding:.5rem;border-radius:14px;box-shadow:0 20px 55px rgba(0,0,0,.4);
+      transform:rotate(-2deg);transition:transform .3s}
+    .hf-flier a:hover{opacity:1;transform:rotate(0deg) scale(1.02)}
+    .hf-flier img{border-radius:9px;width:100%}
+    .hf-flier .hf-tag{position:absolute;top:-14px;right:-10px;background:var(--clr-crimson);color:#fff;font-size:.62rem;
+      font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:.45rem 1rem;border-radius:999px;
+      box-shadow:0 6px 18px rgba(0,0,0,.35);z-index:3}
+    /* ---- COUNTDOWN ---- */
+    #hfCountdown{margin-top:1.8rem;display:inline-block;background:rgba(0,0,0,.28);
+      border:1.5px solid rgba(245,197,24,.4);border-radius:16px;padding:1rem 1.4rem}
+    .hfc-label{display:block;font-size:.6rem;font-weight:800;letter-spacing:.22em;text-transform:uppercase;
+      color:rgba(255,255,255,.6);margin-bottom:.55rem}
+    .hfc-clock{display:flex;align-items:flex-start;gap:.55rem}
+    .hfc-unit{display:flex;flex-direction:column;align-items:center;min-width:52px}
+    .hfc-unit b{font-family:var(--font-display);font-size:2.2rem;font-weight:700;color:#f5c518;line-height:1;
+      font-variant-numeric:tabular-nums}
+    .hfc-unit i{font-style:normal;font-size:.55rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+      color:rgba(255,255,255,.45);margin-top:.35rem}
+    .hfc-sep{font-family:var(--font-display);font-size:1.9rem;font-weight:700;color:rgba(245,197,24,.4);line-height:1.05}
+    .hfc-note{display:block;margin-top:.6rem;font-size:.68rem;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;color:rgba(255,255,255,.45)}
+    /* LIVE state */
+    #hfCountdown.live{border-color:rgba(224,32,32,.75);background:rgba(224,32,32,.16);animation:hfLive 1.6s ease-in-out infinite}
+    @keyframes hfLive{0%,100%{box-shadow:0 0 0 0 rgba(224,32,32,.45)}50%{box-shadow:0 0 0 14px rgba(224,32,32,0)}}
+    #hfCountdown.live .hfc-label{color:#fff}
+    #hfCountdown.live .hfc-unit b{color:#fff}
+    #hfCountdown.over{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.08)}
+    .hfc-msg{display:block;font-family:var(--font-display);font-size:1.85rem;font-weight:700;color:#fff;line-height:1.15}
+    .hfc-msg em{font-style:normal;color:#f5c518}
+    /* live dot in the top bar */
+    .hfb-live{display:inline-flex;align-items:center;gap:.4rem;background:#e02020;color:#fff;font-weight:800;
+      font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;padding:.25rem .7rem;border-radius:999px}
+    .hfb-live i{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink 1.1s infinite}
+
+    @media(max-width:900px){
+      .hf-grid{grid-template-columns:1fr;gap:2.2rem}
+      .hf-flier{max-width:330px;margin-inline:auto}
+    }
+    @media(max-width:640px){
+      #healthfair{padding:2.6rem 0}
+      .hfb-in{gap:.6rem;padding:.65rem .8rem}
+      .hfb-text{font-size:.8rem;width:100%}
+      .hf-cta{width:100%;justify-content:center}
+      .hf-cta2{width:100%;justify-content:center}
+      #hfCountdown{display:block;padding:.85rem 1rem}
+      .hfc-clock{justify-content:space-between;gap:.3rem}
+      .hfc-unit{min-width:0;flex:1}
+      .hfc-unit b{font-size:1.8rem}
+      .hfc-msg{font-size:1.45rem}
+    }
   </style>
 </head>
 <body>
@@ -274,6 +366,18 @@
     <a href="https://spurropen.com/twcministries">Support the Ministry &rarr;</a>
     <button class="banner-x" onclick="this.parentElement.style.display='none'" aria-label="Dismiss">&times;</button>
   </div>
+
+  <!-- ===================== HEALTH FAIR 2026 ANNOUNCEMENT BAR ===================== -->
+  <div id="healthfair-bar">
+    <div class="hfb-in">
+      <span class="hfb-text">&#127973; <b>Sunday, August 9</b> &mdash; TWC Annual Health Fair at Innswood High School &bull; <b>FREE Admission</b></span>
+      <a href="/Pages/Charities/Health%20fair/" class="hfb-btn">
+        <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
+        <span id="hfbBtnText">2026 Health Fair &mdash; Map &amp; Info</span>
+      </a>
+    </div>
+  </div>
+
   <header id="topbar" class="transparent">
     <div class="topbar-inner">
       <a href="https://www.twcministries.net" class="logo" aria-label="TWC Ministries Home">
@@ -286,6 +390,7 @@
         <a href="/Pages/About/"              class="nav-link">About</a>
         <a href="/Pages/Connect/"          class="nav-link">Connect</a>
         <a href="/Pages/Charities/"      class="nav-link">Charities</a>
+        <a href="/Pages/Charities/Health%20fair/" class="nav-link nav-hf">Health Fair</a>
         <a href="/Pages/Events/"            class="nav-link">Events</a>
         <a href="/Pages/Live/"                class="nav-link active">Watch Live</a>
         <a href="https://spurropen.com/twcministries"                           class="nav-donate">Donate</a>
@@ -300,6 +405,7 @@
     <a href="/Pages/About/"              class="drawer-link">About</a>
     <a href="/Pages/Connect/"          class="drawer-link">Connect</a>
     <a href="/Pages/Charities/"      class="drawer-link">Charities</a>
+    <a href="/Pages/Charities/Health%20fair/" class="drawer-link" style="color:#f5c518">&#127973; 2026 Health Fair &mdash; Map</a>
     <a href="/Pages/Events/"            class="drawer-link">Events</a>
     <a href="/Pages/Live/"                class="drawer-link">Watch Live</a>
     <a href="https://spurropen.com/twcministries"                           class="drawer-donate">&#9829; Donate &rarr;</a>
@@ -320,6 +426,60 @@
       </div>
       <div class="hero-scroll" aria-hidden="true"><div class="scroll-track"></div><span>Scroll</span></div>
     </section>
+
+    <!-- ===================== HEALTH FAIR 2026 ===================== -->
+    <section id="healthfair" aria-labelledby="hf-h">
+      <div class="container">
+        <div class="hf-grid">
+          <div>
+            <span class="hf-eyebrow" id="hfEyebrow">TWC Ministries &bull; Community Outreach</span>
+            <h2 class="hf-h2" id="hf-h">Annual Health Fair<em>2026</em></h2>
+            <p class="hf-p">Caring for Your Health, Caring for Your Future. Free medical checkups, dental services, back&#8209;to&#8209;school medicals, blood pressure checks and free eye testing &mdash; all in one day at Innswood High School.</p>
+
+            <!-- COUNTDOWN -->
+            <div id="hfCountdown" aria-live="polite">
+              <span class="hfc-label" id="hfcLabel">Doors open in</span>
+              <div class="hfc-clock" id="hfcClock">
+                <span class="hfc-unit"><b id="hfcD">00</b><i>Days</i></span>
+                <span class="hfc-sep">:</span>
+                <span class="hfc-unit"><b id="hfcH">00</b><i>Hours</i></span>
+                <span class="hfc-sep">:</span>
+                <span class="hfc-unit"><b id="hfcM">00</b><i>Mins</i></span>
+                <span class="hfc-sep">:</span>
+                <span class="hfc-unit"><b id="hfcS">00</b><i>Secs</i></span>
+              </div>
+              <span class="hfc-note" id="hfcNote">10:00 AM Jamaica time</span>
+            </div>
+
+            <div class="hf-meta">
+              <div class="hf-chip"><b>Date</b><span>Sun, Aug 9, 2026</span></div>
+              <div class="hf-chip"><b>Time</b><span>10 AM &ndash; 3 PM</span></div>
+              <div class="hf-chip"><b>Venue</b><span>Innswood High</span></div>
+            </div>
+
+            <div class="hf-cta-row">
+              <a href="/Pages/Charities/Health%20fair/" class="hf-cta" id="hfCta">
+                <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
+                <span id="hfCtaText">2026 Health Fair &mdash; Interactive Map</span>
+              </a>
+              <a href="tel:+18764190595" class="hf-cta2">&#128222; Book: 876&#8209;419&#8209;0595</a>
+            </div>
+            <span class="hf-free">&#10003; Free Admission &nbsp;&bull;&nbsp; Everyone Welcome</span>
+          </div>
+
+          <div class="hf-flier">
+            <span class="hf-tag">Free Admission</span>
+            <a href="/Pages/Charities/Health%20fair/" aria-label="Open the Health Fair 2026 interactive map">
+              <img src="/Pages/Charities/Health%20fair/health%20fair%20flier.jpeg"
+                   alt="TWC Ministries Annual Health Fair 2026 flier — August 9 2026 at Innswood High School, 10AM to 3PM, free admission"
+                   loading="lazy"
+                   onerror="this.closest('.hf-flier').style.display='none'">
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ===================== END HEALTH FAIR 2026 ===================== -->
 
     <div id="sabbath-strip">
       <div class="container">
@@ -537,7 +697,14 @@
   <script>
     /* NAV */
     const topbar=document.getElementById('topbar'),banner=document.getElementById('banner');
-    function syncNav(){const bh=(banner&&banner.style.display!=='none')?banner.offsetHeight:0;topbar.style.top=bh+'px';topbar.classList.toggle('solid',window.scrollY>80);topbar.classList.toggle('transparent',window.scrollY<=80)}
+    const hfBar=document.getElementById('healthfair-bar');
+    function syncNav(){
+      const bh=(banner&&banner.style.display!=='none')?banner.offsetHeight:0;
+      const hb=(hfBar&&hfBar.style.display!=='none')?hfBar.offsetHeight:0;
+      topbar.style.top=(bh+hb)+'px';
+      topbar.classList.toggle('solid',window.scrollY>80);
+      topbar.classList.toggle('transparent',window.scrollY<=80);
+    }
     syncNav();window.addEventListener('scroll',syncNav,{passive:true});window.addEventListener('resize',syncNav);
 
     /* HAMBURGER */
@@ -710,6 +877,94 @@
 
     })();
     /* ===================== END SLIDER ===================== */
+
+    /* ===================== HEALTH FAIR COUNTDOWN =====================
+       Jamaica has no daylight saving — it is UTC-5 all year round.
+       Fair: Sunday 9 August 2026, 10:00 AM – 3:00 PM Jamaica time.
+       To reuse this next year, just change START_UTC / END_UTC below.
+    ================================================================= */
+    (function () {
+      var START_UTC = Date.UTC(2026, 7, 9, 15, 0, 0);  /* 10:00 AM JA = 15:00 UTC */
+      var END_UTC   = Date.UTC(2026, 7, 9, 20, 0, 0);  /*  3:00 PM JA = 20:00 UTC */
+      var MAP_URL   = '/Pages/Charities/Health%20fair/';
+
+      var box    = document.getElementById('hfCountdown');
+      var clock  = document.getElementById('hfcClock');
+      var label  = document.getElementById('hfcLabel');
+      var note   = document.getElementById('hfcNote');
+      var eyeb   = document.getElementById('hfEyebrow');
+      var ctaTxt = document.getElementById('hfCtaText');
+      var cta    = document.getElementById('hfCta');
+      var barTxt = document.querySelector('#healthfair-bar .hfb-text');
+      var barBtn = document.getElementById('hfbBtnText');
+      if (!box) return;
+
+      var dEl = document.getElementById('hfcD'), hEl = document.getElementById('hfcH');
+      var mEl = document.getElementById('hfcM'), sEl = document.getElementById('hfcS');
+      var phase = '';
+
+      function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+      function setPhase(p){
+        if (phase === p) return;
+        phase = p;
+        box.classList.remove('live','over');
+
+        if (p === 'before') {
+          label.textContent = 'Doors open in';
+          note.textContent  = '10:00 AM Jamaica time';
+          if (eyeb)   eyeb.innerHTML   = 'TWC Ministries &bull; Community Outreach';
+          if (ctaTxt) ctaTxt.innerHTML = '2026 Health Fair &mdash; Interactive Map';
+        }
+
+        else if (p === 'live') {
+          box.classList.add('live');
+          clock.style.display = '';
+          label.innerHTML = '&#128308; Happening right now &mdash; closes in';
+          note.textContent = 'Open until 3:00 PM Jamaica time';
+          if (eyeb) eyeb.innerHTML = '&#128308; Live today &bull; Innswood High School';
+          if (ctaTxt) ctaTxt.innerHTML = 'Open the Live Map &mdash; Find Your Way';
+          if (barTxt) barTxt.innerHTML = '<span class="hfb-live"><i></i>Happening now</span> &nbsp;TWC Health Fair &mdash; Innswood High School until <b>3:00 PM</b>';
+          if (barBtn) barBtn.textContent = 'Open the live map';
+        }
+
+        else { /* over */
+          box.classList.add('over');
+          clock.style.display = 'none';
+          label.textContent = '';
+          box.querySelector('.hfc-msg') ||
+            clock.insertAdjacentHTML('afterend',
+              '<span class="hfc-msg">Thank you, <em>Innswood!</em></span>');
+          note.innerHTML = 'The 2026 Health Fair has ended &mdash; see you next year.';
+          if (eyeb)   eyeb.innerHTML   = 'TWC Ministries &bull; 2026 Health Fair &mdash; Completed';
+          if (ctaTxt) ctaTxt.innerHTML = 'See the Health Fair Recap';
+          if (cta)    cta.style.animation = 'none';
+          if (barTxt) barTxt.innerHTML = '&#127973; Thank you to everyone who came out to the <b>2026 TWC Health Fair</b>!';
+          if (barBtn) barBtn.textContent = 'View the Health Fair';
+        }
+      }
+
+      function tick(){
+        var now = Date.now();
+        var target, p;
+        if (now < START_UTC)    { target = START_UTC; p = 'before'; }
+        else if (now < END_UTC) { target = END_UTC;   p = 'live';   }
+        else                    { setPhase('over'); return; }
+
+        setPhase(p);
+        var s = Math.max(0, Math.floor((target - now) / 1000));
+        dEl.textContent = pad(Math.floor(s / 86400));
+        hEl.textContent = pad(Math.floor(s / 3600) % 24);
+        mEl.textContent = pad(Math.floor(s / 60) % 60);
+        sEl.textContent = pad(s % 60);
+      }
+
+      tick();
+      setInterval(tick, 1000);
+      /* re-sync if the tab was asleep */
+      document.addEventListener('visibilitychange', function(){ if (!document.hidden) tick(); });
+    })();
+    /* ===================== END HEALTH FAIR COUNTDOWN ===================== */
   </script>
 </body>
 </html>
