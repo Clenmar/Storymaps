@@ -274,7 +274,8 @@
     .hfb-text b{color:#f5c518}
     .hfb-btn{display:inline-flex;align-items:center;gap:.5rem;background:#f5c518;color:#2b1d00 !important;
       font-weight:800;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;padding:.6rem 1.5rem;
-      border-radius:999px;box-shadow:0 4px 0 #d9a800;transition:transform .18s,box-shadow .18s;white-space:nowrap}
+      border-radius:999px;box-shadow:0 4px 0 #d9a800;transition:transform .18s,box-shadow .18s;white-space:nowrap;
+      font-variant-numeric:tabular-nums}
     .hfb-btn:hover{opacity:1;transform:translateY(-2px);box-shadow:0 6px 0 #d9a800}
     .hfb-btn:active{transform:translateY(2px);box-shadow:0 2px 0 #d9a800}
     .hfb-btn svg{width:15px;height:15px;fill:#2b1d00}
@@ -297,7 +298,7 @@
     .hf-cta{display:inline-flex;align-items:center;gap:.6rem;background:#f5c518;color:#2b1d00 !important;
       font-weight:800;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase;padding:1rem 2.2rem;
       border-radius:999px;box-shadow:0 5px 0 #d9a800;transition:transform .18s,box-shadow .18s;
-      animation:hfPulse 2.4s ease-in-out infinite}
+      animation:hfPulse 2.4s ease-in-out infinite;font-variant-numeric:tabular-nums}
     .hf-cta:hover{opacity:1;transform:translateY(-2px);box-shadow:0 7px 0 #d9a800;animation:none}
     .hf-cta:active{transform:translateY(3px);box-shadow:0 2px 0 #d9a800}
     .hf-cta svg{width:17px;height:17px;fill:#2b1d00}
@@ -913,8 +914,8 @@
         if (p === 'before') {
           label.textContent = 'Doors open in';
           note.textContent  = '10:00 AM Jamaica time';
-          if (eyeb)   eyeb.innerHTML   = 'TWC Ministries &bull; Community Outreach';
-          if (ctaTxt) ctaTxt.innerHTML = '2026 Health Fair &mdash; Interactive Map';
+          if (eyeb) eyeb.innerHTML = 'TWC Ministries &bull; Community Outreach';
+          /* button text is set every second by tick() */
         }
 
         else if (p === 'live') {
@@ -923,9 +924,8 @@
           label.innerHTML = '&#128308; Happening right now &mdash; closes in';
           note.textContent = 'Open until 3:00 PM Jamaica time';
           if (eyeb) eyeb.innerHTML = '&#128308; Live today &bull; Innswood High School';
-          if (ctaTxt) ctaTxt.innerHTML = 'Open the Live Map &mdash; Find Your Way';
           if (barTxt) barTxt.innerHTML = '<span class="hfb-live"><i></i>Happening now</span> &nbsp;TWC Health Fair &mdash; Innswood High School until <b>3:00 PM</b>';
-          if (barBtn) barBtn.textContent = 'Open the live map';
+          /* button text is set every second by tick() */
         }
 
         else { /* over */
@@ -953,10 +953,22 @@
 
         setPhase(p);
         var s = Math.max(0, Math.floor((target - now) / 1000));
-        dEl.textContent = pad(Math.floor(s / 86400));
-        hEl.textContent = pad(Math.floor(s / 3600) % 24);
-        mEl.textContent = pad(Math.floor(s / 60) % 60);
-        sEl.textContent = pad(s % 60);
+        var d = Math.floor(s / 86400), h = Math.floor(s / 3600) % 24,
+            mi = Math.floor(s / 60) % 60, se = s % 60;
+        dEl.textContent = pad(d); hEl.textContent = pad(h);
+        mEl.textContent = pad(mi); sEl.textContent = pad(se);
+
+        /* --- the buttons themselves count down too --- */
+        var short = d > 0 ? (d + 'd ' + h + 'h ' + pad(mi) + 'm')
+                  : h > 0 ? (h + 'h ' + pad(mi) + 'm ' + pad(se) + 's')
+                          : (mi + 'm ' + pad(se) + 's');
+        if (p === 'before') {
+          if (ctaTxt) ctaTxt.innerHTML = 'Health Fair Map &mdash; opens in ' + short;
+          if (barBtn) barBtn.textContent = 'Health Fair in ' + short;
+        } else {
+          if (ctaTxt) ctaTxt.innerHTML = 'Open the Live Map &mdash; ' + short + ' left';
+          if (barBtn) barBtn.textContent = short + ' left — open map';
+        }
       }
 
       tick();

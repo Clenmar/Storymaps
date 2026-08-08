@@ -317,11 +317,42 @@ footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-
   </div>
 </div></div></div>
 
-<!-- ============ 1. PICK YOUR VISIT ============ -->
-<section class="block">
+<!-- ============ 1. MAP (first thing they see) ============ -->
+<section class="block" id="map-sec" style="padding-top:.4rem">
   <div class="wrap">
     <div class="sec-head">
       <span class="sec-num">1</span>
+      <h2>Where you are right now</h2>
+      <p>Your <b style="color:#1a73e8">blue dot</b> shows where you are. Tap any pin to see what happens there.</p>
+    </div>
+
+    <div id="mapcard">
+      <div class="map-tools">
+        <button class="tool primary" id="btnLocate">
+          <svg viewBox="0 0 512 512"><path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/></svg>
+          Where am I?
+        </button>
+        <button class="tool" id="btnBase">
+          <svg viewBox="0 0 576 512"><path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/></svg>
+          <span id="baseLabel">Street view</span>
+        </button>
+        <button class="tool" id="btnAll">
+          <svg viewBox="0 0 512 512"><path d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>
+          Show all stops
+        </button>
+      </div>
+      <div id="map" role="application" aria-label="Interactive map of the health fair stops"></div>
+      <div id="geo-msg" role="status"></div>
+      <div class="map-legend" id="legend"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. PICK YOUR VISIT ============ -->
+<section class="block">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">2</span>
       <h2>What did you come for?</h2>
       <p>Tap a big button. We&rsquo;ll show you exactly where to go, in order.</p>
     </div>
@@ -360,36 +391,6 @@ footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-
   </div>
 </section>
 
-<!-- ============ 2. MAP ============ -->
-<section class="block" id="map-sec" style="padding-top:.4rem">
-  <div class="wrap">
-    <div class="sec-head">
-      <span class="sec-num">2</span>
-      <h2>Find it on the map</h2>
-      <p>Press <b>&ldquo;Where am I?&rdquo;</b> to see your blue dot, then tap any pin.</p>
-    </div>
-
-    <div id="mapcard">
-      <div class="map-tools">
-        <button class="tool primary" id="btnLocate">
-          <svg viewBox="0 0 512 512"><path d="M256 0c17.7 0 32 14.3 32 32V66.7C368.4 80.1 431.9 143.6 445.3 224H480c17.7 0 32 14.3 32 32s-14.3 32-32 32H445.3C431.9 368.4 368.4 431.9 288 445.3V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.3C143.6 431.9 80.1 368.4 66.7 288H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H66.7C80.1 143.6 143.6 80.1 224 66.7V32c0-17.7 14.3-32 32-32zM128 256a128 128 0 1 0 256 0 128 128 0 1 0 -256 0zm128-80a80 80 0 1 1 0 160 80 80 0 1 1 0-160z"/></svg>
-          Where am I?
-        </button>
-        <button class="tool" id="btnBase">
-          <svg viewBox="0 0 576 512"><path d="M264.5 5.2c14.9-6.9 32.1-6.9 47 0l218.6 101c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 149.8C37.4 145.8 32 137.3 32 128s5.4-17.9 13.9-21.8L264.5 5.2zM476.9 209.6l53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 277.8C37.4 273.8 32 265.3 32 256s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0l152-70.2zm-152 198.2l152-70.2 53.2 24.6c8.5 3.9 13.9 12.4 13.9 21.8s-5.4 17.9-13.9 21.8l-218.6 101c-14.9 6.9-32.1 6.9-47 0L45.9 405.8C37.4 401.8 32 393.3 32 384s5.4-17.9 13.9-21.8l53.2-24.6 152 70.2c23.4 10.8 50.4 10.8 73.8 0z"/></svg>
-          <span id="baseLabel">Street view</span>
-        </button>
-        <button class="tool" id="btnAll">
-          <svg viewBox="0 0 512 512"><path d="M0 96C0 60.7 28.7 32 64 32H448c35.3 0 64 28.7 64 64V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96zM323.8 202.5c-4.5-6.6-11.9-10.5-19.8-10.5s-15.4 3.9-19.8 10.5l-87 127.6L170.7 297c-4.6-5.7-11.5-9-18.7-9s-14.2 3.3-18.7 9l-64 80c-5.8 7.2-6.9 17.1-2.9 25.4s12.4 13.6 21.6 13.6h96 32H424c8.9 0 17.1-4.9 21.2-12.8s3.6-17.4-1.4-24.7l-120-176zM112 192a48 48 0 1 0 0-96 48 48 0 1 0 0 96z"/></svg>
-          Show all stops
-        </button>
-      </div>
-      <div id="map" role="application" aria-label="Interactive map of the health fair stops"></div>
-      <div id="geo-msg" role="status"></div>
-      <div class="map-legend" id="legend"></div>
-    </div>
-  </div>
-</section>
 
 <!-- ============ 3. ALL STOPS ============ -->
 <section class="block" style="padding-top:.4rem">
@@ -440,7 +441,7 @@ footer .partners{margin:.9rem 0;font-weight:700;color:rgba(255,255,255,.6);font-
       </div>
       <div class="help-card">
         <span class="ico"><svg viewBox="0 0 512 512"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48L48 64zM0 176L0 384c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-208L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg></span>
-        <b>Email us</b><a href="mailto:twccenter@gmail.com">twccenter@gmail.com</a>
+        <b>Email us</b><a href="mailto:twccentre@gmail.com">twccentre@gmail.com</a>
       </div>
       <div class="help-card">
         <span class="ico"><svg viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg></span>
@@ -679,15 +680,19 @@ function onPos(p){
 function onErr(e){
   btnLocate.classList.remove('locating');
   var m = 'We could not find your location. ';
-  if (e && e.code === 1) m += 'Please allow location access for this page in your browser, then press the button again.';
-  else if (e && e.code === 3) m += 'It took too long. Move outside where the sky is clear, then try again.';
-  else m += 'Turn on your phone’s location (GPS) and try again.';
-  setMsg('⚠️ ' + m, 'warn');
+  if (e && e.code === 1) m += 'Please allow location access for this page in your browser, then press “Where am I?”.';
+  else if (e && e.code === 3) m += 'It took too long. Step outside where the sky is clear, then press “Where am I?”.';
+  else m += 'Turn on your phone’s location (GPS), then press “Where am I?”.';
+  setMsg('⚠️ ' + m + ' You can still use the map and the pins below.', 'warn');
 }
-function locate(){
-  if(!navigator.geolocation){ setMsg('⚠️ This browser cannot show your location. Use the map pins instead.','warn'); return; }
+function locate(auto){
+  if(!navigator.geolocation){
+    if(!auto) setMsg('⚠️ This browser cannot show your location. Use the map pins instead.','warn');
+    return;
+  }
   btnLocate.classList.add('locating');
-  setMsg('⏳ Looking for you… please allow location access if asked.','ok');
+  setMsg(auto ? '⏳ Finding you on the map… please tap “Allow” if your phone asks.'
+              : '⏳ Looking for you… please allow location access if asked.', 'ok');
   navigator.geolocation.getCurrentPosition(onPos,onErr,{ enableHighAccuracy:true, timeout:15000, maximumAge:0 });
   if(watchId===null){
     watchId = navigator.geolocation.watchPosition(function(p){
@@ -698,8 +703,26 @@ function locate(){
     }, function(){}, { enableHighAccuracy:true, maximumAge:5000, timeout:20000 });
   }
 }
-btnLocate.addEventListener('click', locate);
-document.getElementById('sbLocate').addEventListener('click', function(){ setTimeout(locate,350); });
+btnLocate.addEventListener('click', function(){ locate(false); });
+document.getElementById('sbLocate').addEventListener('click', function(){ setTimeout(function(){ locate(false); },350); });
+
+/* Ask for location automatically as soon as the page opens, so the blue dot
+   is already there. If the browser blocks it or the visitor says no, the
+   "Where am I?" button still works. */
+function autoLocate(){
+  if(!navigator.geolocation) return;
+  if(navigator.permissions && navigator.permissions.query){
+    navigator.permissions.query({name:'geolocation'}).then(function(st){
+      if(st.state === 'denied'){
+        setMsg('📍 Location is turned off for this page. Press “Where am I?” after allowing it — or just use the pins below.','warn');
+      } else {
+        locate(true);
+      }
+    }).catch(function(){ locate(true); });
+  } else {
+    locate(true);
+  }
+}
 
 /* ============================================================
    JOURNEY PICKER + STEP LIST
@@ -868,6 +891,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLb()
 showAll();
 window.addEventListener('resize', function(){ map.invalidateSize(); });
 setTimeout(function(){ map.invalidateSize(); fitAll(); }, 400);
+setTimeout(autoLocate, 900);   /* find the visitor automatically on arrival */
 
 })();
 </script>
