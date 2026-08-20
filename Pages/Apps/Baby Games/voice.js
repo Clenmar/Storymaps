@@ -24,6 +24,7 @@
   var PICKED_KEY = "babyVoicePicked_v1"; // '1' once a grown-up chose on purpose
   var AUTO_KEY   = "babyVoiceAuto_v1";   // 'done' once the default was fetched
   var FAIL_KEY   = "babyVoiceAutoFail_v1"; // how many times the auto fetch failed
+  var WW_KEY     = "babyVoiceWorkerWrite_v1"; // 'yes'|'no': can a worker write OPFS?
   var DEFAULT_PIPER = "en_GB-jenny_dioco-medium";   // Jenny — British, gentle
   var PIPER_URL = "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js";
 
@@ -176,13 +177,38 @@
                  typeof FileSystemFileHandle.prototype.createWritable === "function"; }
     catch (e) { return false; }
   }
-  function canWriteViaWorker() {              // Safari 15.2+ / iPadOS 16
-    try { return typeof FileSystemFileHandle !== "undefined" &&
-                 typeof FileSystemFileHandle.prototype.createSyncAccessHandle === "function" &&
-                 typeof Worker !== "undefined"; }
-    catch (e) { return false; }
+  /* createSyncAccessHandle() cannot be feature-detected from here: in Safari it
+   * exists only inside a Worker, so FileSystemFileHandle.prototype does not
+   * carry it on the main thread even on devices where it works perfectly. The
+   * only honest test is to do a real write in a worker and look at the result,
+   * so that is what we do — once per device, remembered afterwards. */
+  var workerWriteOK = null;                   // null unknown | true | false
+  function probeWorkerWrite() {
+    if (workerWriteOK !== null) return Promise.resolve(workerWriteOK);
+    var saved = getStr(WW_KEY, "");
+    if (saved === "yes" || saved === "no") {
+      workerWriteOK = (saved === "yes");
+      return Promise.resolve(workerWriteOK);
+    }
+    if (typeof Worker === "undefined" || !navigator.storage || !navigator.storage.getDirectory) {
+      workerWriteOK = false; setStr(WW_KEY, "no");
+      return Promise.resolve(false);
+    }
+    return writeViaWorker("__wwprobe", new Blob([new Uint8Array(64)]))
+      .then(function () { return cachedSize("__wwprobe"); })
+      .then(function (n) { return n === 64; })
+      .catch(function () { return false; })
+      .then(function (good) {
+        workerWriteOK = good; setStr(WW_KEY, good ? "yes" : "no");
+        return sweepCache(null).then(function () { return good; });  // 64 B < 1 KB, swept
+      });
   }
-  function canCacheModels() { return canWriteDirect() || canWriteViaWorker(); }
+  // Synchronous best guess, for drawing the picker before the probe has run.
+  function canCacheModels() { return canWriteDirect() || workerWriteOK !== false; }
+  // The real answer, for anything that is about to spend 60 MB.
+  function canCacheModelsAsync() {
+    return canWriteDirect() ? Promise.resolve(true) : probeWorkerWrite();
+  }
 
   // Walk an async iterator without for-await, so this file stays ES5-parseable.
   function eachKey(it, fn) {
@@ -316,8 +342,10 @@
       try { TS._instance = null; } catch (e) {}   // never reuse another voice's graph
       return sweepCache(null).then(function () {
         // Browsers with no createWritable() need the model put there for them.
-        if (canWriteDirect() || !canWriteViaWorker()) return;
-        return primeCache(m, id, onPct);
+        if (canWriteDirect()) return;
+        return probeWorkerWrite().then(function (ok) {
+          if (ok) return primeCache(m, id, onPct);
+        });
       }).then(function () {
         return TS.create({
           voiceId: id,
@@ -483,40 +511,8 @@
 
   function autoSetup(chip, chipHide) {
     if (getStr(PICKED_KEY, "") === "1") return;                 // grown-up chose already
-    whenVoicesReady(function () {
-      // An installed Piper voice always wins. This test has to come FIRST:
-      // modern iOS exposes the whole macOS voice catalogue, "(Enhanced)" and
-      // "Premium" entries included, so hasNaturalSystemVoice() now returns true
-      // on phones where it used to return false. When it was checked first it
-      // reset mode to "system" — and wrote that to localStorage — on every page
-      // load, permanently silencing a 63 MB voice the grown-up had already
-      // downloaded. That is the "the natural voice stopped working" bug.
-      // (piperId alone is enough: a hand-picked voice sets PICKED_KEY and has
-      // already returned above, so anything left here was auto-installed. If an
-      // earlier build downgraded it to "system", put it back.)
-      if (piperId) {
-        if (mode !== "natural") { mode = "natural"; setStr(MODE_KEY, "natural"); }
-        return;
-      }
-      // We used to stop here when the phone reported an "extra natural" system
-      // voice. Modern iOS labels a great many voices Enhanced or Premium, so
-      // that shortcut fired almost everywhere and Jenny was never installed.
-      // Jenny is now the default on any device that can keep her.
-      if (getStr(AUTO_KEY, "") === "done") return;
-      if (!canCacheModels()) {
-        // No OPFS write path at all: an automatic fetch would mean 60 MB on
-        // every page, and each game is its own page. Leave it to the grown-up.
-        if (chip) chip("Tap \u{1F5E3}\uFE0F Voice for a gentler voice", 4000);
-        return;
-      }
-      if (+getStr(FAIL_KEY, "0") >= 2) {                        // stop re-fetching 63 MB
-        if (chip) chip("Tap \u{1F5E3}\uFE0F Voice to try the gentle voice again", 4000);
-        return;
-      }
-      if (metered()) {
-        if (chip) chip("Tap 🗣️ Voice for a gentler voice (63 MB)", 5000);
-        return;
-      }
+
+    function startAutoDownload() {
       if (chip) chip("Getting a gentle voice… 0%", 0);
       downloadVoice(DEFAULT_PIPER, function (pct) {
         if (chip) chip("Getting a gentle voice… " + pct + "%", 0);
@@ -529,6 +525,42 @@
         setStr(FAIL_KEY, String(+getStr(FAIL_KEY, "0") + 1));
         if (chipHide) chipHide();
       });
+    }
+
+    whenVoicesReady(function () {
+      // An installed Piper voice always wins, and this has to be tested FIRST.
+      // Modern iOS exposes the whole macOS voice catalogue, "(Enhanced)" and
+      // "Premium" included, so hasNaturalSystemVoice() can return true where it
+      // used to return false; when that was checked first it reset the mode to
+      // "system" — and saved it — on every page load, silencing a voice the
+      // grown-up had already downloaded.
+      // (piperId alone is enough: a hand-picked voice sets PICKED_KEY and has
+      // returned above, so anything reaching here was auto-installed. If an
+      // earlier build downgraded it, put it back.)
+      if (piperId) {
+        if (mode !== "natural") { mode = "natural"; setStr(MODE_KEY, "natural"); }
+        return;
+      }
+      // We used to stop here when the phone had an "extra natural" system voice.
+      // Jenny is now the default on any device that can keep her.
+      if (getStr(AUTO_KEY, "") === "done") return;
+      if (+getStr(FAIL_KEY, "0") >= 2) {                        // stop re-fetching 63 MB
+        if (chip) chip("Tap \u{1F5E3}\uFE0F Voice to try the gentle voice again", 4000);
+        return;
+      }
+      if (metered()) {
+        if (chip) chip("Tap 🗣️ Voice for a gentler voice (63 MB)", 5000);
+        return;
+      }
+      canCacheModelsAsync().then(function (canKeep) {
+        if (!canKeep) {
+          // No OPFS write path at all: an automatic fetch would mean 60 MB on
+          // every page, and each game is its own page. Leave it to the grown-up.
+          if (chip) chip("Tap \u{1F5E3}\uFE0F Voice for a gentler voice", 4000);
+          return;
+        }
+        startAutoDownload();
+      });
     });
   }
 
@@ -539,13 +571,14 @@
     capabilities: function () {
       return {
         writeDirect: canWriteDirect(),
-        writeViaWorker: canWriteViaWorker(),
+        workerWrite: workerWriteOK,          // null until probed
         canCache: canCacheModels(),
         mode: mode,
         piperId: piperId
       };
     },
     sweepCache: sweepCache,
+    probeWorkerWrite: probeWorkerWrite,
     say: say,
     openPicker: openPicker,
     autoSetup: autoSetup,

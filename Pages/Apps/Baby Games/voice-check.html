@@ -23,7 +23,12 @@
   @media (prefers-color-scheme:dark){body{background:#12101f;color:#f3eeff}#log{background:#1e1a30}
     p.sub{color:#a79fd0}button.ghost{background:#2b2350;color:#e9e2ff}}
 </style>
-<script src="voice.js"></script>
+<script>
+/* Always fetch a fresh voice.js: a cached copy is what made step 6 report
+   "voice.js did not load" while step 9 happily found an older BabyVoice. */
+(function(){ var t=document.createElement("script");
+  t.src="voice.js?ts="+Date.now(); document.head.appendChild(t); })();
+</script>
 </head>
 <body>
 <h1>Voice check</h1>
@@ -89,6 +94,8 @@ document.getElementById("run").onclick = async function(){
         : "cannot tell (very old browser)");
   info("crossOriginIsolated", self.crossOriginIsolated);
   info("SharedArrayBuffer", typeof SharedArrayBuffer);
+  info("voice.js build", !window.BabyVoice ? "NOT LOADED"
+        : (BabyVoice.prepare ? "current" : "STALE — an old cached copy is being served"));
   w("");
 
   /* 1 — phone voices */
@@ -119,7 +126,15 @@ document.getElementById("run").onclick = async function(){
     info("   handle.remove()", typeof fh.remove === "function" ? "supported" : "NOT supported (what the library uses)");
     info("   dir.removeEntry()", typeof dir.removeEntry === "function" ? "supported (what voice.js now uses)" : "NOT supported");
     var caps = (window.BabyVoice && BabyVoice.capabilities) ? BabyVoice.capabilities() : {};
-    info("   createSyncAccessHandle", caps.writeViaWorker ? "supported (voice.js writes via a worker)" : "not available");
+    info("   createSyncAccessHandle (main thread)", (typeof FileSystemFileHandle !== "undefined" &&
+          typeof FileSystemFileHandle.prototype.createSyncAccessHandle === "function")
+          ? "present" : "absent — normal on Safari, it is worker-only");
+    if (window.BabyVoice && BabyVoice.probeWorkerWrite) {
+      var wok = await BabyVoice.probeWorkerWrite();
+      info("   worker write (real test)", wok ? "WORKS — the voice can be cached here" : "failed — the voice cannot be kept");
+    } else {
+      info("   worker write (real test)", "not testable, voice.js is stale");
+    }
     info("   can cache at all", caps.canCache === undefined ? "?" : caps.canCache);
     if (!canWrite && have.length) {
       w("      >>> Those 0 MB files are the bug: the browser could not write");
