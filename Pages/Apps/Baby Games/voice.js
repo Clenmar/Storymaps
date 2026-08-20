@@ -171,12 +171,18 @@
    * FileSystemDirectoryHandle.removeEntry() is standard and supported back to
    * Safari 15.2, so we sweep the empty files ourselves before every session.
    */
-  function canCacheModels() {
-    try {
-      return typeof FileSystemFileHandle !== "undefined" &&
-             typeof FileSystemFileHandle.prototype.createWritable === "function";
-    } catch (e) { return false; }
+  function canWriteDirect() {                 // Safari 17+, Chrome, Firefox
+    try { return typeof FileSystemFileHandle !== "undefined" &&
+                 typeof FileSystemFileHandle.prototype.createWritable === "function"; }
+    catch (e) { return false; }
   }
+  function canWriteViaWorker() {              // Safari 15.2+ / iPadOS 16
+    try { return typeof FileSystemFileHandle !== "undefined" &&
+                 typeof FileSystemFileHandle.prototype.createSyncAccessHandle === "function" &&
+                 typeof Worker !== "undefined"; }
+    catch (e) { return false; }
+  }
+  function canCacheModels() { return canWriteDirect() || canWriteViaWorker(); }
 
   // Walk an async iterator without for-await, so this file stays ES5-parseable.
   function eachKey(it, fn) {
@@ -211,6 +217,93 @@
     }).catch(function () {});
   }
 
+  /* iPadOS 16 has no createWritable() — but it does have
+   * createSyncAccessHandle(), which works inside a Worker. So on those devices
+   * we fetch the model ourselves and write it in a worker, under the exact
+   * names the library's readBlob() looks for. The library then finds a valid
+   * file and stops re-downloading, which turns "60 MB on every game page" back
+   * into "60 MB once, ever".
+   */
+  var WORKER_SRC = [
+    "self.onmessage=function(e){var d=e.data;(async function(){try{",
+    "var root=await navigator.storage.getDirectory();",
+    "var dir=await root.getDirectoryHandle('piper',{create:true});",
+    "var fh=await dir.getFileHandle(d.name,{create:true});",
+    "var h=await fh.createSyncAccessHandle();",
+    "var buf=await d.blob.arrayBuffer();",
+    "h.truncate(0);h.write(new Uint8Array(buf),{at:0});h.flush();h.close();",
+    "self.postMessage({ok:true});",
+    "}catch(err){self.postMessage({ok:false,error:String((err&&err.message)||err)});}})();};"
+  ].join("");
+
+  function writeViaWorker(name, blob) {
+    return new Promise(function (resolve, reject) {
+      var url, wk;
+      try {
+        url = URL.createObjectURL(new Blob([WORKER_SRC], { type: "text/javascript" }));
+        wk = new Worker(url);
+      } catch (e) { reject(e); return; }
+      var settled = false;
+      function finish(err) {
+        if (settled) return;
+        settled = true;
+        try { wk.terminate(); } catch (e) {}
+        try { URL.revokeObjectURL(url); } catch (e) {}
+        if (err) reject(err); else resolve();
+      }
+      wk.onmessage = function (ev) {
+        finish(ev.data && ev.data.ok ? null : new Error((ev.data && ev.data.error) || "write failed"));
+      };
+      wk.onerror = function () { finish(new Error("worker failed")); };
+      setTimeout(function () { finish(new Error("write timed out")); }, 180000);
+      wk.postMessage({ name: name, blob: blob });
+    });
+  }
+
+  function fetchWithProgress(url, onPct) {
+    return fetch(url).then(function (res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      var total = +(res.headers.get("Content-Length") || 0);
+      if (!res.body || !res.body.getReader || !total) return res.blob();
+      var reader = res.body.getReader(), chunks = [], got = 0;
+      return (function pump() {
+        return reader.read().then(function (r) {
+          if (r.done) return new Blob(chunks);
+          chunks.push(r.value); got += r.value.length;
+          if (onPct) { try { onPct(Math.round(got * 100 / total)); } catch (e) {} }
+          return pump();
+        });
+      })();
+    });
+  }
+
+  function cachedSize(name) {
+    if (!navigator.storage || !navigator.storage.getDirectory) return Promise.resolve(0);
+    return navigator.storage.getDirectory()
+      .then(function (root) { return root.getDirectoryHandle("piper", { create: false }); })
+      .then(function (dir) { return dir.getFileHandle(name); })
+      .then(function (h) { return h.getFile(); })
+      .then(function (f) { return f.size; })
+      .catch(function () { return 0; });
+  }
+
+  // Fill the cache by hand for browsers the library cannot write on. Resolves
+  // quietly on any failure — the library will simply fetch into memory instead.
+  function primeCache(m, id, onPct) {
+    var path = m.PATH_MAP && m.PATH_MAP[id];
+    if (!path || !m.HF_BASE) return Promise.resolve(false);
+    var base = m.HF_BASE + "/" + path;
+    var file = path.split("/").pop();          // en_GB-jenny_dioco-medium.onnx
+    return cachedSize(file).then(function (sz) {
+      if (sz > 1024) return false;             // already there and usable
+      return fetchWithProgress(base + ".json", null)
+        .then(function (cfg) { return writeViaWorker(file + ".json", cfg); })
+        .then(function () { return fetchWithProgress(base, onPct); })
+        .then(function (mdl) { return writeViaWorker(file, mdl); })
+        .then(function () { return true; });
+    }).catch(function () { return false; });
+  }
+
   function makeSession(id, onPct, isRetry) {
     return loadLib().then(function (m) {
       if (!m) throw new Error("Natural voice engine unavailable");
@@ -222,6 +315,10 @@
       }
       try { TS._instance = null; } catch (e) {}   // never reuse another voice's graph
       return sweepCache(null).then(function () {
+        // Browsers with no createWritable() need the model put there for them.
+        if (canWriteDirect() || !canWriteViaWorker()) return;
+        return primeCache(m, id, onPct);
+      }).then(function () {
         return TS.create({
           voiceId: id,
           progress: function (p) {
@@ -401,15 +498,14 @@
         if (mode !== "natural") { mode = "natural"; setStr(MODE_KEY, "natural"); }
         return;
       }
-      if (hasNaturalSystemVoice()) {                            // already lovely, no download
-        mode = "system"; setStr(MODE_KEY, "system");
-        return;
-      }
+      // We used to stop here when the phone reported an "extra natural" system
+      // voice. Modern iOS labels a great many voices Enhanced or Premium, so
+      // that shortcut fired almost everywhere and Jenny was never installed.
+      // Jenny is now the default on any device that can keep her.
       if (getStr(AUTO_KEY, "") === "done") return;
       if (!canCacheModels()) {
-        // iPadOS 16 and earlier cannot keep the model, so an automatic fetch
-        // would mean 60 MB on every page — and each game is its own page.
-        // Leave it to the grown-up, who gets told the cost in the picker.
+        // No OPFS write path at all: an automatic fetch would mean 60 MB on
+        // every page, and each game is its own page. Leave it to the grown-up.
         if (chip) chip("Tap \u{1F5E3}\uFE0F Voice for a gentler voice", 4000);
         return;
       }
@@ -437,6 +533,19 @@
   }
 
   window.BabyVoice = {
+    // voice-check.html drives these so the diagnostic exercises the code that
+    // actually ships, rather than a copy of it that can drift.
+    prepare: function (id, onPct) { return makeSession(id || piperId || DEFAULT_PIPER, onPct, false); },
+    capabilities: function () {
+      return {
+        writeDirect: canWriteDirect(),
+        writeViaWorker: canWriteViaWorker(),
+        canCache: canCacheModels(),
+        mode: mode,
+        piperId: piperId
+      };
+    },
+    sweepCache: sweepCache,
     say: say,
     openPicker: openPicker,
     autoSetup: autoSetup,

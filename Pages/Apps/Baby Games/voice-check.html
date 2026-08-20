@@ -118,6 +118,9 @@ document.getElementById("run").onclick = async function(){
     info("   already cached", have.join(", ") || "nothing");
     info("   handle.remove()", typeof fh.remove === "function" ? "supported" : "NOT supported (what the library uses)");
     info("   dir.removeEntry()", typeof dir.removeEntry === "function" ? "supported (what voice.js now uses)" : "NOT supported");
+    var caps = (window.BabyVoice && BabyVoice.capabilities) ? BabyVoice.capabilities() : {};
+    info("   createSyncAccessHandle", caps.writeViaWorker ? "supported (voice.js writes via a worker)" : "not available");
+    info("   can cache at all", caps.canCache === undefined ? "?" : caps.canCache);
     if (!canWrite && have.length) {
       w("      >>> Those 0 MB files are the bug: the browser could not write");
       w("      >>> them, but left them behind, and the engine reads them back");
@@ -152,20 +155,24 @@ document.getElementById("run").onclick = async function(){
     this.disabled = false; return;
   }
 
-  /* 6 — build the session (downloads the model) */
+  /* 6 — build the session, through voice.js itself */
   var sess = null;
   try {
     var last = -1, t1 = Date.now();
-    try { m.TtsSession._instance = null; } catch(e){}
-    sess = await m.TtsSession.create({
-      voiceId: VOICE,
-      progress: function(p){
-        if (!p || !p.total) return;
-        var pct = Math.round(p.loaded*100/p.total);
-        if (pct >= last + 10) { last = pct; LOG.textContent = lines.join("\n") + "\n      downloading… " + pct + "%"; }
-      }
+    if (!window.BabyVoice || !BabyVoice.prepare) throw new Error("voice.js did not load — cannot test the real path");
+    sess = await BabyVoice.prepare(VOICE, function (pct) {
+      if (pct >= last + 10) { last = pct; LOG.textContent = lines.join("\n") + "\n      downloading… " + pct + "%"; }
     });
     ok("6 voice session", "ready in " + Math.round((Date.now()-t1)/1000) + "s");
+    var kept = await (async function(){
+      try {
+        var root = await navigator.storage.getDirectory();
+        var dir  = await root.getDirectoryHandle("piper");
+        var h    = await dir.getFileHandle(VOICE + ".onnx");
+        return Math.round((await h.getFile()).size/1048576) + "MB";
+      } catch(e){ return "nothing"; }
+    })();
+    info("   model now cached as", kept + (kept === "nothing" ? " — it will download again next visit" : " — it will not download again"));
   } catch(e){ bad("6 voice session", e); info("   stack", (e && e.stack ? String(e.stack).slice(0,400) : "none")); }
 
   /* 7 — synthesise */

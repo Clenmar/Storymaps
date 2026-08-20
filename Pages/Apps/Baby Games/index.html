@@ -10,6 +10,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+<!-- voice.js is loaded here too, and the Piper library imports onnxruntime-web
+     by bare name, so this page needs the same import map as the games. Without
+     it the landing page could fetch the voice and then never build a session. -->
+<script type="importmap">
+{ "imports": { "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm" } }
+</script>
 <style>
 :root{
   --paper:#FFFFFF; --ink:#2C2350; --soft:#6B6390; --faint:#9A93B8;
