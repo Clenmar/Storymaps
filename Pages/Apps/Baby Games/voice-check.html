@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Voice check — Baby Games</title>
+<script type="importmap">
+{ "imports": { "onnxruntime-web": "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/+esm" } }
+</script>
+<style>
+  :root{color-scheme:light dark}
+  body{margin:0;padding:calc(env(safe-area-inset-top,0px) + 16px) 14px 40px;
+       font:16px/1.45 -apple-system,system-ui,sans-serif;background:#fff6dd;color:#2b2350}
+  h1{font-size:20px;margin:0 0 4px}
+  p.sub{margin:0 0 14px;color:#6b6390;font-size:14px}
+  button{font:700 16px/1 -apple-system,system-ui,sans-serif;border:0;border-radius:14px;
+         padding:14px 18px;margin:0 8px 10px 0;background:#7c3aed;color:#fff}
+  button.ghost{background:#e9e2ff;color:#3a1d6e}
+  button[disabled]{opacity:.5}
+  #log{white-space:pre-wrap;word-break:break-word;font:13px/1.4 ui-monospace,Menlo,monospace;
+       background:#fff;border-radius:14px;padding:12px;margin-top:12px;
+       box-shadow:0 4px 14px rgba(60,40,110,.14)}
+  @media (prefers-color-scheme:dark){body{background:#12101f;color:#f3eeff}#log{background:#1e1a30}
+    p.sub{color:#a79fd0}button.ghost{background:#2b2350;color:#e9e2ff}}
+</style>
+</head>
+<body>
+<h1>Voice check</h1>
+<p class="sub">Runs the natural-voice steps one at a time and shows exactly where it stops.
+Step 6 downloads about 60&nbsp;MB — use Wi‑Fi.</p>
+
+<button id="run">Run the check</button>
+<button id="heavy" class="ghost">Include the 60 MB voice</button>
+<button id="wipe" class="ghost">Clear the saved voice</button>
+<button id="copy" class="ghost">Copy result</button>
+<div id="log">Tap “Run the check”.</div>
+
+<script>
+var LOG = document.getElementById("log");
+var lines = [];
+function w(s){ lines.push(s); LOG.textContent = lines.join("\n"); }
+function ok(n,d){ w("PASS  " + n + (d ? "  — " + d : "")); }
+function bad(n,e){ w("FAIL  " + n + "  — " + (e && (e.message||e.name) ? (e.name||"") + ": " + (e.message||e) : e)); }
+function info(n,d){ w("      " + n + ": " + d); }
+
+var heavy = false;
+document.getElementById("heavy").onclick = function(){
+  heavy = !heavy;
+  this.textContent = heavy ? "60 MB voice: ON" : "Include the 60 MB voice";
+};
+document.getElementById("copy").onclick = function(){
+  try { navigator.clipboard.writeText(lines.join("\n")); this.textContent = "Copied"; } catch(e){}
+};
+document.getElementById("wipe").onclick = function(){
+  ["babyVoiceMode_v1","babyPiperVoice_v1","babyVoicePicked_v1","babyVoiceAuto_v1","babyVoiceAutoFail_v1","babyVoiceURI_v1"]
+    .forEach(function(k){ try{ localStorage.removeItem(k); }catch(e){} });
+  (async function(){
+    try {
+      var root = await navigator.storage.getDirectory();
+      var dir  = await root.getDirectoryHandle("piper");
+      if (dir.remove) await dir.remove({recursive:true});
+      else for await (var n of dir.keys()) { var h = await dir.getFileHandle(n); if (h.remove) await h.remove(); }
+    } catch(e){}
+  })();
+  this.textContent = "Cleared";
+};
+
+var VOICE = "en_GB-jenny_dioco-medium";
+var LIB   = "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js";
+var HFCFG = "https://huggingface.co/diffusionstudio/piper-voices/resolve/main/en/en_GB/jenny_dioco/medium/" + VOICE + ".onnx.json";
+
+document.getElementById("run").onclick = async function(){
+  this.disabled = true;
+  lines = []; LOG.textContent = "";
+  var actx = null;
+  try { actx = new (window.AudioContext||window.webkitAudioContext)(); await actx.resume(); } catch(e){}
+
+  w("=== Baby Games voice check ===");
+  info("time", new Date().toString());
+  info("agent", navigator.userAgent);
+  info("cores", navigator.hardwareConcurrency);
+  info("deviceMemory", navigator.deviceMemory || "not reported");
+  var c = navigator.connection || {};
+  info("network", (c.effectiveType||"?") + (c.saveData ? " saveData:ON" : ""));
+  info("import maps", (window.HTMLScriptElement && HTMLScriptElement.supports)
+        ? (HTMLScriptElement.supports("importmap") ? "supported" : "NOT SUPPORTED — needs iOS 16.4+")
+        : "cannot tell (very old browser)");
+  info("crossOriginIsolated", self.crossOriginIsolated);
+  info("SharedArrayBuffer", typeof SharedArrayBuffer);
+  w("");
+
+  /* 1 — phone voices */
+  try {
+    var vs = (speechSynthesis.getVoices()||[]);
+    if (!vs.length) { await new Promise(function(r){ setTimeout(r,1200); }); vs = speechSynthesis.getVoices()||[]; }
+    var en = vs.filter(function(v){ return /^en/i.test(v.lang); });
+    ok("1 phone voices", en.length + " English of " + vs.length);
+    info("   names", en.slice(0,12).map(function(v){ return v.name + (v.localService===false?"*":""); }).join(", ") || "none");
+  } catch(e){ bad("1 phone voices", e); }
+
+  /* 2 — storage for the model */
+  var canWrite = false;
+  try {
+    var root = await navigator.storage.getDirectory();
+    var dir  = await root.getDirectoryHandle("piper", {create:true});
+    var fh   = await dir.getFileHandle("__probe", {create:true});
+    if (typeof fh.createWritable === "function") {
+      var wr = await fh.createWritable(); await wr.write(new Uint8Array(8)); await wr.close();
+      canWrite = true;
+      ok("2 model storage (OPFS)", "readable and writable");
+    } else {
+      bad("2 model storage (OPFS)", "createWritable() missing — this iOS is too old to cache the voice, so it must re-download every visit");
+    }
+    var have = [];
+    for await (var nm of dir.keys()) { try { var h = await dir.getFileHandle(nm); var f = await h.getFile(); have.push(nm + " " + Math.round(f.size/1048576) + "MB"); } catch(e){} }
+    info("   already cached", have.join(", ") || "nothing");
+    info("   handle.remove()", typeof fh.remove === "function" ? "supported" : "NOT supported (cache cannot be cleared)");
+  } catch(e){ bad("2 model storage (OPFS)", e); }
+
+  /* 3 — the piper library */
+  var m = null;
+  try {
+    m = await (new Function("u","return import(u)"))(LIB);
+    ok("3 voice engine module", Object.keys(m).length + " exports");
+  } catch(e){ bad("3 voice engine module", e); }
+
+  /* 4 — onnxruntime via the import map */
+  try {
+    var o = await (new Function("u","return import(u)"))("onnxruntime-web");
+    ok("4 onnxruntime import map", "web " + (o.env && o.env.versions && o.env.versions.web));
+  } catch(e){ bad("4 onnxruntime import map", e); }
+
+  /* 5 — can we reach the files */
+  try {
+    var t0 = Date.now();
+    var r = await fetch(HFCFG);
+    ok("5 voice files reachable", "config HTTP " + r.status + " in " + (Date.now()-t0) + "ms");
+  } catch(e){ bad("5 voice files reachable", e); }
+
+  if (!m) { w(""); w("Stopped: the engine module never loaded."); this.disabled = false; return; }
+  if (!heavy) {
+    w("");
+    w("Steps 6–8 skipped. Tap “Include the 60 MB voice”, then run again.");
+    this.disabled = false; return;
+  }
+
+  /* 6 — build the session (downloads the model) */
+  var sess = null;
+  try {
+    var last = -1, t1 = Date.now();
+    try { m.TtsSession._instance = null; } catch(e){}
+    sess = await m.TtsSession.create({
+      voiceId: VOICE,
+      progress: function(p){
+        if (!p || !p.total) return;
+        var pct = Math.round(p.loaded*100/p.total);
+        if (pct >= last + 10) { last = pct; LOG.textContent = lines.join("\n") + "\n      downloading… " + pct + "%"; }
+      }
+    });
+    ok("6 voice session", "ready in " + Math.round((Date.now()-t1)/1000) + "s");
+  } catch(e){ bad("6 voice session", e); info("   stack", (e && e.stack ? String(e.stack).slice(0,400) : "none")); }
+
+  /* 7 — synthesise */
+  var blob = null;
+  if (sess) {
+    try {
+      var t2 = Date.now();
+      blob = await sess.predict("Hi! Let's play together!");
+      ok("7 made the sound", Math.round(blob.size/1024) + " KB in " + (Date.now()-t2) + "ms");
+    } catch(e){ bad("7 made the sound", e); }
+  }
+
+  /* 8 — play it */
+  if (blob) {
+    try {
+      if (!actx) actx = new (window.AudioContext||window.webkitAudioContext)();
+      await actx.resume();
+      var buf = await actx.decodeAudioData(await blob.arrayBuffer());
+      var src = actx.createBufferSource(); src.buffer = buf; src.connect(actx.destination); src.start();
+      ok("8 played it", buf.duration.toFixed(2) + "s, audio state " + actx.state + " — you should hear a voice now");
+    } catch(e){ bad("8 played it", e); }
+  }
+
+  w("");
+  w("=== end ===");
+  this.disabled = false;
+};
+</script>
+</body>
+</html>
