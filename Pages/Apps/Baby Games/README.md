@@ -142,3 +142,26 @@ colour reward in Colors!, and the cards on this landing page.
 
 iPhone → Settings → Accessibility → Guided Access. Android → screen pinning.
 `baby-bible-squish.html` also has its own PIN exit button.
+
+## Shipping a change to voice.js, kit.js or photos.js
+
+The host serves these with `cache-control: max-age=14400`, so a plain
+`<script src="voice.js">` can keep running a **four-hour-old copy** after a
+push. That is not theoretical: it is why several rounds of voice fixes looked
+like they had done nothing on real devices while `voice-check.html` — which
+loads `voice.js?ts=<now>` and so misses the cache — reported everything fixed.
+
+Every page therefore loads them with a version stamp:
+
+```html
+<script src="voice.js?v=20260820a"></script>
+```
+
+**Bump that stamp in every page whenever one of those files changes**, or the
+change will not reach anyone until the cache expires:
+
+```bash
+cd "Pages/Apps/Baby Games"
+OLD=20260820a; NEW=20260821a
+sed -i "s/?v=$OLD/?v=$NEW/g" *.html
+```
