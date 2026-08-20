@@ -77,6 +77,26 @@ removed and fetched once more. After two failed automatic attempts the auto
 download stands down (`babyVoiceAutoFail_v1`) and leaves it to the 🗣️ Voice
 button.
 
+Two device rules the voice has to respect:
+
+- **An installed voice always wins.** `autoSetup` checks for a downloaded Piper
+  voice *before* it checks whether the phone has a good system voice. Modern iOS
+  exposes the whole macOS voice catalogue, "(Enhanced)" and "Premium" included,
+  so the system-voice heuristic now returns true where it used to return false —
+  and when it was checked first it reset the mode to `system`, and saved that,
+  on every page load, silencing a voice the grown-up had already downloaded.
+- **iPadOS 16 and earlier cannot keep the model.** They have OPFS but no
+  `createWritable()`, and the library creates the file before writing it, so a
+  failed write leaves a 0-byte file that it then reads back as empty forever
+  after (`JSON.parse("")` → *Unexpected EOF*). It works once, then never again.
+  Its own `remove()` can't clear it either — that uses the non-standard
+  `handle.remove()`. `sweepCache()` drops any empty or truncated file with the
+  standard `removeEntry()` before every session. On those tablets the voice is
+  never fetched automatically, since it cannot be cached and each game is its
+  own page; the 🗣️ Voice picker says so and leaves the choice to the grown-up.
+
+`voice-check.html` runs all of this on a device and prints the failing step.
+
 Games speak with `BabyVoice.say(text, done)`. `baby-bible-squish.html` and
 `baby-draw.html` route their own `speakText()` through it, so they inherit the
 same voice.

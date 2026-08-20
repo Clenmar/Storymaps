@@ -153,6 +153,64 @@
    * to be cleared before switching voices. If a truncated model from an
    * earlier attempt is already cached, we bin it and fetch once more.
    */
+  /* ── OPFS cache hygiene (iPadOS 16 and earlier) ────────────────────────
+   * Those versions have OPFS but no FileSystemFileHandle.createWritable().
+   * piper-tts-web's writeBlob() creates the file first and only then writes:
+   *
+   *     const file = await dir.getFileHandle(path, { create: true });
+   *     const writable = await file.createWritable();   // <- throws here
+   *
+   * so the throw leaves a 0-byte file behind — and readBlob() happily hands
+   * that empty file back on every later visit. The model config then parses as
+   * JSON.parse("") => "JSON Parse error: Unexpected EOF", and the voice can
+   * never load again. It works exactly once, on the very first visit, and is
+   * poisoned from then on.
+   *
+   * The library's own remove() cannot clear it either: it uses the
+   * non-standard handle.remove(), which those devices also lack. But
+   * FileSystemDirectoryHandle.removeEntry() is standard and supported back to
+   * Safari 15.2, so we sweep the empty files ourselves before every session.
+   */
+  function canCacheModels() {
+    try {
+      return typeof FileSystemFileHandle !== "undefined" &&
+             typeof FileSystemFileHandle.prototype.createWritable === "function";
+    } catch (e) { return false; }
+  }
+
+  // Walk an async iterator without for-await, so this file stays ES5-parseable.
+  function eachKey(it, fn) {
+    if (!it || !it.next) return Promise.resolve();
+    function step() {
+      return Promise.resolve(it.next()).then(function (r) {
+        if (r.done) return;
+        return Promise.resolve(fn(r.value)).catch(function () {}).then(step);
+      });
+    }
+    return step().catch(function () {});
+  }
+
+  // Drop every unusable cached file: anything empty/truncated, plus (when
+  // dropId is given) that voice's own files, which we have just proved bad.
+  function sweepCache(dropId) {
+    if (!navigator.storage || !navigator.storage.getDirectory) return Promise.resolve();
+    return navigator.storage.getDirectory().then(function (root) {
+      return root.getDirectoryHandle("piper", { create: false });
+    }).then(function (dir) {
+      return eachKey(dir.keys(), function (name) {
+        var kill = !!(dropId && name.indexOf(dropId) === 0);
+        var check = kill ? Promise.resolve() : dir.getFileHandle(name)
+          .then(function (h) { return h.getFile(); })
+          .then(function (f) { if (f.size < 1024) kill = true; })
+          .catch(function () { kill = true; });
+        return check.then(function () {
+          if (!kill) return;
+          if (dir.removeEntry) return dir.removeEntry(name);
+        });
+      });
+    }).catch(function () {});
+  }
+
   function makeSession(id, onPct, isRetry) {
     return loadLib().then(function (m) {
       if (!m) throw new Error("Natural voice engine unavailable");
@@ -163,16 +221,18 @@
         return { predict: function (t) { return api.predict({ text: t, voiceId: id }); } };
       }
       try { TS._instance = null; } catch (e) {}   // never reuse another voice's graph
-      return TS.create({
-        voiceId: id,
-        progress: function (p) {
-          try { if (onPct && p && p.total) onPct(Math.round(p.loaded * 100 / p.total)); } catch (e) {}
-        }
+      return sweepCache(null).then(function () {
+        return TS.create({
+          voiceId: id,
+          progress: function (p) {
+            try { if (onPct && p && p.total) onPct(Math.round(p.loaded * 100 / p.total)); } catch (e) {}
+          }
+        });
       }).catch(function (err) {
         if (isRetry) throw err;
-        var drop = m.remove ? m.remove(id) : null;   // cached model is unusable
-        return Promise.resolve(drop).catch(function () {})
-          .then(function () { return makeSession(id, onPct, true); });
+        // Cached model is unusable — bin it (ours works where m.remove() does
+        // not) and fetch once more.
+        return sweepCache(id).then(function () { return makeSession(id, onPct, true); });
       });
     }).then(function (s) {
       session = s; sessionVoice = id; naturalFailed = false;
@@ -255,6 +315,10 @@
         });
       } else {
         box.appendChild(el("div", "font-size:13px;color:#777;margin-bottom:6px;line-height:1.45;", "A warm neural voice that runs on the phone. Downloads once (~63 MB), then works offline. Tap a voice to install it."));
+        if (!canCacheModels()) {
+          box.appendChild(el("div", "font-size:13px;color:#a33;font-weight:700;margin-bottom:8px;line-height:1.45;",
+            "This tablet's browser is too old to save the voice, so it downloads again each time a game opens. The phone voice is the kinder choice here."));
+        }
         var status = el("div", "font-size:13px;font-weight:700;color:#7c3aed;min-height:18px;margin-bottom:6px;");
         box.appendChild(status);
         PIPER_VOICES.forEach(function (pv) {
@@ -323,12 +387,32 @@
   function autoSetup(chip, chipHide) {
     if (getStr(PICKED_KEY, "") === "1") return;                 // grown-up chose already
     whenVoicesReady(function () {
+      // An installed Piper voice always wins. This test has to come FIRST:
+      // modern iOS exposes the whole macOS voice catalogue, "(Enhanced)" and
+      // "Premium" entries included, so hasNaturalSystemVoice() now returns true
+      // on phones where it used to return false. When it was checked first it
+      // reset mode to "system" — and wrote that to localStorage — on every page
+      // load, permanently silencing a 63 MB voice the grown-up had already
+      // downloaded. That is the "the natural voice stopped working" bug.
+      // (piperId alone is enough: a hand-picked voice sets PICKED_KEY and has
+      // already returned above, so anything left here was auto-installed. If an
+      // earlier build downgraded it to "system", put it back.)
+      if (piperId) {
+        if (mode !== "natural") { mode = "natural"; setStr(MODE_KEY, "natural"); }
+        return;
+      }
       if (hasNaturalSystemVoice()) {                            // already lovely, no download
         mode = "system"; setStr(MODE_KEY, "system");
         return;
       }
-      if (mode === "natural" && piperId) return;                // a natural voice is installed
       if (getStr(AUTO_KEY, "") === "done") return;
+      if (!canCacheModels()) {
+        // iPadOS 16 and earlier cannot keep the model, so an automatic fetch
+        // would mean 60 MB on every page — and each game is its own page.
+        // Leave it to the grown-up, who gets told the cost in the picker.
+        if (chip) chip("Tap \u{1F5E3}\uFE0F Voice for a gentler voice", 4000);
+        return;
+      }
       if (+getStr(FAIL_KEY, "0") >= 2) {                        // stop re-fetching 63 MB
         if (chip) chip("Tap \u{1F5E3}\uFE0F Voice to try the gentle voice again", 4000);
         return;

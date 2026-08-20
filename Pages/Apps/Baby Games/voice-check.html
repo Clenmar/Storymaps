@@ -23,6 +23,7 @@
   @media (prefers-color-scheme:dark){body{background:#12101f;color:#f3eeff}#log{background:#1e1a30}
     p.sub{color:#a79fd0}button.ghost{background:#2b2350;color:#e9e2ff}}
 </style>
+<script src="voice.js"></script>
 </head>
 <body>
 <h1>Voice check</h1>
@@ -58,8 +59,9 @@ document.getElementById("wipe").onclick = function(){
     try {
       var root = await navigator.storage.getDirectory();
       var dir  = await root.getDirectoryHandle("piper");
-      if (dir.remove) await dir.remove({recursive:true});
-      else for await (var n of dir.keys()) { var h = await dir.getFileHandle(n); if (h.remove) await h.remove(); }
+      var names = [];
+      for await (var n of dir.keys()) names.push(n);
+      for (var i = 0; i < names.length; i++) { try { await dir.removeEntry(names[i]); } catch(e){} }
     } catch(e){}
   })();
   this.textContent = "Cleared";
@@ -114,7 +116,13 @@ document.getElementById("run").onclick = async function(){
     var have = [];
     for await (var nm of dir.keys()) { try { var h = await dir.getFileHandle(nm); var f = await h.getFile(); have.push(nm + " " + Math.round(f.size/1048576) + "MB"); } catch(e){} }
     info("   already cached", have.join(", ") || "nothing");
-    info("   handle.remove()", typeof fh.remove === "function" ? "supported" : "NOT supported (cache cannot be cleared)");
+    info("   handle.remove()", typeof fh.remove === "function" ? "supported" : "NOT supported (what the library uses)");
+    info("   dir.removeEntry()", typeof dir.removeEntry === "function" ? "supported (what voice.js now uses)" : "NOT supported");
+    if (!canWrite && have.length) {
+      w("      >>> Those 0 MB files are the bug: the browser could not write");
+      w("      >>> them, but left them behind, and the engine reads them back");
+      w("      >>> as empty every visit. voice.js now sweeps them first.");
+    }
   } catch(e){ bad("2 model storage (OPFS)", e); }
 
   /* 3 — the piper library */
@@ -180,6 +188,61 @@ document.getElementById("run").onclick = async function(){
       ok("8 played it", buf.duration.toFixed(2) + "s, audio state " + actx.state + " — you should hear a voice now");
     } catch(e){ bad("8 played it", e); }
   }
+
+  /* 9 — what voice.js itself thinks, on this device */
+  try {
+    if (!window.BabyVoice) {
+      await new Promise(function(res, rej){
+        var t = document.createElement("script");
+        t.src = "voice.js?ts=" + Date.now();
+        t.onload = res; t.onerror = function(){ rej(new Error("voice.js did not load")); };
+        document.head.appendChild(t);
+      });
+    }
+    ok("9 voice.js loaded", "BabyVoice " + (window.BabyVoice ? "present" : "MISSING"));
+
+    var saved = {};
+    ["babyVoiceMode_v1","babyPiperVoice_v1","babyVoicePicked_v1","babyVoiceAuto_v1","babyVoiceAutoFail_v1"]
+      .forEach(function(k){ saved[k.replace("babyVoice","").replace("_v1","")] = localStorage.getItem(k); });
+    info("   saved settings", JSON.stringify(saved));
+
+    // the exact heuristic voice.js uses to decide "no download needed"
+    var GREAT = /natural|neural|online|siri|premium|enhanced/i;
+    var BAD   = /espeak|compact|david|zira|mark|albert|fred|eloquence|zarvox|trinoids|whisper|bad ?news|good ?news|bells|boing|bubbles|cellos|deranged|hysterical|pipe|robot|wobble/i;
+    var trig = (speechSynthesis.getVoices()||[]).filter(function(v){
+      if (!/^en/i.test(v.lang)) return false;
+      var n = (v.name||"") + " " + (v.voiceURI||"");
+      if (BAD.test(n)) return false;
+      return GREAT.test(n) || v.localService === false;
+    }).map(function(v){ return v.name; });
+
+    var h = BabyVoice.hasNaturalSystemVoice();
+    info("   hasNaturalSystemVoice()", h);
+    info("   voices that trigger it", trig.join(", ") || "none");
+    if (h && saved["Piper"]) {
+      w("      >>> THIS IS THE BUG: a downloaded voice is installed, but the");
+      w("      >>> phone also reports an 'enhanced/premium' system voice, so the");
+      w("      >>> old code reset the mode to 'system' on every page load.");
+    }
+  } catch(e){ bad("9 voice.js loaded", e); }
+
+  /* 10 — does BabyVoice.say actually use the downloaded voice? */
+  try {
+    var usedPiper = false;
+    var origStart = AudioBufferSourceNode.prototype.start;
+    AudioBufferSourceNode.prototype.start = function(){ usedPiper = true; return origStart.apply(this, arguments); };
+
+    if (BabyVoice.autoSetup) { BabyVoice.autoSetup(function(){}, function(){}); }
+    await new Promise(function(r){ setTimeout(r, 1500); });
+    info("   mode after autoSetup", localStorage.getItem("babyVoiceMode_v1"));
+
+    BabyVoice.say("Hi! Let's play together!");
+    await new Promise(function(r){ setTimeout(r, 6000); });
+    AudioBufferSourceNode.prototype.start = origStart;
+
+    if (usedPiper) ok("10 BabyVoice.say", "used the DOWNLOADED voice");
+    else bad("10 BabyVoice.say", "fell back to the phone voice — the downloaded voice was not used");
+  } catch(e){ bad("10 BabyVoice.say", e); }
 
   w("");
   w("=== end ===");
