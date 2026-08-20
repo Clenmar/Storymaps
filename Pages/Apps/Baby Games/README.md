@@ -65,6 +65,18 @@ what the sub-landing page itself uses.
 4. Never again once someone picks a voice by hand in the 🗣️ Voice picker
    (`babyVoicePicked_v1`).
 
+Voices are fetched through `TtsSession.create({voiceId, progress})`, **not** the
+library's own `download()`. In piper-tts-web 1.0.4/1.0.5 `download()` starts the
+OPFS write without awaiting it, so it can resolve while the 63 MB model is still
+half-written; opening a session straight after then reads a truncated file and
+onnxruntime throws *"No graph was found in the protobuf"* — which showed up as
+"Couldn't load that voice", at random, on a fresh phone. `TtsSession.create`
+awaits the write and builds the graph from the blob it already has, so there is
+no race and only one download. A model that is already truncated in the cache is
+removed and fetched once more. After two failed automatic attempts the auto
+download stands down (`babyVoiceAutoFail_v1`) and leaves it to the 🗣️ Voice
+button.
+
 Games speak with `BabyVoice.say(text, done)`. `baby-bible-squish.html` and
 `baby-draw.html` route their own `speakText()` through it, so they inherit the
 same voice.

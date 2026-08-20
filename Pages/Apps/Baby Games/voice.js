@@ -23,6 +23,7 @@
   var PIP_KEY  = "babyPiperVoice_v1";    // chosen Piper voiceId
   var PICKED_KEY = "babyVoicePicked_v1"; // '1' once a grown-up chose on purpose
   var AUTO_KEY   = "babyVoiceAuto_v1";   // 'done' once the default was fetched
+  var FAIL_KEY   = "babyVoiceAutoFail_v1"; // how many times the auto fetch failed
   var DEFAULT_PIPER = "en_GB-jenny_dioco-medium";   // Jenny — British, gentle
   var PIPER_URL = "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js";
 
@@ -118,6 +119,7 @@
 
   // ── Piper engine ────────────────────────────────────────────────────────
   var lib = null, loadingLib = null, session = null, sessionVoice = "";
+  var naturalFailed = false;          // this page gave up on Piper; use the phone voice
   var blobCache = {};
 
   function loadLib() {
@@ -131,29 +133,67 @@
   }
   function apiOf(m) { return (m && m.predict) ? m : (m && m.default) ? m.default : (m || {}); }
 
-  // Download a voice model with progress (parent picker uses this).
-  function downloadVoice(id, onPct) {
+  /* Build (or rebuild) the Piper session for `id`, fetching the model if it is
+   * not cached yet.
+   *
+   * We deliberately do NOT use the library's own download(). In
+   * piper-tts-web 1.0.4 and 1.0.5 it fires the OPFS write without awaiting it:
+   *
+   *     writeBlob(url, await fetchBlob(url, cb));   // <- no await / no return
+   *
+   * so download() can resolve while the 63 MB model is still half-written.
+   * Opening a session right afterwards then reads a truncated file and
+   * onnxruntime throws "No graph was found in the protobuf" — which is exactly
+   * the "Couldn't load that voice" a grown-up used to see, at random, on a
+   * fresh phone.
+   *
+   * TtsSession.create({voiceId, progress}) fetches the model itself, *does*
+   * await the OPFS write, and builds the graph from the in-memory blob. No
+   * race, and one download instead of two. It is a singleton, so _instance has
+   * to be cleared before switching voices. If a truncated model from an
+   * earlier attempt is already cached, we bin it and fetch once more.
+   */
+  function makeSession(id, onPct, isRetry) {
     return loadLib().then(function (m) {
       if (!m) throw new Error("Natural voice engine unavailable");
-      var api = apiOf(m);
-      if (!api.download) return true;
-      return api.download(id, function (p) { try { if (onPct && p && p.total) onPct(Math.round(p.loaded * 100 / p.total)); } catch (e) {} });
-    }).then(function () { piperId = id; session = null; sessionVoice = ""; return ensureSession(); }).then(function () { return true; });
+      var TS = m.TtsSession || (m.default && m.default.TtsSession);
+      if (!TS || !TS.create) {                 // very old build: wrap predict()
+        var api = apiOf(m);
+        if (!api.predict) throw new Error("Natural voice engine unavailable");
+        return { predict: function (t) { return api.predict({ text: t, voiceId: id }); } };
+      }
+      try { TS._instance = null; } catch (e) {}   // never reuse another voice's graph
+      return TS.create({
+        voiceId: id,
+        progress: function (p) {
+          try { if (onPct && p && p.total) onPct(Math.round(p.loaded * 100 / p.total)); } catch (e) {}
+        }
+      }).catch(function (err) {
+        if (isRetry) throw err;
+        var drop = m.remove ? m.remove(id) : null;   // cached model is unusable
+        return Promise.resolve(drop).catch(function () {})
+          .then(function () { return makeSession(id, onPct, true); });
+      });
+    }).then(function (s) {
+      session = s; sessionVoice = id; naturalFailed = false;
+      return s;
+    });
+  }
+
+  // Download a voice model with progress (parent picker uses this).
+  function downloadVoice(id, onPct) {
+    naturalFailed = false;
+    return makeSession(id, onPct, false).then(function () { piperId = id; return true; });
   }
 
   // A reusable session (so the 63 MB graph is parsed once, not per phrase).
   function ensureSession() {
     if (session && sessionVoice === piperId) return Promise.resolve(session);
     if (!piperId) return Promise.resolve(null);
-    return loadLib().then(function (m) {
-      if (!m) return null;
-      var TS = m.TtsSession || (m.default && m.default.TtsSession);
-      if (TS && TS.create) {
-        return TS.create({ voiceId: piperId }).then(function (s) { session = s; sessionVoice = piperId; return s; });
-      }
-      var api = apiOf(m);                 // fallback: wrap predict() as a session
-      session = { predict: function (t) { return api.predict({ text: t, voiceId: piperId }); } };
-      sessionVoice = piperId; return session;
+    return makeSession(piperId, null, false).catch(function (err) {
+      // Don't re-fetch 63 MB for every word: fall back for the rest of the page.
+      naturalFailed = true; session = null; sessionVoice = "";
+      throw err;
     });
   }
 
@@ -169,7 +209,7 @@
 
   function say(text, cb) {
     cb = cb ? once(cb) : null;              // one call per phrase, always
-    if (mode === "natural" && piperId) { speakNatural(text, cb); return; }
+    if (mode === "natural" && piperId && !naturalFailed) { speakNatural(text, cb); return; }
     speakSystem(text, cb);
   }
 
@@ -226,6 +266,7 @@
             downloadVoice(pv.id, function (pct) { status.textContent = "Downloading… " + pct + "% (one time)"; })
               .then(function () {
                 mode = "natural"; setStr(MODE_KEY, "natural"); setStr(PIP_KEY, pv.id); setStr(PICKED_KEY, "1");
+                setStr(AUTO_KEY, "done"); setStr(FAIL_KEY, "0");
                 status.textContent = "Ready! Playing a sample…";
                 render(); speakNatural("Hi! Let's play together!");
               })
@@ -288,6 +329,10 @@
       }
       if (mode === "natural" && piperId) return;                // a natural voice is installed
       if (getStr(AUTO_KEY, "") === "done") return;
+      if (+getStr(FAIL_KEY, "0") >= 2) {                        // stop re-fetching 63 MB
+        if (chip) chip("Tap \u{1F5E3}\uFE0F Voice to try the gentle voice again", 4000);
+        return;
+      }
       if (metered()) {
         if (chip) chip("Tap 🗣️ Voice for a gentler voice (63 MB)", 5000);
         return;
@@ -301,6 +346,7 @@
         if (chip) chip("Gentle voice ready ✨", 2600);
       }).catch(function () {
         mode = "system"; setStr(MODE_KEY, "system");            // phone voice carries on
+        setStr(FAIL_KEY, String(+getStr(FAIL_KEY, "0") + 1));
         if (chipHide) chipHide();
       });
     });
