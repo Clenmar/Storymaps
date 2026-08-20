@@ -85,15 +85,18 @@ Two device rules the voice has to respect:
   so the system-voice heuristic now returns true where it used to return false —
   and when it was checked first it reset the mode to `system`, and saved that,
   on every page load, silencing a voice the grown-up had already downloaded.
-- **iPadOS 16 and earlier cannot keep the model.** They have OPFS but no
-  `createWritable()`, and the library creates the file before writing it, so a
-  failed write leaves a 0-byte file that it then reads back as empty forever
-  after (`JSON.parse("")` → *Unexpected EOF*). It works once, then never again.
-  Its own `remove()` can't clear it either — that uses the non-standard
-  `handle.remove()`. `sweepCache()` drops any empty or truncated file with the
-  standard `removeEntry()` before every session. On those tablets the voice is
-  never fetched automatically, since it cannot be cached and each game is its
-  own page; the 🗣️ Voice picker says so and leaves the choice to the grown-up.
+- **iPadOS 16 has no `createWritable()`**, and the library creates the file
+  before writing it, so a failed write leaves a 0-byte file that it then reads
+  back as empty forever after (`JSON.parse("")` → *Unexpected EOF*). It works
+  once, then never again. Its own `remove()` can't clear it either — that uses
+  the non-standard `handle.remove()`. `sweepCache()` drops any empty or
+  truncated file with the standard `removeEntry()` before every session, and
+  `primeCache()` then writes the model with `createSyncAccessHandle()` inside a
+  Worker, which those devices *do* support. Note it cannot be feature-detected
+  from the page: Safari exposes that API only inside a worker, so
+  `FileSystemFileHandle.prototype` does not carry it on the main thread even
+  where it works. `probeWorkerWrite()` settles it by doing a real 64-byte write
+  once per device.
 
 `voice-check.html` runs all of this on a device and prints the failing step.
 

@@ -25,6 +25,7 @@
   var AUTO_KEY   = "babyVoiceAuto_v1";   // 'done' once the default was fetched
   var FAIL_KEY   = "babyVoiceAutoFail_v1"; // how many times the auto fetch failed
   var WW_KEY     = "babyVoiceWorkerWrite_v1"; // 'yes'|'no': can a worker write OPFS?
+  var HEAL_KEY   = "babyVoiceHealed_v2";  // the one-time repair below has run
   var DEFAULT_PIPER = "en_GB-jenny_dioco-medium";   // Jenny — British, gentle
   var PIPER_URL = "https://cdn.jsdelivr.net/npm/@mintplex-labs/piper-tts-web@1.0.4/dist/piper-tts-web.js";
 
@@ -509,7 +510,29 @@
     })();
   }
 
+  /* One-time repair.
+   *
+   * Every natural voice used to fail on this device: the browser could not
+   * write the model, left a 0-byte file behind, and read it back as empty ever
+   * after. A grown-up who then tapped a phone voice in the picker got
+   * PICKED_KEY set — and that flag makes autoSetup bow out on its first line,
+   * so the now-working natural voice would never be offered again.
+   *
+   * That was not really a choice about voices; it was a choice about a broken
+   * feature. So we re-open the question exactly once, and only in the precise
+   * shape the bug produced: a phone voice chosen with no Piper voice installed.
+   * Anyone who picks the phone voice from here on keeps it for good.
+   */
+  function healOnce() {
+    if (getStr(HEAL_KEY, "") === "1") return;
+    setStr(HEAL_KEY, "1");
+    if (getStr(PICKED_KEY, "") === "1" && mode === "system" && !piperId) {
+      setStr(PICKED_KEY, "");
+    }
+  }
+
   function autoSetup(chip, chipHide) {
+    healOnce();
     if (getStr(PICKED_KEY, "") === "1") return;                 // grown-up chose already
 
     function startAutoDownload() {

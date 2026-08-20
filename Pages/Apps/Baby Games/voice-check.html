@@ -248,23 +248,36 @@ document.getElementById("run").onclick = async function(){
     }
   } catch(e){ bad("9 voice.js loaded", e); }
 
-  /* 10 — does BabyVoice.say actually use the downloaded voice? */
+  /* 10 — what will the games actually do? */
   try {
     var usedPiper = false;
     var origStart = AudioBufferSourceNode.prototype.start;
     AudioBufferSourceNode.prototype.start = function(){ usedPiper = true; return origStart.apply(this, arguments); };
 
-    if (BabyVoice.autoSetup) { BabyVoice.autoSetup(function(){}, function(){}); }
-    await new Promise(function(r){ setTimeout(r, 1500); });
-    info("   mode after autoSetup", localStorage.getItem("babyVoiceMode_v1"));
+    if (BabyVoice.autoSetup) BabyVoice.autoSetup(function(msg){ info("   setup", msg); }, function(){});
 
-    BabyVoice.say("Hi! Let's play together!");
-    await new Promise(function(r){ setTimeout(r, 6000); });
+    // autoSetup may have to build (or fetch) the voice — give it real time.
+    var waited = 0, caps = BabyVoice.capabilities();
+    while (caps.mode !== "natural" && waited < 120000) {
+      await new Promise(function(r){ setTimeout(r, 2000); });
+      waited += 2000; caps = BabyVoice.capabilities();
+    }
+    info("   mode after autoSetup", caps.mode + (caps.piperId ? " (" + caps.piperId + ")" : ""));
+
+    if (caps.mode !== "natural") {
+      var why = localStorage.getItem("babyVoicePicked_v1") === "1"
+        ? "a phone voice was chosen by hand in the Voice picker"
+        : "no natural voice is installed yet";
+      bad("10 what the games will use", "the phone voice — " + why);
+      w("      >>> Tap the Voice button in a game, choose Natural, then Jenny.");
+    } else {
+      BabyVoice.say("Hi! Let's play together!");
+      await new Promise(function(r){ setTimeout(r, 8000); });
+      if (usedPiper) ok("10 what the games will use", "the DOWNLOADED voice — you should have heard it");
+      else bad("10 what the games will use", "mode is natural but nothing played");
+    }
     AudioBufferSourceNode.prototype.start = origStart;
-
-    if (usedPiper) ok("10 BabyVoice.say", "used the DOWNLOADED voice");
-    else bad("10 BabyVoice.say", "fell back to the phone voice — the downloaded voice was not used");
-  } catch(e){ bad("10 BabyVoice.say", e); }
+  } catch(e){ bad("10 what the games will use", e); }
 
   w("");
   w("=== end ===");
